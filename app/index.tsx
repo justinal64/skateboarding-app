@@ -1,37 +1,48 @@
-import { Link } from 'expo-router';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COLORS } from '@/constants/AppTheme';
 import { useTricks } from '@/context/TrickContext';
 
 export default function HomeScreen() {
-  const { tricks } = useTricks();
+  const { tricks, toggleTrickCompletion, loading } = useTricks();
+  const insets = useSafeAreaInsets();
+
+  const handleToggle = (trickId: string, completed: boolean) => {
+    toggleTrickCompletion(trickId, completed);
+  };
+
+  if (loading && tricks.length === 0) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={styles.loadingText}>LOADING TRICKS...</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <FlatList
         data={tricks}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <View style={styles.item}>
-            <View style={styles.itemHeader}>
-               <View style={styles.glowDot} />
-               <Text style={styles.itemTitle}>{item.name}</Text>
+          <Pressable onPress={() => handleToggle(item.id, !!item.completed)}>
+            <View style={[styles.card, item.completed && styles.cardCompleted]}>
+                <View style={[styles.glowDot, item.completed && styles.glowDotCompleted]} />
+                <View style={styles.textContainer}>
+                    <Text style={[styles.trickName, item.completed && styles.textCompleted]}>{item.name}</Text>
+                    <Text style={[styles.trickDesc, item.completed && styles.textCompleted]}>{item.description}</Text>
+                </View>
+                {item.completed && (
+                    <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />
+                )}
             </View>
-            <Text style={styles.itemDesc}>{item.description}</Text>
-            <View style={styles.checkIcon}>
-               <Text style={styles.checkText}>✓</Text>
-            </View>
-          </View>
+          </Pressable>
         )}
-        style={styles.list}
       />
-
-      <Link href="/add" asChild>
-        <Pressable style={styles.fab}>
-          <Text style={styles.fabText}>+</Text>
-        </Pressable>
-      </Link>
     </View>
   );
 }
@@ -41,10 +52,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  list: {
-    padding: 16,
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  item: {
+  loadingText: {
+    color: COLORS.primary,
+    marginTop: 16,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  listContent: {
+    padding: 16,
+    paddingBottom: 100,
+  },
+  card: {
     backgroundColor: COLORS.card,
     borderRadius: 12,
     padding: 16,
@@ -53,54 +75,51 @@ const styles = StyleSheet.create({
     borderColor: COLORS.secondary,
     shadowColor: COLORS.secondary,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  itemHeader: {
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 3,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+  },
+  cardCompleted: {
+    borderColor: COLORS.success,
+    shadowColor: COLORS.success,
+    backgroundColor: '#0D250D', // Dark Green tint
+  },
+  textContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  trickName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginBottom: 4,
+    textShadowColor: COLORS.secondary,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 5,
+  },
+  trickDesc: {
+    fontSize: 14,
+    color: COLORS.textDim,
+  },
+  textCompleted: {
+    color: '#88AA88',
+    textDecorationLine: 'line-through',
   },
   glowDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: COLORS.secondary,
-    marginRight: 8,
     shadowColor: COLORS.secondary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 4,
   },
-  itemTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  itemDesc: {
-    color: COLORS.textDim,
-    fontSize: 14,
-  },
-  checkIcon: {
-    position: 'absolute',
-    right: 16,
-    top: 16,
-    width: 24,
-    height: 24,
-    borderWidth: 2,
-    borderColor: COLORS.success,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkText: {
-    color: COLORS.success,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: -2,
+  glowDotCompleted: {
+    backgroundColor: COLORS.success,
+    shadowColor: COLORS.success,
   },
   fab: {
     position: 'absolute',

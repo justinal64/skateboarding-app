@@ -1,20 +1,19 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { COLORS } from '@/constants/AppTheme';
-import { useTricks } from '@/context/TrickContext';
 
 export default function AddTrickScreen() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const { addTrick } = useTricks();
 
   const handleSubmit = () => {
-    if (!name.trim()) return;
-
-    addTrick({ name, description });
-    router.back();
+    if (name && description) {
+      // addTrick({ name, description }); // Disabled for curated list
+      Alert.alert("Coming Soon", "We are currently using a curated list of tricks. Custom tricks will be available in a future update!");
+      router.back();
+    }
   };
 
   return (
@@ -23,29 +22,27 @@ export default function AddTrickScreen() {
         <Text style={styles.label}>TRICK NAME</Text>
         <TextInput
           style={styles.input}
+          placeholder="e.g. Kickflip"
+          placeholderTextColor={COLORS.textDim}
           value={name}
           onChangeText={setName}
-          placeholder="e.g., KICKFLIP"
-          placeholderTextColor={COLORS.textDim}
         />
-      </View>
 
-      <View style={styles.formGroup}>
         <Text style={styles.label}>DESCRIPTION</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          value={description}
-          onChangeText={setDescription}
-          placeholder="Describe the trick..."
+          placeholder="How do you do it?"
           placeholderTextColor={COLORS.textDim}
           multiline
           numberOfLines={4}
+          value={description}
+          onChangeText={setDescription}
         />
-      </View>
 
-      <Pressable style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>SAVE NEW TRICK</Text>
-      </Pressable>
+        <Pressable style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>SAVE TRICK</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
