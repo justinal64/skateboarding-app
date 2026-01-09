@@ -1,21 +1,30 @@
-import TrickList from '@/components/TrickList';
+import TrickDeck from '@/components/TrickDeck';
+import { COLORS } from '@/constants/AppTheme';
 import { Trick, useTricks } from '@/context/TrickContext';
+import { StyleSheet, View } from 'react-native';
 
 export default function InProgressScreen() {
-  const { tricks, updateTrickStatus, loading } = useTricks();
+  const { tricks, updateTrickStatus } = useTricks();
   const inProgressTricks = tricks.filter(t => t.status === 'IN_PROGRESS');
 
-  const handlePress = (trick: Trick) => {
-      // Logic: Click on In Progress page -> move to Done
+  const handleTrickPress = (trick: Trick) => {
+      // Tap -> Completed!
       updateTrickStatus(trick.id, 'COMPLETED');
   };
 
   return (
-    <TrickList
-      tricks={inProgressTricks}
-      onTrickPress={handlePress}
-      loading={loading}
-      headerTitle="IN PROGRESS"
-    />
+    <View style={styles.container}>
+      <TrickDeck
+        tricks={inProgressTricks}
+        onTrickPress={handleTrickPress}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+    }
+});
