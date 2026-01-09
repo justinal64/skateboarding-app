@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -7,8 +7,7 @@ import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
-  withTiming,
+  withSpring
 } from 'react-native-reanimated';
 
 import { COLORS } from '@/constants/AppTheme';
@@ -16,7 +15,6 @@ import { Trick } from '@/context/TrickContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-// Smaller Cards: Reduced by another 20% (0.7 * 0.8 = 0.56)
 const CARD_WIDTH = SCREEN_WIDTH * 0.56;
 const CARD_HEIGHT = CARD_WIDTH * 1.5;
 
@@ -25,8 +23,18 @@ type TrickDeckProps = {
   onTrickPress: (trick: Trick) => void;
 };
 
+type Ghost = {
+    id: string; // unique ID for the ghost (trick.id + timestamp)
+    trick: Trick;
+    initialX: number;
+    initialY: number;
+    initialRotation: number;
+    direction: 'left' | 'right';
+};
+
 export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
   const [index, setIndex] = useState(0);
+  const [ghosts, setGhosts] = useState<Ghost[]>([]);
 
   if (tricks.length === 0) {
     return (
@@ -44,12 +52,26 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
   const nextNextIndex = (index + 2) % tricks.length;
 
   const currentTrick = tricks[currentIndex];
-  // Only show next cards if we have more than 1 trick
   const nextTrick = tricks.length > 1 ? tricks[nextIndex] : null;
   const nextNextTrick = tricks.length > 2 ? tricks[nextNextIndex] : null;
 
-  const handleNext = (direction: 'left' | 'right') => {
-    // Just increment index to cycle
+  const removeGhost = useCallback((ghostId: string) => {
+      setGhosts(prev => prev.filter(g => g.id !== ghostId));
+  }, []);
+
+  const handleNext = (direction: 'left' | 'right', offset: { x: number, y: number, rot: number }) => {
+    // 1. Create Ghost
+    const newGhost: Ghost = {
+        id: `${currentTrick.id}-${Date.now()}`,
+        trick: currentTrick,
+        initialX: offset.x,
+        initialY: offset.y,
+        initialRotation: offset.rot,
+        direction
+    };
+    setGhosts(prev => [...prev, newGhost]);
+
+    // 2. Immediate State Update (Next Card becomes Top)
     setIndex(prev => prev + 1);
   };
 
@@ -74,24 +96,39 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
              </View>
           )}
 
-          {/* Top Card (Animated) */}
+          {/* Top Card (Interactive) */}
           <SwipeableCard
-            key={`${currentTrick.id}-${index}`} // Unique key ensures fresh animation state per index increment
+            key={`${currentTrick.id}-${index}`} // Fresh key ensures component resets completely
             trick={currentTrick}
-            onSwipe={(dir) => handleNext(dir)}
+            onSwipe={(dir, offset) => handleNext(dir, offset)}
             onPress={handlePress}
           />
+
+          {/* Ghost Cards (Animating away) */}
+          {ghosts.map(ghost => (
+              <GhostCard key={ghost.id} ghost={ghost} onComplete={() => removeGhost(ghost.id)} />
+          ))}
        </View>
     </GestureHandlerRootView>
   );
 }
 
-function SwipeableCard({ trick, onSwipe, onPress }: { trick: Trick; onSwipe: (dir: 'left' | 'right') => void, onPress: () => void }) {
+// ------------------------------------------------------------------
+// Interactive Card
+// ------------------------------------------------------------------
+function SwipeableCard({
+    trick,
+    onSwipe,
+    onPress
+}: {
+    trick: Trick;
+    onSwipe: (dir: 'left' | 'right', offset: { x: number, y: number, rot: number }) => void,
+    onPress: () => void
+}) {
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const rotation = useSharedValue(0);
 
-  // Pan Gesture for Swiping
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       translationX.value = event.translationX;
@@ -105,34 +142,34 @@ function SwipeableCard({ trick, onSwipe, onPress }: { trick: Trick; onSwipe: (di
     })
     .onEnd((event) => {
       if (Math.abs(event.translationX) > SCREEN_WIDTH * 0.3) {
-        // Swipe away to cycle
-        const direction = event.translationX > 0 ? 'right' : 'left';
+        // Threshold Passed:
+        // Instead of animating here, we just signal completion and pass current values.
+        // We calculate what the rotation currently is (roughly)
 
-        translationX.value = withTiming(direction === 'right' ? SCREEN_WIDTH * 1.5 : -SCREEN_WIDTH * 1.5, {}, () => {
-            runOnJS(onSwipe)(direction);
-        });
+        const direction = event.translationX > 0 ? 'right' : 'left';
+        const currentOffset = {
+            x: event.translationX,
+            y: event.translationY,
+            rot: 0 // We let the ghost calculate rotation based on X, or logic below
+        };
+        // Approximate rotation based on x for the ghost to pick up smoothly
+        currentOffset.rot = (event.translationX / (SCREEN_WIDTH/2)) * 10;
+
+        runOnJS(onSwipe)(direction, currentOffset);
+
+        // We do NOT reset spring here because this component is about to be unmounted/replaced.
       } else {
-        // Reset
-        translationX.value = withSpring(0);
+        // Reset (Snap back)
+        translationX.value = withSpring(0, { damping: 15, stiffness: 150 });
         translationY.value = withSpring(0);
         rotation.value = withSpring(0);
       }
     });
 
-  // Tap Gesture for Selecting
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
         runOnJS(onPress)();
     });
-
-  // Race: If we drag effectively, Pan wins. If we tap quickly without dragging valid distance, Tap wins?
-  // actually standard approach is usually one or the other active.
-  // compose() runs them simultaneously. Race() means only one activates.
-  // Since we want both swiping and tapping, we can try Simultaneous or Race.
-  // Given Pan usually swallows taps if not careful, we might rely on the fact that Pan needs movement.
-  // A simple Tap gesture separate from Pan often works best if configured to not conflict.
-  // Let's use `Race` but generally standard TouchableOpacity inside might be buggy with Pan on top.
-  // Using Gesture.Race(panGesture, tapGesture) implies if Pan activates (move), Tap fails.
 
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
@@ -142,18 +179,59 @@ function SwipeableCard({ trick, onSwipe, onPress }: { trick: Trick; onSwipe: (di
       { translateY: translationY.value },
       { rotate: `${rotation.value}deg` },
     ],
-    zIndex: 100, // Top card
+    zIndex: 100,
   }));
 
   return (
     <GestureDetector gesture={composedGesture}>
       <Animated.View style={[styles.cardWrapper, animatedStyle]}>
          <NeonCard trick={trick} />
-         {/* No overlays needed for cycling mode since we aren't "deciding" anything */}
       </Animated.View>
     </GestureDetector>
   );
 }
+
+// ------------------------------------------------------------------
+// Ghost Card (Fire-and-forget animation)
+// ------------------------------------------------------------------
+function GhostCard({ ghost, onComplete }: { ghost: Ghost, onComplete: () => void }) {
+    const translationX = useSharedValue(ghost.initialX);
+    const translationY = useSharedValue(ghost.initialY);
+    const rotation = useSharedValue(ghost.initialRotation);
+
+    // Run animation on mount
+    React.useEffect(() => {
+        const targetX = ghost.direction === 'right' ? SCREEN_WIDTH * 1.5 : -SCREEN_WIDTH * 1.5;
+        // Fast, no-wobble spring
+        const springConfig = { damping: 40, stiffness: 400, mass: 1, overshootClamping: true };
+
+        translationX.value = withSpring(targetX, springConfig, (finished) => {
+            if (finished) {
+                runOnJS(onComplete)();
+            }
+        });
+    }, []);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            { translateX: translationX.value },
+            { translateY: translationY.value },
+            { rotate: `${rotation.value}deg` },
+        ],
+        zIndex: 1000, // Always on top
+    }));
+
+    return (
+        <Animated.View style={[styles.cardWrapper, animatedStyle, { position: 'absolute' }]}>
+            <NeonCard trick={ghost.trick} />
+        </Animated.View>
+    );
+}
+
+
+// ------------------------------------------------------------------
+// Visual Component & Styles
+// ------------------------------------------------------------------
 
 function NeonCard({ trick, isBackground = false }: { trick: Trick, isBackground?: boolean }) {
     return (
@@ -174,7 +252,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    // offset up slightly so the stack fits well
     marginTop: -40,
   },
   deckContainer: {
@@ -188,14 +265,14 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
   },
-  // Stack Styles - Fan to the LEFT
+  // Stack Styles - Fan to the LEFT (Increased offset)
   cardNext: {
-     transform: [{ scale: 0.9 }, { translateX: -40 }, { rotate: '-4deg' }],
+     transform: [{ scale: 0.9 }, { translateX: -60 }, { rotate: '-4deg' }],
      opacity: 0.7,
      zIndex: -1,
   },
   cardNextNext: {
-     transform: [{ scale: 0.8 }, { translateX: -80 }, { rotate: '-8deg' }],
+     transform: [{ scale: 0.8 }, { translateX: -120 }, { rotate: '-8deg' }],
      opacity: 0.4,
      zIndex: -2,
   },
@@ -230,7 +307,7 @@ const styles = StyleSheet.create({
       marginBottom: 20,
   },
   trickName: {
-      fontSize: 24, // Smaller font
+      fontSize: 24,
       fontWeight: 'bold',
       color: '#fff',
       textAlign: 'center',
