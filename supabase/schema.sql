@@ -11,7 +11,8 @@ create table user_tricks (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users not null,
   trick_id uuid references tricks(id) not null,
-  completed_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  -- Nullable completed_at: NULL means "In Progress", Timestamp means "Completed"
+  completed_at timestamp with time zone default timezone('utc'::text, now()),
   notes text,
   unique(user_id, trick_id)
 );
@@ -36,6 +37,11 @@ create policy "Users can update their own progress"
 on user_tricks for insert
 to authenticated
 with check (auth.uid() = user_id);
+
+create policy "Users can modify their own progress"
+on user_tricks for update
+to authenticated
+using (auth.uid() = user_id);
 
 create policy "Users can delete their own progress"
 on user_tricks for delete
@@ -69,3 +75,7 @@ insert into tricks (name, description) values
   ('Crooked Grind', 'Grinding on the front truck with the nose angled out.'),
   ('Rock to Fakie', 'Hooking the front truck over the coping and rolling back.'),
   ('Drop In', 'Entering a bowl or ramp from the top coping.');
+
+-- MIGRATION:
+-- If you already ran the previous schema, run this to update your table:
+-- alter table user_tricks alter column completed_at drop not null;

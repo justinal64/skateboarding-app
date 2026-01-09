@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { COLORS, NeonTheme } from '@/constants/AppTheme';
+import { NeonTheme } from '@/constants/AppTheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { TrickProvider } from '@/context/TrickContext';
 
@@ -36,25 +36,23 @@ function RootLayoutNav() {
     <ThemeProvider value={NeonTheme}>
       <TrickProvider>
         <Stack
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: COLORS.background,
-            },
-            headerTintColor: COLORS.secondary,
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              color: COLORS.secondary,
-            },
-            contentStyle: {
-              backgroundColor: COLORS.background,
-            },
-          }}
-        >
-          <Stack.Screen name="index" options={{ title: 'SKATE LOG' }} />
-          <Stack.Screen name="add" options={{ title: 'ADD TRICK' }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ headerShown: false }} />
-        </Stack>
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: NeonTheme.colors.card,
+          },
+          headerTintColor: NeonTheme.colors.text,
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            color: NeonTheme.colors.primary,
+          },
+          animation: 'fade',
+        }}
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="add" options={{ title: 'ADD TRICK', presentation: 'modal' }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ headerShown: false }} />
+      </Stack>
         <StatusBar style="light" />
       </TrickProvider>
     </ThemeProvider>

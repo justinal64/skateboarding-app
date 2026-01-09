@@ -2,17 +2,19 @@ import { supabase } from '@/lib/supabase';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
 
+export type TrickStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
+
 export type Trick = {
   id: string;
   name: string;
   description: string;
-  completed?: boolean;
+  status: TrickStatus;
 };
 
 type TrickContextType = {
   tricks: Trick[];
   refreshTricks: () => Promise<void>;
-  toggleTrickCompletion: (trickId: string, currentStatus: boolean) => Promise<void>;
+  updateTrickStatus: (trickId: string, status: TrickStatus) => Promise<void>;
   loading: boolean;
 };
 
@@ -36,21 +38,35 @@ export function TrickProvider({ children }: { children: ReactNode }) {
 
       if (tricksError) throw tricksError;
 
-      // 2. Get user's completed tricks
+      // 2. Get user's tricks (in progress or completed)
       const { data: userTricksData, error: userTricksError } = await supabase
         .from('user_tricks')
-        .select('trick_id')
+        .select('trick_id, completed_at')
         .eq('user_id', user.id);
 
       if (userTricksError) throw userTricksError;
 
-      const completedTrickIds = new Set(userTricksData?.map(ut => ut.trick_id));
+      // Map of ID -> Row
+      const userTrickMap = new Map(userTricksData?.map(ut => [ut.trick_id, ut]));
 
       // 3. Merge data
-      const mergedTricks = tricksData.map(trick => ({
-        ...trick,
-        completed: completedTrickIds.has(trick.id),
-      }));
+      const mergedTricks: Trick[] = tricksData.map(trick => {
+        const userTrick = userTrickMap.get(trick.id);
+        let status: TrickStatus = 'NOT_STARTED';
+
+        if (userTrick) {
+            if (userTrick.completed_at) {
+                status = 'COMPLETED';
+            } else {
+                status = 'IN_PROGRESS';
+            }
+        }
+
+        return {
+          ...trick,
+          status,
+        };
+      });
 
       setTricks(mergedTricks);
     } catch (error) {
@@ -60,34 +76,45 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const toggleTrickCompletion = async (trickId: string, isCompleted: boolean) => {
+  const updateTrickStatus = async (trickId: string, newStatus: TrickStatus) => {
     if (!user) return;
 
     // Optimistic Update
-    setTricks(prev => prev.map(t => t.id === trickId ? { ...t, completed: !isCompleted } : t));
+    setTricks(prev => prev.map(t => t.id === trickId ? { ...t, status: newStatus } : t));
 
     try {
-      if (isCompleted) {
-        // Remove from user_tricks
+      if (newStatus === 'NOT_STARTED') {
+        // Delete row
         const { error } = await supabase
           .from('user_tricks')
           .delete()
           .eq('user_id', user.id)
           .eq('trick_id', trickId);
-
         if (error) throw error;
-      } else {
-        // Add to user_tricks
+      } else if (newStatus === 'IN_PROGRESS') {
+        // Upsert with null completed_at
         const { error } = await supabase
           .from('user_tricks')
-          .insert({ user_id: user.id, trick_id: trickId });
-
+          .upsert({
+              user_id: user.id,
+              trick_id: trickId,
+              completed_at: null
+          }, { onConflict: 'user_id, trick_id' });
+        if (error) throw error;
+      } else if (newStatus === 'COMPLETED') {
+        // Upsert with current timestamp
+        const { error } = await supabase
+          .from('user_tricks')
+          .upsert({
+              user_id: user.id,
+              trick_id: trickId,
+              completed_at: new Date().toISOString()
+          }, { onConflict: 'user_id, trick_id' });
         if (error) throw error;
       }
     } catch (error) {
-      console.error('Error toggling trick:', error);
-      // Revert on error
-      fetchTricks();
+      console.error('Error updating trick:', error);
+      fetchTricks(); // Revert
     }
   };
 
@@ -96,15 +123,12 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     if (user) {
       fetchTricks();
     } else {
-        setTricks([]); // Clear if no user
+        setTricks([]);
     }
   }, [user]);
 
-  // Remove addTrick logic as we are now using a static DB list for now
-  // If we wanted to add tricks we would insert into 'tricks' table
-
   return (
-    <TrickContext.Provider value={{ tricks, refreshTricks: fetchTricks, toggleTrickCompletion, loading }}>
+    <TrickContext.Provider value={{ tricks, refreshTricks: fetchTricks, updateTrickStatus, loading }}>
       {children}
     </TrickContext.Provider>
   );
