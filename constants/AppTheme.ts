@@ -11,6 +11,29 @@ export const COLORS = {
   success: '#00FF00',    // Neon Green (optional extra)
 };
 
+export const SHADOWS = {
+  small: {
+    shadowColor: COLORS.secondary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  medium: {
+    shadowColor: COLORS.secondary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 5.84,
+    elevation: 8,
+  },
+};
+
 export const NeonTheme: Theme = {
   dark: true,
   colors: {
