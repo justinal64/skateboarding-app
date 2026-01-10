@@ -1,4 +1,4 @@
-import { COLORS, SHADOWS } from '@/constants/AppTheme';
+import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/types';
 import { getTrickImage } from '@/utils/mockImages';
 import { Ionicons } from '@expo/vector-icons';
@@ -123,7 +123,6 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
                             style={styles.actionButtonGradient}
                         >
                             <Text style={styles.actionButtonText}>Start Learning</Text>
-                            <Ionicons name="arrow-forward" size={20} color="#fff" />
                         </LinearGradient>
                     </TouchableOpacity>
                 ) : (
@@ -243,21 +242,26 @@ const styles = StyleSheet.create({
   },
   actionButton: {
       width: '100%',
-      ...SHADOWS.medium,
+      shadowColor: COLORS.primary,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.5,
+      shadowRadius: 10,
+      elevation: 5,
   },
   actionButtonGradient: {
-      padding: 18,
-      borderRadius: 16,
-      flexDirection: 'row',
+      padding: 16,
+      borderRadius: 12,
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 10,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.2)',
   },
   actionButtonText: {
       color: '#fff',
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: 'bold',
       textTransform: 'uppercase',
+      letterSpacing: 1,
   },
   statusMessage: {
       flexDirection: 'row',

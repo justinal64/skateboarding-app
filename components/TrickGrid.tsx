@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: GAP,
-    paddingTop: 100, // Space for header if transparent, or use SafeAreaView
+    paddingTop: 0,
     paddingBottom: 40,
   },
   columnWrapper: {
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
   },
   card: {
     width: ITEM_WIDTH,
-    height: ITEM_WIDTH * 1.2, // Rectangular portrait aspect
-    borderRadius: 16,
+    height: ITEM_WIDTH, // Square aspect ratio to match width
+    borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#1E1E1E',
     position: 'relative',
