@@ -2,17 +2,20 @@ import React, { useCallback, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
-  Extrapolate,
   interpolate,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring
+  withSpring,
+  // @ts-ignore
+  type SharedValue
 } from 'react-native-reanimated';
+
 
 import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/context/TrickContext';
 import { Ionicons } from '@expo/vector-icons';
+// @ts-ignore
+import { scheduleOnRN } from 'react-native-worklets';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH * 0.56;
@@ -36,30 +39,51 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
   const [index, setIndex] = useState(0);
   const [ghosts, setGhosts] = useState<Ghost[]>([]);
 
-  if (tricks.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Ionicons name="trophy-outline" size={64} color={COLORS.secondary} />
-        <Text style={styles.emptyText}>No more tricks in progress!</Text>
-        <Text style={styles.emptySubText}>Go to "All Tricks" to add more.</Text>
-      </View>
-    );
-  }
+  // Lifted SharedValue to coordinate background animations
+  const activeTranslationX = useSharedValue(0);
 
-  // Circular Indexing
-  const currentIndex = index % tricks.length;
-  const nextIndex = (index + 1) % tricks.length;
-  const nextNextIndex = (index + 2) % tricks.length;
+  // Animated Styles for Background Cards (Moved UP to execute unconditionally)
+  const nextCardStyle = useAnimatedStyle(() => {
+      const tX = Math.abs(activeTranslationX.value);
+      return {
+          transform: [
+              { scale: interpolate(tX, [0, SCREEN_WIDTH], [0.9, 1], 'clamp') },
+              { translateX: interpolate(tX, [0, SCREEN_WIDTH], [-60, 0], 'clamp') },
+              { rotate: `${interpolate(tX, [0, SCREEN_WIDTH], [-4, 0], 'clamp')}deg` },
+          ],
+          opacity: interpolate(tX, [0, SCREEN_WIDTH], [0.7, 1], 'clamp'),
+      };
+  });
 
-  const currentTrick = tricks[currentIndex];
-  const nextTrick = tricks.length > 1 ? tricks[nextIndex] : null;
-  const nextNextTrick = tricks.length > 2 ? tricks[nextNextIndex] : null;
+  const nextNextCardStyle = useAnimatedStyle(() => {
+      const tX = Math.abs(activeTranslationX.value);
+       return {
+          transform: [
+              { scale: interpolate(tX, [0, SCREEN_WIDTH], [0.8, 0.9], 'clamp') },
+              { translateX: interpolate(tX, [0, SCREEN_WIDTH], [-120, -60], 'clamp') },
+              { rotate: `${interpolate(tX, [0, SCREEN_WIDTH], [-8, -4], 'clamp')}deg` },
+          ],
+          opacity: interpolate(tX, [0, SCREEN_WIDTH], [0.4, 0.7], 'clamp'),
+      };
+  });
 
   const removeGhost = useCallback((ghostId: string) => {
       setGhosts(prev => prev.filter(g => g.id !== ghostId));
   }, []);
 
+  // Safe Derived State
+  const hasTricks = tricks.length > 0;
+  const currentIndex = hasTricks ? index % tricks.length : 0;
+  const nextIndex = hasTricks ? (index + 1) % tricks.length : 0;
+  const nextNextIndex = hasTricks ? (index + 2) % tricks.length : 0;
+
+  const currentTrick = hasTricks ? tricks[currentIndex] : null;
+  const nextTrick = hasTricks && tricks.length > 1 ? tricks[nextIndex] : null;
+  const nextNextTrick = hasTricks && tricks.length > 2 ? tricks[nextNextIndex] : null;
+
   const handleNext = (direction: 'left' | 'right', offset: { x: number, y: number, rot: number }) => {
+    if (!currentTrick) return;
+
     // 1. Create Ghost
     const newGhost: Ghost = {
         id: `${currentTrick.id}-${Date.now()}`,
@@ -71,35 +95,51 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
     };
     setGhosts(prev => [...prev, newGhost]);
 
-    // 2. Immediate State Update (Next Card becomes Top)
+    // 2. Immediate State Update
     setIndex(prev => prev + 1);
+
+    // 3. Reset SharedValue for the NEW top card
+    activeTranslationX.value = 0;
   };
 
   const handlePress = () => {
-      onTrickPress(currentTrick);
+      if (currentTrick) onTrickPress(currentTrick);
   };
 
+  // Condition check AFTER all hooks
+  if (!hasTricks) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Ionicons name="trophy-outline" size={64} color={COLORS.secondary} />
+        <Text style={styles.emptyText}>No more tricks in progress!</Text>
+        <Text style={styles.emptySubText}>Go to "All Tricks" to add more.</Text>
+      </View>
+    );
+  }
+
+  // If we have tricks, render deck (currentTrick is guaranteed not null here)
   return (
     <GestureHandlerRootView style={styles.container}>
        <View style={styles.deckContainer}>
           {/* Background Card (2 steps behind) */}
           {nextNextTrick && (
-            <View style={[styles.cardWrapper, styles.cardNextNext]}>
+            <Animated.View style={[styles.cardWrapper, styles.cardNextNext, nextNextCardStyle]}>
                  <NeonCard trick={nextNextTrick} isBackground />
-            </View>
+            </Animated.View>
           )}
 
           {/* Next Card */}
           {nextTrick && (
-             <View style={[styles.cardWrapper, styles.cardNext]}>
+             <Animated.View style={[styles.cardWrapper, styles.cardNext, nextCardStyle]}>
                  <NeonCard trick={nextTrick} isBackground />
-             </View>
+             </Animated.View>
           )}
 
           {/* Top Card (Interactive) */}
           <SwipeableCard
-            key={`${currentTrick.id}-${index}`} // Fresh key ensures component resets completely
-            trick={currentTrick}
+            key={`${currentTrick!.id}-${index}`} // Fresh key ensures component resets completely
+            trick={currentTrick!}
+            sharedTranslationX={activeTranslationX} // Pass it down
             onSwipe={(dir, offset) => handleNext(dir, offset)}
             onPress={handlePress}
           />
@@ -119,13 +159,15 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
 function SwipeableCard({
     trick,
     onSwipe,
-    onPress
+    onPress,
+    sharedTranslationX // Receive shared value
 }: {
     trick: Trick;
     onSwipe: (dir: 'left' | 'right', offset: { x: number, y: number, rot: number }) => void,
-    onPress: () => void
+    onPress: () => void,
+    sharedTranslationX: SharedValue<number>
 }) {
-  const translationX = useSharedValue(0);
+  const translationX = sharedTranslationX; // use the passed shared value
   const translationY = useSharedValue(0);
   const rotation = useSharedValue(0);
 
@@ -137,7 +179,7 @@ function SwipeableCard({
         event.translationX,
         [-SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2],
         [-10, 0, 10],
-        Extrapolate.CLAMP
+        'clamp'
       );
     })
     .onEnd((event) => {
@@ -155,7 +197,7 @@ function SwipeableCard({
         // Approximate rotation based on x for the ghost to pick up smoothly
         currentOffset.rot = (event.translationX / (SCREEN_WIDTH/2)) * 10;
 
-        runOnJS(onSwipe)(direction, currentOffset);
+        scheduleOnRN(onSwipe, direction, currentOffset);
 
         // We do NOT reset spring here because this component is about to be unmounted/replaced.
       } else {
@@ -168,7 +210,7 @@ function SwipeableCard({
 
   const tapGesture = Gesture.Tap()
     .onEnd(() => {
-        runOnJS(onPress)();
+        scheduleOnRN(onPress);
     });
 
   const composedGesture = Gesture.Race(panGesture, tapGesture);
@@ -207,9 +249,11 @@ function GhostCard({ ghost, onComplete }: { ghost: Ghost, onComplete: () => void
 
         translationX.value = withSpring(targetX, springConfig, (finished) => {
             if (finished) {
-                runOnJS(onComplete)();
+                scheduleOnRN(onComplete);
             }
         });
+        translationY.value = withSpring(ghost.initialY + (Math.random() * 100 - 50), springConfig); // Drift up/down
+        rotation.value = withSpring(ghost.initialRotation + (ghost.direction === 'right' ? 90 : -90), springConfig); // Spin away
     }, []);
 
     const animatedStyle = useAnimatedStyle(() => ({
