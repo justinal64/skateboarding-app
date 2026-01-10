@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from '
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COLORS } from '@/constants/AppTheme';
-import { Trick } from '@/context/TrickContext';
+import { Trick } from '@/types';
 
 type TrickListProps = {
   tricks: Trick[];

@@ -1,26 +1,18 @@
 import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  Timestamp,
-  where,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    setDoc,
+    Timestamp,
+    where,
 } from 'firebase/firestore';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { db } from '@/lib/firebase';
+import { Trick, TrickStatus } from '@/types';
 import { useAuth } from './AuthContext';
-
-export type TrickStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
-
-export type Trick = {
-  id: string;
-  name: string;
-  description: string;
-  status: TrickStatus;
-};
 
 type TrickContextType = {
   tricks: Trick[];
@@ -37,43 +29,48 @@ export function TrickProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
 
   const fetchTricks = async () => {
-    if (!user) return;
-
     setLoading(true);
     try {
-      // 1. Get all tricks
+      // 1. Get Static Tricks (Metadata)
       const tricksCollection = collection(db, 'tricks');
       const tricksSnapshot = await getDocs(tricksCollection);
-      const tricksData = tricksSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const tricksData = tricksSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as any[]; // Temporary cast, will map to Trick interface
 
-      // 2. Get user's tricks (in progress or completed)
-      const userTricksCollection = collection(db, 'user_tricks');
-      const userTricksQuery = query(userTricksCollection, where('user_id', '==', user.uid));
-      const userTricksSnapshot = await getDocs(userTricksQuery);
-      const userTricksData = userTricksSnapshot.docs.map((doc) => doc.data());
+      // 2. Get User Progress (if logged in)
+      let userTricksMap = new Map();
+      if (user) {
+        const userTricksCollection = collection(db, 'user_tricks');
+        const userTricksQuery = query(userTricksCollection, where('userId', '==', user.uid));
+        const userTricksSnapshot = await getDocs(userTricksQuery);
+        userTricksSnapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          userTricksMap.set(data.trickId, data);
+        });
+      }
 
-      // Map of ID -> Row
-      const userTrickMap = new Map(userTricksData?.map((ut) => [ut.trick_id, ut]));
+      // 3. Merge Flow
+      const mergedTricks: Trick[] = tricksData.map((trickMeta) => {
+        const userProgress = userTricksMap.get(trickMeta.id);
 
-      // 3. Merge data
-      const mergedTricks: Trick[] = tricksData.map((trick) => {
-        const userTrick = userTrickMap.get(trick.id);
         let status: TrickStatus = 'NOT_STARTED';
-
-        if (userTrick) {
-          if (userTrick.completed_at) {
-            status = 'COMPLETED';
-          } else {
-            status = 'IN_PROGRESS';
-          }
+        if (userProgress) {
+            status = userProgress.status;
         }
 
         return {
-          ...trick,
+          ...trickMeta,
+          // Ensure we have defaults if fields are missing in DB
+          category: trickMeta.category || 'Basics',
+          difficulty: trickMeta.difficulty || 'Easy',
+          points: trickMeta.points || 10,
           status,
         } as Trick;
       });
 
+      // Sort by difficulty/category if needed? For now, just merged.
       setTricks(mergedTricks);
     } catch (error) {
       console.error('Error fetching tricks:', error);
@@ -89,39 +86,49 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     setTricks((prev) => prev.map((t) => (t.id === trickId ? { ...t, status: newStatus } : t)));
 
     try {
-      const userTrickDoc = doc(db, 'user_tricks', `${user.uid}_${trickId}`);
+      // ID Convention: userId_trickId
+      const progressDocId = `${user.uid}_${trickId}`;
+      const userTrickDoc = doc(db, 'user_tricks', progressDocId);
 
       if (newStatus === 'NOT_STARTED') {
-        // Delete row
+        // Option A: Delete the record
+        // Option B: Archive it (keep history).
+        // User asked for "attempts" which implies history.
+        // But for "Status" reset, deleting is cleaner, or set status to NOT_STARTED.
+        // Let's delete for now to keep it simple, unless we want to keep "attempts".
+        // Use case: User un-checks a box.
         await deleteDoc(userTrickDoc);
-      } else if (newStatus === 'IN_PROGRESS') {
-        // Upsert with null completed_at
-        await setDoc(userTrickDoc, {
-          user_id: user.uid,
-          trick_id: trickId,
-          completed_at: null,
-        });
-      } else if (newStatus === 'COMPLETED') {
-        // Upsert with current timestamp
-        await setDoc(userTrickDoc, {
-          user_id: user.uid,
-          trick_id: trickId,
-          completed_at: Timestamp.now(),
-        });
+      } else {
+        const now = Timestamp.now();
+
+        // Prepare data payload
+        const payload: any = {
+           userId: user.uid,
+           trickId: trickId,
+           status: newStatus,
+        };
+
+        if (newStatus === 'IN_PROGRESS') {
+            // If it was already in progress or completed, we might want to preserve original startedAt?
+            // For simplicity, we upsert.
+            // setDoc with { merge: true } allows preserving other fields like 'attempts'
+            payload.startedAt = now;
+            payload.masteredAt = null;
+        } else if (newStatus === 'COMPLETED') {
+            payload.masteredAt = now;
+        }
+
+        await setDoc(userTrickDoc, payload, { merge: true });
       }
     } catch (error) {
       console.error('Error updating trick:', error);
-      fetchTricks(); // Revert
+      fetchTricks(); // Revert on error
     }
   };
 
   // Initial fetch
   useEffect(() => {
-    if (user) {
-      fetchTricks();
-    } else {
-      setTricks([]);
-    }
+    fetchTricks();
   }, [user]);
 
   return (

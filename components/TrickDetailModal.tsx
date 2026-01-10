@@ -1,11 +1,11 @@
 import { COLORS, SHADOWS } from '@/constants/AppTheme';
-import { Trick } from '@/context/TrickContext';
+import { Trick } from '@/types';
 import { getTrickImage } from '@/utils/mockImages';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type TrickDetailModalProps = {
   visible: boolean;
@@ -66,9 +66,40 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
                     ]}>
                          <Text style={styles.badgeText}>{trick.status.replace('_', ' ')}</Text>
                     </View>
+                    <View style={[styles.badge, styles.metaBadge]}>
+                        <Text style={styles.badgeText}>{trick.difficulty}</Text>
+                    </View>
+                    <View style={[styles.badge, styles.metaBadge]}>
+                        <Text style={styles.badgeText}>{trick.points} PTS</Text>
+                    </View>
                 </View>
 
+                {/* Content */}
+                {trick.prerequisites.length > 0 && (
+                    <View style={styles.prereqContainer}>
+                        <Text style={styles.prereqTitle}>Prerequisites:</Text>
+                        <View style={styles.prereqList}>
+                            {trick.prerequisites.map((p, i) => (
+                                <View key={i} style={styles.prereqBadge}>
+                                    <Text style={styles.prereqText}>{p}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                )}
+
                 <Text style={styles.description}>{trick.description}</Text>
+
+                 {/* Video Link */}
+                 {trick.video_url && (
+                    <TouchableOpacity
+                        style={styles.videoButton}
+                        onPress={() => Linking.openURL(trick.video_url)}
+                    >
+                        <Ionicons name="logo-youtube" size={20} color="#FF0000" />
+                        <Text style={styles.videoButtonText}>Watch Tutorial</Text>
+                    </TouchableOpacity>
+                )}
 
                 {/* Action Button */}
                 {isActionable ? (
@@ -194,6 +225,10 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       fontSize: 12,
   },
+  metaBadge: {
+      backgroundColor: '#444',
+      marginLeft: 8,
+  },
   description: {
       fontSize: 16,
       color: COLORS.textDim,
@@ -233,5 +268,50 @@ const styles = StyleSheet.create({
       color: COLORS.text,
       fontSize: 16,
       fontWeight: '600',
+  },
+  prereqContainer: {
+      marginBottom: 16,
+  },
+  prereqTitle: {
+      color: COLORS.textDim,
+      fontSize: 14,
+      marginBottom: 8,
+      textTransform: 'uppercase',
+      fontWeight: 'bold',
+  },
+  prereqList: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+  },
+  prereqBadge: {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.2)',
+  },
+  prereqText: {
+      color: COLORS.text,
+      fontSize: 12,
+  },
+  videoButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+      alignSelf: 'flex-start',
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 20,
+      marginBottom: 24,
+      borderWidth: 1,
+      borderColor: 'rgba(255, 0, 0, 0.3)',
+  },
+  videoButtonText: {
+      color: '#FF9999',
+      fontWeight: 'bold',
+      fontSize: 14,
   },
 });

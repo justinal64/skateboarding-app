@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 
 import { INITIAL_TRICKS } from '@/constants/TrickData';
 import { db } from '@/lib/firebase';
-import { collection, doc, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
@@ -19,8 +19,14 @@ export default function ProfileScreen() {
       const batch = writeBatch(db);
       const tricksRef = collection(db, 'tricks');
 
+      // 1. Delete all existing tricks to avoid duplicates/schema mismatch
+      const existingSnapshot = await getDocs(tricksRef);
+      existingSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      // 2. Add new tricks
       INITIAL_TRICKS.forEach((trick) => {
-        // Create a new doc ref for each trick
         const docRef = doc(tricksRef);
         batch.set(docRef, {
           ...trick,
@@ -29,7 +35,7 @@ export default function ProfileScreen() {
       });
 
       await batch.commit();
-      Alert.alert('Success', 'Database restored with 25 default tricks.');
+      Alert.alert('Success', 'Database restored with enriched trick data.');
     } catch (error: any) {
       console.error(error);
       Alert.alert('Error', error.message);

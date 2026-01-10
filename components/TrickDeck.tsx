@@ -12,7 +12,7 @@ import Animated, {
 
 
 import { COLORS } from '@/constants/AppTheme';
-import { Trick } from '@/context/TrickContext';
+import { Trick } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 // @ts-ignore
 import { scheduleOnRN } from 'react-native-worklets';

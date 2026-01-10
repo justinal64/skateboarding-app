@@ -1,5 +1,5 @@
 import { COLORS } from '@/constants/AppTheme';
-import { Trick } from '@/context/TrickContext';
+import { Trick } from '@/types';
 import { getTrickImage } from '@/utils/mockImages';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -50,7 +50,7 @@ export default function TrickGrid({ tricks, onAddProcess, loading, headerTitle }
         <View style={styles.textContainer}>
             <Text style={styles.trickName}>{item.name}</Text>
             <Text style={styles.trickStatus} numberOfLines={1}>
-                {item.status === 'NOT_STARTED' ? '' : item.status.replace('_', ' ')}
+                {item.status === 'NOT_STARTED' ? item.difficulty : item.status.replace('_', ' ')}
             </Text>
         </View>
 
