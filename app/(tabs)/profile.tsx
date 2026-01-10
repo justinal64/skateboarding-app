@@ -1,0 +1,117 @@
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { COLORS } from '@/constants/AppTheme';
+import { useAuth } from '@/context/AuthContext';
+
+export default function ProfileScreen() {
+  const { user, signOut } = useAuth();
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.avatarContainer}>
+          <Ionicons name="person" size={64} color={COLORS.primary} />
+        </View>
+        <Text style={styles.name}>{user?.displayName || 'Skater'}</Text>
+        <Text style={styles.email}>{user?.email}</Text>
+      </View>
+
+      <View style={styles.content}>
+        <View style={styles.statsCard}>
+            <Ionicons name="trophy" size={32} color={COLORS.secondary} style={styles.statIcon} />
+            <Text style={styles.statTitle}>Keep Skating!</Text>
+            <Text style={styles.statDesc}>Track your progress in the other tabs.</Text>
+        </View>
+
+        <Pressable style={styles.signOutButton} onPress={signOut}>
+            <Text style={styles.signOutText}>SIGN OUT</Text>
+            <Ionicons name="log-out-outline" size={24} color="#FFF" style={{ marginLeft: 8 }} />
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+    padding: 24,
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 40,
+  },
+  avatarContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(255, 0, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    marginBottom: 16,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+  },
+  name: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  email: {
+    fontSize: 16,
+    color: COLORS.textDim,
+    textAlign: 'center',
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingBottom: 40,
+  },
+  statsCard: {
+      backgroundColor: COLORS.card,
+      borderRadius: 20,
+      padding: 24,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: 'rgba(0, 255, 255, 0.3)',
+  },
+  statIcon: {
+      marginBottom: 16,
+  },
+  statTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: COLORS.secondary,
+      marginBottom: 8,
+  },
+  statDesc: {
+      fontSize: 14,
+      color: COLORS.textDim,
+      textAlign: 'center',
+  },
+  signOutButton: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 0, 50, 0.2)', // Red-ish tint
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 50, 0.8)',
+    padding: 18,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  signOutText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+});

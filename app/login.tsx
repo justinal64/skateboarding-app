@@ -1,9 +1,10 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import { COLORS } from '@/constants/AppTheme';
-import { supabase } from '@/lib/supabase';
+import { auth } from '@/lib/firebase';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -12,13 +13,13 @@ export default function LoginScreen() {
 
   async function signInWithEmail() {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) Alert.alert(error.message);
-    setLoading(false);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+      Alert.alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

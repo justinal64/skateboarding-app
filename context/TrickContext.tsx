@@ -1,5 +1,16 @@
-import { supabase } from '@/lib/supabase';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  Timestamp,
+  where,
+} from 'firebase/firestore';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+
+import { db } from '@/lib/firebase';
 import { useAuth } from './AuthContext';
 
 export type TrickStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -31,41 +42,36 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       // 1. Get all tricks
-      const { data: tricksData, error: tricksError } = await supabase
-        .from('tricks')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (tricksError) throw tricksError;
+      const tricksCollection = collection(db, 'tricks');
+      const tricksSnapshot = await getDocs(tricksCollection);
+      const tricksData = tricksSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
       // 2. Get user's tricks (in progress or completed)
-      const { data: userTricksData, error: userTricksError } = await supabase
-        .from('user_tricks')
-        .select('trick_id, completed_at')
-        .eq('user_id', user.id);
-
-      if (userTricksError) throw userTricksError;
+      const userTricksCollection = collection(db, 'user_tricks');
+      const userTricksQuery = query(userTricksCollection, where('user_id', '==', user.uid));
+      const userTricksSnapshot = await getDocs(userTricksQuery);
+      const userTricksData = userTricksSnapshot.docs.map((doc) => doc.data());
 
       // Map of ID -> Row
-      const userTrickMap = new Map(userTricksData?.map(ut => [ut.trick_id, ut]));
+      const userTrickMap = new Map(userTricksData?.map((ut) => [ut.trick_id, ut]));
 
       // 3. Merge data
-      const mergedTricks: Trick[] = tricksData.map(trick => {
+      const mergedTricks: Trick[] = tricksData.map((trick) => {
         const userTrick = userTrickMap.get(trick.id);
         let status: TrickStatus = 'NOT_STARTED';
 
         if (userTrick) {
-            if (userTrick.completed_at) {
-                status = 'COMPLETED';
-            } else {
-                status = 'IN_PROGRESS';
-            }
+          if (userTrick.completed_at) {
+            status = 'COMPLETED';
+          } else {
+            status = 'IN_PROGRESS';
+          }
         }
 
         return {
           ...trick,
           status,
-        };
+        } as Trick;
       });
 
       setTricks(mergedTricks);
@@ -80,37 +86,28 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     // Optimistic Update
-    setTricks(prev => prev.map(t => t.id === trickId ? { ...t, status: newStatus } : t));
+    setTricks((prev) => prev.map((t) => (t.id === trickId ? { ...t, status: newStatus } : t)));
 
     try {
+      const userTrickDoc = doc(db, 'user_tricks', `${user.uid}_${trickId}`);
+
       if (newStatus === 'NOT_STARTED') {
         // Delete row
-        const { error } = await supabase
-          .from('user_tricks')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('trick_id', trickId);
-        if (error) throw error;
+        await deleteDoc(userTrickDoc);
       } else if (newStatus === 'IN_PROGRESS') {
         // Upsert with null completed_at
-        const { error } = await supabase
-          .from('user_tricks')
-          .upsert({
-              user_id: user.id,
-              trick_id: trickId,
-              completed_at: null
-          }, { onConflict: 'user_id, trick_id' });
-        if (error) throw error;
+        await setDoc(userTrickDoc, {
+          user_id: user.uid,
+          trick_id: trickId,
+          completed_at: null,
+        });
       } else if (newStatus === 'COMPLETED') {
         // Upsert with current timestamp
-        const { error } = await supabase
-          .from('user_tricks')
-          .upsert({
-              user_id: user.id,
-              trick_id: trickId,
-              completed_at: new Date().toISOString()
-          }, { onConflict: 'user_id, trick_id' });
-        if (error) throw error;
+        await setDoc(userTrickDoc, {
+          user_id: user.uid,
+          trick_id: trickId,
+          completed_at: Timestamp.now(),
+        });
       }
     } catch (error) {
       console.error('Error updating trick:', error);
@@ -123,12 +120,14 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     if (user) {
       fetchTricks();
     } else {
-        setTricks([]);
+      setTricks([]);
     }
   }, [user]);
 
   return (
-    <TrickContext.Provider value={{ tricks, refreshTricks: fetchTricks, updateTrickStatus, loading }}>
+    <TrickContext.Provider
+      value={{ tricks, refreshTricks: fetchTricks, updateTrickStatus, loading }}
+    >
       {children}
     </TrickContext.Provider>
   );

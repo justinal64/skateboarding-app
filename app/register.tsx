@@ -1,9 +1,10 @@
 import { Link } from 'expo-router';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { COLORS } from '@/constants/AppTheme';
-import { supabase } from '@/lib/supabase';
+import { auth } from '@/lib/firebase';
 
 export default function RegisterScreen() {
   const [firstName, setFirstName] = useState('');
@@ -14,29 +15,25 @@ export default function RegisterScreen() {
 
   async function signUp() {
     if (!firstName || !lastName) {
-        Alert.alert("Please enter your first and last name.");
-        return;
+      Alert.alert('Please enter your first and last name.');
+      return;
     }
 
     setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-            first_name: firstName,
-            last_name: lastName,
-        }
-      }
-    });
-
-    if (error) Alert.alert(error.message);
-    else if (!session) Alert.alert('Please check your inbox for email verification!');
-
-    setLoading(false);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: `${firstName} ${lastName}`,
+      });
+      await sendEmailVerification(userCredential.user);
+    } catch (error: any) {
+      console.log('Registration Error:', error);
+      console.log('Error Code:', error.code);
+      console.log('Error Message:', error.message);
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -45,24 +42,24 @@ export default function RegisterScreen() {
 
       <View style={styles.row}>
         <View style={[styles.formGroup, styles.half]}>
-            <Text style={styles.label}>FIRST NAME</Text>
-            <TextInput
+          <Text style={styles.label}>FIRST NAME</Text>
+          <TextInput
             style={styles.input}
             onChangeText={setFirstName}
             value={firstName}
             placeholder="Tony"
             placeholderTextColor={COLORS.textDim}
-            />
+          />
         </View>
         <View style={[styles.formGroup, styles.half]}>
-            <Text style={styles.label}>LAST NAME</Text>
-            <TextInput
+          <Text style={styles.label}>LAST NAME</Text>
+          <TextInput
             style={styles.input}
             onChangeText={setLastName}
             value={lastName}
             placeholder="Hawk"
             placeholderTextColor={COLORS.textDim}
-            />
+          />
         </View>
       </View>
 
@@ -91,11 +88,7 @@ export default function RegisterScreen() {
         />
       </View>
 
-      <Pressable
-        style={[styles.button, loading && styles.buttonDisabled]}
-        onPress={signUp}
-        disabled={loading}
-      >
+      <Pressable style={[styles.button, loading && styles.buttonDisabled]} onPress={signUp} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'CREATING...' : 'CREATE ACCOUNT'}</Text>
       </Pressable>
 

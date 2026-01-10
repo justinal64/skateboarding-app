@@ -114,7 +114,7 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
       <View style={styles.emptyContainer}>
         <Ionicons name="trophy-outline" size={64} color={COLORS.secondary} />
         <Text style={styles.emptyText}>No more tricks in progress!</Text>
-        <Text style={styles.emptySubText}>Go to "All Tricks" to add more.</Text>
+        <Text style={styles.emptySubText}>Go to &quot;All Tricks&quot; to add more.</Text>
       </View>
     );
   }
@@ -256,7 +256,7 @@ function GhostCard({ ghost, onComplete }: { ghost: Ghost, onComplete: () => void
         });
         translationY.value = withSpring(ghost.initialY + (Math.random() * 100 - 50), springConfig); // Drift up/down
         rotation.value = withSpring(ghost.initialRotation + (ghost.direction === 'right' ? 90 : -90), springConfig); // Spin away
-    }, []);
+    });
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [

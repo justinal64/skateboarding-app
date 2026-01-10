@@ -9,28 +9,32 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { TrickProvider } from '@/context/TrickContext';
 
 function RootLayoutNav() {
-  const { session, loading } = useAuth();
+  const { user, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     if (loading) return;
 
-    // Simple check: if no session, and not on login/register, go to login
+    // Simple check: if no user, and not on login/register, go to login
 
-    // Check if on login or register
+    // Check if on login, register, or verify-email
     const isLoginPage = segments[0] === 'login';
     const isRegisterPage = segments[0] === 'register';
+    const isVerifyPage = segments[0] === 'verify-email';
     const isPublicPage = isLoginPage || isRegisterPage;
 
-    if (!session && !isPublicPage) {
-      // Redirect to login
+    if (!user && !isPublicPage) {
+      // Not logged in -> Go to login
       router.replace('/login');
-    } else if (session && isPublicPage) {
-      // Redirect to home if logged in and trying to access auth pages
+    } else if (user && !user.emailVerified && !isVerifyPage) {
+       // Logged in BUT not verified -> Go to verify email
+       router.replace('/verify-email');
+    } else if (user && user.emailVerified && (isPublicPage || isVerifyPage)) {
+      // Logged in AND verified -> Go to home (if currently on auth/verify pages)
       router.replace('/');
     }
-  }, [session, loading, segments]);
+  }, [user, loading, segments, router]);
 
   return (
     <ThemeProvider value={NeonTheme}>
@@ -52,6 +56,7 @@ function RootLayoutNav() {
         <Stack.Screen name="add" options={{ title: 'ADD TRICK', presentation: 'modal' }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
+        <Stack.Screen name="verify-email" options={{ headerShown: false }} />
       </Stack>
         <StatusBar style="light" />
       </TrickProvider>

@@ -70,17 +70,6 @@ export default function TrickGrid({ tricks, onAddProcess, loading, headerTitle }
     );
   };
 
-  const renderHeader = () => {
-      if (!headerTitle) return null;
-      return (
-        <View style={styles.headerContainer}>
-            <View style={styles.neonHeader}>
-                <Text style={styles.neonHeaderText}>{headerTitle}</Text>
-            </View>
-        </View>
-      );
-  };
-
   if (loading) {
       // Basic Loading State
       return (
