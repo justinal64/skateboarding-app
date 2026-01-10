@@ -1,14 +1,11 @@
 import { Timestamp } from 'firebase/firestore';
 
 export type TrickDifficulty = 'Easy' | 'Intermediate' | 'Advanced';
-export type TrickCategory = 'Basics' | 'Flip' | 'Grind' | 'Transition';
+export type TrickCategory = 'Basics' | 'Flip' | 'Grind' | 'Transition' | 'Slide';
 export type TrickStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
 export interface TrickMeta {
   id?: string; // Optional for seeding (auto-generated)
-  title: string; // Mapped to 'name' in user request, keeping 'title' for consistency or refactoring? User asked for 'name'. I will map 'title' to 'name' in Firestore or renaming here. Let's use 'name' to verify strict compliance.
-  // Wait, TrickData.ts uses 'title'. I should double check.
-  // User Request: "name". I will switch to "name".
   name: string;
   description: string;
   imageUrl: string;

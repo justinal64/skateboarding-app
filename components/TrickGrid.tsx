@@ -105,6 +105,12 @@ export default function TrickGrid({ tricks, onAddProcess, loading, headerTitle }
         trick={selectedTrick}
         onClose={() => setModalVisible(false)}
         onAddToInProgress={onAddProcess}
+        onPrerequisitePress={(trickName) => {
+            const target = tricks.find(t => t.name === trickName);
+            if (target) {
+                setSelectedTrick(target);
+            }
+        }}
       />
     </View>
   );

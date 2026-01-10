@@ -12,9 +12,10 @@ type TrickDetailModalProps = {
   onClose: () => void;
   trick: Trick | null;
   onAddToInProgress: (trick: Trick) => void;
+  onPrerequisitePress?: (trickName: string) => void;
 };
 
-export default function TrickDetailModal({ visible, onClose, trick, onAddToInProgress }: TrickDetailModalProps) {
+export default function TrickDetailModal({ visible, onClose, trick, onAddToInProgress, onPrerequisitePress }: TrickDetailModalProps) {
   if (!trick) return null;
 
   const imageUrl = getTrickImage(trick.id);
@@ -80,9 +81,14 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
                         <Text style={styles.prereqTitle}>Prerequisites:</Text>
                         <View style={styles.prereqList}>
                             {trick.prerequisites.map((p, i) => (
-                                <View key={i} style={styles.prereqBadge}>
+                                <TouchableOpacity
+                                    key={i}
+                                    style={styles.prereqBadge}
+                                    onPress={() => onPrerequisitePress && onPrerequisitePress(p)}
+                                >
                                     <Text style={styles.prereqText}>{p}</Text>
-                                </View>
+                                    <Ionicons name="link" size={12} color={COLORS.primary} style={{marginLeft: 4}}/>
+                                </TouchableOpacity>
                             ))}
                         </View>
                     </View>
@@ -285,15 +291,18 @@ const styles = StyleSheet.create({
       gap: 8,
   },
   prereqBadge: {
-      backgroundColor: 'rgba(255,255,255,0.1)',
+      backgroundColor: 'rgba(0, 255, 255, 0.1)',
       paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 4,
+      paddingVertical: 6,
+      borderRadius: 20,
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.2)',
+      borderColor: COLORS.primary,
+      flexDirection: 'row',
+      alignItems: 'center',
   },
   prereqText: {
-      color: COLORS.text,
+      color: COLORS.primary,
+      fontWeight: 'bold',
       fontSize: 12,
   },
   videoButton: {
