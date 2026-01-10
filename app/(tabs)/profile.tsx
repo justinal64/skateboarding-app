@@ -1,11 +1,42 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
 
+import { INITIAL_TRICKS } from '@/constants/TrickData';
+import { db } from '@/lib/firebase';
+import { collection, doc, writeBatch } from 'firebase/firestore';
+
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
+  const [seeding, setSeeding] = useState(false);
+
+  const seedDatabase = async () => {
+    setSeeding(true);
+    try {
+      const batch = writeBatch(db);
+      const tricksRef = collection(db, 'tricks');
+
+      INITIAL_TRICKS.forEach((trick) => {
+        // Create a new doc ref for each trick
+        const docRef = doc(tricksRef);
+        batch.set(docRef, {
+          ...trick,
+          created_at: new Date(),
+        });
+      });
+
+      await batch.commit();
+      Alert.alert('Success', 'Database restored with 25 default tricks.');
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert('Error', error.message);
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -24,10 +55,16 @@ export default function ProfileScreen() {
             <Text style={styles.statDesc}>Track your progress in the other tabs.</Text>
         </View>
 
-        <Pressable style={styles.signOutButton} onPress={signOut}>
-            <Text style={styles.signOutText}>SIGN OUT</Text>
-            <Ionicons name="log-out-outline" size={24} color="#FFF" style={{ marginLeft: 8 }} />
-        </Pressable>
+        <View style={{ gap: 16 }}>
+          <Pressable style={styles.seedButton} onPress={seedDatabase} disabled={seeding}>
+             <Text style={styles.seedText}>{seeding ? 'RESTORING...' : 'RESTORE DEFAULT TRICKS'}</Text>
+          </Pressable>
+
+          <Pressable style={styles.signOutButton} onPress={signOut}>
+              <Text style={styles.signOutText}>SIGN OUT</Text>
+              <Ionicons name="log-out-outline" size={24} color="#FFF" style={{ marginLeft: 8 }} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -97,6 +134,21 @@ const styles = StyleSheet.create({
       fontSize: 14,
       color: COLORS.textDim,
       textAlign: 'center',
+  },
+  seedButton: {
+    backgroundColor: 'rgba(0, 255, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: COLORS.secondary,
+    padding: 18,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  seedText: {
+    color: COLORS.secondary,
+    fontSize: 16,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
   signOutButton: {
     flexDirection: 'row',
