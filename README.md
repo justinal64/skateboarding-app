@@ -1,50 +1,24 @@
-# Welcome to your Expo app 👋
+# Skateboarding App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Deployment Checklist 🚀
 
-## Get started
+### 1. API Key Security (CRITICAL)
+Before shipping to production/App Store, you must restrict the Google Maps/Firebase API Keys to prevent unauthorized usage.
 
-1. Install dependencies
+**Steps:**
+1.  Go to [Google Cloud Console Credentials](https://console.cloud.google.com/apis/credentials?project=skateboarding-app-cb3d9).
+2.  Edit your API Key.
+3.  Under **Application restrictions**, select **iOS apps**.
+4.  Add your Bundle ID: `com.justinleggett.skateboard` (from `app.json`).
+5.  Save.
 
-   ```bash
-   npm install
-   ```
+*Note: You may need to revert this to "None" temporarily if you are testing on localhost/Expo Go.*
 
-2. Start the app
+### 2. Firestore Rules
+Ensure `firestore.rules` content is copied to the Firebase Console to prevent public overwrites of the Trick Library.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+### 3. Deploy
+Run the following to build for TestFlight:
 ```bash
-npm run reset-project
+npm run deploy:ios
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
