@@ -48,10 +48,11 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
       return {
           transform: [
               { scale: interpolate(tX, [0, SCREEN_WIDTH], [0.9, 1], 'clamp') },
-              { translateX: interpolate(tX, [0, SCREEN_WIDTH], [-60, 0], 'clamp') },
-              { rotate: `${interpolate(tX, [0, SCREEN_WIDTH], [-4, 0], 'clamp')}deg` },
+              { translateX: interpolate(tX, [0, SCREEN_WIDTH], [-70, 0], 'clamp') }, // Increased offset
+              { rotate: `${interpolate(tX, [0, SCREEN_WIDTH], [-6, 0], 'clamp')}deg` },
           ],
-          opacity: interpolate(tX, [0, SCREEN_WIDTH], [0.7, 1], 'clamp'),
+          opacity: interpolate(tX, [0, SCREEN_WIDTH], [0.8, 1], 'clamp'),
+          zIndex: 10, // Positive but lower than top card (100)
       };
   });
 
@@ -60,10 +61,11 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
        return {
           transform: [
               { scale: interpolate(tX, [0, SCREEN_WIDTH], [0.8, 0.9], 'clamp') },
-              { translateX: interpolate(tX, [0, SCREEN_WIDTH], [-120, -60], 'clamp') },
-              { rotate: `${interpolate(tX, [0, SCREEN_WIDTH], [-8, -4], 'clamp')}deg` },
+              { translateX: interpolate(tX, [0, SCREEN_WIDTH], [-140, -70], 'clamp') }, // Increased offset
+              { rotate: `${interpolate(tX, [0, SCREEN_WIDTH], [-10, -6], 'clamp')}deg` },
           ],
-          opacity: interpolate(tX, [0, SCREEN_WIDTH], [0.4, 0.7], 'clamp'),
+          opacity: interpolate(tX, [0, SCREEN_WIDTH], [0.5, 0.8], 'clamp'),
+          zIndex: 5, // Positive but lower than next card
       };
   });
 
@@ -309,16 +311,12 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
   },
-  // Stack Styles - Fan to the LEFT (Increased offset)
+  // Stack Styles
   cardNext: {
-     transform: [{ scale: 0.9 }, { translateX: -60 }, { rotate: '-4deg' }],
-     opacity: 0.7,
-     zIndex: -1,
+     // Transform and Opacity handled by useAnimatedStyle
   },
   cardNextNext: {
-     transform: [{ scale: 0.8 }, { translateX: -120 }, { rotate: '-8deg' }],
-     opacity: 0.4,
-     zIndex: -2,
+     // Transform and Opacity handled by useAnimatedStyle
   },
   // Card Visuals
   card: {
