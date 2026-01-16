@@ -5,7 +5,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
 
-import { INITIAL_TRICKS } from '@/constants/TrickData';
+import { FULL_TRICK_LIBRARY } from '@/constants/FullTrickLibrary';
 import { db } from '@/lib/firebase';
 import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
 
@@ -26,7 +26,7 @@ export default function ProfileScreen() {
       });
 
       // 2. Add new tricks
-      INITIAL_TRICKS.forEach((trick) => {
+      FULL_TRICK_LIBRARY.forEach((trick) => {
         const docRef = doc(tricksRef);
         batch.set(docRef, {
           ...trick,

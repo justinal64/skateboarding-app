@@ -19,9 +19,10 @@ type TrickDirectoryProps = {
     loading?: boolean;
     title?: string;
     subtitle?: string;
+    allowCompletion?: boolean;
 };
 
-export default function TrickDirectory({ tricks, onAddProcess, loading, title = "TRICK LIBRARY", subtitle }: TrickDirectoryProps) {
+export default function TrickDirectory({ tricks, onAddProcess, loading, title = "TRICK LIBRARY", subtitle, allowCompletion = false }: TrickDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<any | 'All'>('All');
   const [sortOption, setSortOption] = useState<string>('name_asc');
@@ -153,6 +154,7 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
             tricks={filteredTricks}
             onAddProcess={onAddProcess}
             loading={loading}
+            allowCompletion={allowCompletion}
         />
     </View>
   );

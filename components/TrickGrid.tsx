@@ -18,9 +18,10 @@ type TrickGridProps = {
   onAddProcess: (trick: Trick) => void;
   loading?: boolean;
   headerTitle?: string;
+  allowCompletion?: boolean;
 };
 
-export default function TrickGrid({ tricks, onAddProcess, loading, headerTitle }: TrickGridProps) {
+export default function TrickGrid({ tricks, onAddProcess, loading, headerTitle, allowCompletion = false }: TrickGridProps) {
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -105,6 +106,7 @@ export default function TrickGrid({ tricks, onAddProcess, loading, headerTitle }
         trick={selectedTrick}
         onClose={() => setModalVisible(false)}
         onAddToInProgress={onAddProcess}
+        allowCompletion={allowCompletion}
         onPrerequisitePress={(trickName) => {
             const target = tricks.find(t => t.name === trickName);
             if (target) {

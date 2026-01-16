@@ -13,16 +13,16 @@ type TrickDetailModalProps = {
   trick: Trick | null;
   onAddToInProgress: (trick: Trick) => void;
   onPrerequisitePress?: (trickName: string) => void;
+  allowCompletion?: boolean;
 };
 
-export default function TrickDetailModal({ visible, onClose, trick, onAddToInProgress, onPrerequisitePress }: TrickDetailModalProps) {
+export default function TrickDetailModal({ visible, onClose, trick, onAddToInProgress, onPrerequisitePress, allowCompletion = false }: TrickDetailModalProps) {
   if (!trick) return null;
 
   const imageUrl = getTrickImage(trick.id);
 
-  // If trick is already in progress/completed, we might want to change the button
-  // But user specifically asked for "add to my tricks in process list" logic.
-  const isActionable = trick.status === 'NOT_STARTED';
+  // Actionable if NOT_STARTED or (IN_PROGRESS AND allowCompletion is true)
+  const isActionable = trick.status === 'NOT_STARTED' || (trick.status === 'IN_PROGRESS' && allowCompletion);
 
   return (
     <Modal
@@ -117,12 +117,16 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
                         }}
                     >
                         <LinearGradient
-                            colors={[COLORS.primary, COLORS.secondary]}
+                            colors={trick.status === 'IN_PROGRESS'
+                                ? [COLORS.success, '#00CC66']
+                                : [COLORS.primary, COLORS.secondary]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={styles.actionButtonGradient}
                         >
-                            <Text style={styles.actionButtonText}>Start Learning</Text>
+                            <Text style={styles.actionButtonText}>
+                                {trick.status === 'IN_PROGRESS' ? 'Mark as Completed' : 'Start Learning'}
+                            </Text>
                         </LinearGradient>
                     </TouchableOpacity>
                 ) : (

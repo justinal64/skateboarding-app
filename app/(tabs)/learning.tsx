@@ -14,9 +14,9 @@ export default function LearningScreen() {
   const inProgressTricks = tricks.filter(t => t.status === 'IN_PROGRESS');
 
   const handleAddProcess = (trick: Trick) => {
-    // Should generally not be called since they are already in progress,
-    // but good to have the handler just in case logic changes.
-    if (trick.status === 'NOT_STARTED') {
+    if (trick.status === 'IN_PROGRESS') {
+        updateTrickStatus(trick.id, 'COMPLETED');
+    } else if (trick.status === 'NOT_STARTED') {
         updateTrickStatus(trick.id, 'IN_PROGRESS');
     }
   };
@@ -29,6 +29,7 @@ export default function LearningScreen() {
             loading={loading}
             title="IN PROGRESS"
             subtitle="Keep pushing your limits!"
+            allowCompletion={true}
         />
     </View>
   );
