@@ -2,18 +2,21 @@ import React, { useCallback, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  // @ts-ignore
-  type SharedValue
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    // @ts-ignore
+    type SharedValue
 } from 'react-native-reanimated';
 
 
 import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/types';
+import { getTrickImage } from '@/utils/mockImages';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 // @ts-ignore
 import { scheduleOnRN } from 'react-native-worklets';
 
@@ -279,16 +282,40 @@ function GhostCard({ ghost, onComplete }: { ghost: Ghost, onComplete: () => void
 // Visual Component & Styles
 // ------------------------------------------------------------------
 
+
 function NeonCard({ trick, isBackground = false }: { trick: Trick, isBackground?: boolean }) {
+    const imageUrl = getTrickImage(trick.id);
+
     return (
         <View style={[styles.card, isBackground && styles.cardBackground]}>
-            <View style={styles.innerBorder}>
-                <View style={styles.iconContainer}>
-                     <Ionicons name="flash" size={48} color={COLORS.secondary} />
-                </View>
+             <Image
+                source={{ uri: imageUrl }}
+                style={styles.backgroundImage}
+                contentFit="cover"
+                transition={300}
+            />
+            <LinearGradient
+                colors={['transparent', 'rgba(13, 13, 37, 0.9)']}
+                style={styles.gradient}
+            />
+
+            <View style={styles.textContainer}>
                 <Text style={styles.trickName}>{trick.name}</Text>
-                {!isBackground && <Text style={styles.trickDesc}>{trick.description}</Text>}
+                 {!isBackground && (
+                    <Text style={styles.trickStatus} numberOfLines={1}>
+                        {trick.status === 'NOT_STARTED' ? trick.difficulty : trick.status.replace('_', ' ')}
+                    </Text>
+                 )}
             </View>
+
+            {/* Status Indicator (if needed in future, but clean for now) */}
+             {trick.status === 'COMPLETED' && !isBackground && (
+                 <View style={styles.statusIconContainer}>
+                     <View style={styles.checkIcon}>
+                        <Text style={styles.checkText}>✓</Text>
+                     </View>
+                 </View>
+            )}
         </View>
     );
 }
@@ -321,46 +348,76 @@ const styles = StyleSheet.create({
   // Card Visuals
   card: {
     flex: 1,
-    backgroundColor: 'rgba(13, 13, 37, 0.95)',
+    backgroundColor: '#1E1E1E',
     borderRadius: 24,
-    borderWidth: 2,
-    borderColor: COLORS.secondary,
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 20,
+    overflow: 'hidden',
+    position: 'relative',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
     elevation: 8,
-    padding: 4,
   },
   cardBackground: {
-      shadowOpacity: 0.3,
-      borderColor: 'rgba(0, 255, 255, 0.5)',
+     opacity: 0.8, // Slightly dimmed if background
   },
-  innerBorder: {
-      flex: 1,
-      borderWidth: 1,
-      borderColor: 'rgba(0, 255, 255, 0.3)',
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 16,
+  backgroundImage: {
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
   },
-  iconContainer: {
-      marginBottom: 20,
+  gradient: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: '60%',
+  },
+  textContainer: {
+      position: 'absolute',
+      bottom: 20,
+      left: 16,
+      right: 16,
   },
   trickName: {
-      fontSize: 24,
+      fontSize: 28,
       fontWeight: 'bold',
-      color: '#fff',
-      textAlign: 'center',
-      marginBottom: 12,
+      color: COLORS.text,
+      textShadowColor: 'rgba(0,0,0,0.5)',
+      textShadowOffset: { width: 0, height: 2 },
+      textShadowRadius: 6,
+      marginBottom: 4,
   },
-  trickDesc: {
+  trickStatus: {
       fontSize: 14,
-      color: COLORS.textDim,
-      textAlign: 'center',
-      lineHeight: 20,
+      color: COLORS.primary,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
   },
+  statusIconContainer: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
+  },
+  checkIcon: {
+    width: 32,
+    height: 32,
+    borderWidth: 2,
+    borderColor: COLORS.success,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  checkText: {
+    color: COLORS.success,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: -2,
+  },
+
   // Empty State
   emptyContainer: {
       flex: 1,
