@@ -11,6 +11,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+ollie',
     points: 10,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Nollie',
@@ -21,6 +22,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+nollie',
     points: 20,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Fakie Ollie',
@@ -31,6 +33,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+fakie+ollie',
     points: 15,
     prerequisites: ['Ollie', 'Fakie Riding'],
+    isPublic: true,
   },
   {
     name: 'Switch Ollie',
@@ -41,6 +44,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+switch+ollie',
     points: 50,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Boneless',
@@ -51,6 +55,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+boneless',
     points: 10,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'No-Comply',
@@ -61,6 +66,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+no+comply',
     points: 20,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Caveman',
@@ -71,6 +77,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+caveman+skate',
     points: 5,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Hippie Jump',
@@ -81,6 +88,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+hippie+jump',
     points: 10,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Shove-It',
@@ -91,6 +99,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+shove+it',
     points: 10,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Pop Shove-It',
@@ -101,6 +110,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+pop+shove+it',
     points: 20,
     prerequisites: ['Ollie', 'Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Frontside Shove-It',
@@ -111,6 +121,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+frontside+shove+it',
     points: 20,
     prerequisites: ['Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Bigspin',
@@ -121,6 +132,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+bigspin',
     points: 30,
     prerequisites: ['Pop Shove-It', 'Backside 180'],
+    isPublic: true,
   },
   {
     name: 'Frontside 180',
@@ -131,6 +143,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+frontside+180',
     points: 20,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Backside 180',
@@ -141,6 +154,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+backside+180',
     points: 25,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
 
   // --- MANUALS ---
@@ -153,6 +167,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+manual',
     points: 10,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Nose Manual',
@@ -163,6 +178,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+nose+manual',
     points: 20,
     prerequisites: ['Manual'],
+    isPublic: true,
   },
 
   // --- FLIP TRICKS ---
@@ -175,6 +191,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+kickflip',
     points: 30,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Heelflip',
@@ -185,6 +202,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+heelflip',
     points: 30,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Varial Kickflip',
@@ -195,6 +213,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+varial+kickflip',
     points: 35,
     prerequisites: ['Kickflip', 'Pop Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Varial Heelflip',
@@ -205,6 +224,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+varial+heelflip',
     points: 40,
     prerequisites: ['Heelflip', 'Frontside Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Hardflip',
@@ -215,6 +235,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+hardflip',
     points: 50,
     prerequisites: ['Kickflip', 'Frontside Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Inward Heelflip',
@@ -225,6 +246,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+inward+heelflip',
     points: 50,
     prerequisites: ['Heelflip', 'Pop Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Tre Flip',
@@ -235,6 +257,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+tre+flip',
     points: 60,
     prerequisites: ['Varial Kickflip', '360 Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Laser Flip',
@@ -245,6 +268,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+laser+flip',
     points: 70,
     prerequisites: ['Varial Heelflip', 'Frontside 360 Shove-It'],
+    isPublic: true,
   },
   {
     name: 'Bigspin Flip',
@@ -255,6 +279,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+bigspin+flip',
     points: 65,
     prerequisites: ['Bigspin', 'Kickflip'],
+    isPublic: true,
   },
   {
     name: 'Hospital Flip',
@@ -265,6 +290,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+hospital+flip',
     points: 55,
     prerequisites: ['Kickflip'],
+    isPublic: true,
   },
 
   // --- GRINDS ---
@@ -277,6 +303,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+50-50+grind',
     points: 25,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: '5-0 Grind',
@@ -287,6 +314,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+5-0+grind',
     points: 30,
     prerequisites: ['50-50 Grind', 'Manual'],
+    isPublic: true,
   },
   {
     name: 'Nosegrind',
@@ -297,6 +325,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+nosegrind',
     points: 40,
     prerequisites: ['50-50 Grind', 'Nose Manual'],
+    isPublic: true,
   },
   {
     name: 'Crooked Grind',
@@ -307,6 +336,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+crooked+grind',
     points: 45,
     prerequisites: ['Noseslide'],
+    isPublic: true,
   },
   {
     name: 'Smith Grind',
@@ -317,6 +347,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+smith+grind',
     points: 45,
     prerequisites: ['5-0 Grind'],
+    isPublic: true,
   },
   {
     name: 'Feeble Grind',
@@ -327,6 +358,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+feeble+grind',
     points: 50,
     prerequisites: ['Smith Grind', 'Boardslide'],
+    isPublic: true,
   },
 
   // --- SLIDES ---
@@ -339,6 +371,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+boardslide',
     points: 15,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Tailslide',
@@ -349,6 +382,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+tailslide',
     points: 35,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Noseslide',
@@ -359,6 +393,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+noseslide',
     points: 20,
     prerequisites: ['Ollie'],
+    isPublic: true,
   },
   {
     name: 'Bluntslide',
@@ -369,6 +404,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+bluntslide',
     points: 50,
     prerequisites: ['Tailslide'],
+    isPublic: true,
   },
   {
     name: 'Darkslide',
@@ -379,6 +415,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+darkslide',
     points: 70,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Powerslide',
@@ -389,6 +426,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+powerslide',
     points: 10,
     prerequisites: [],
+    isPublic: true,
   },
 
   // --- TRANSITION ---
@@ -401,6 +439,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+rock+to+fakie',
     points: 15,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Axle Stall',
@@ -411,6 +450,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+axle+stall',
     points: 20,
     prerequisites: ['Rock to Fakie', '50-50 Grind'],
+    isPublic: true,
   },
   {
     name: 'Rock and Roll',
@@ -421,6 +461,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+rock+and+roll+skate',
     points: 20,
     prerequisites: ['Rock to Fakie', 'Kickturn'],
+    isPublic: true,
   },
   {
     name: 'Disaster',
@@ -431,6 +472,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+disaster+skate',
     points: 35,
     prerequisites: ['Rock and Roll', 'Ollie'],
+    isPublic: true,
   },
   {
     name: 'Drop In',
@@ -441,6 +483,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+drop+in+skate',
     points: 10,
     prerequisites: [],
+    isPublic: true,
   },
 
   // --- OLD SCHOOL / FREESTYLE ---
@@ -453,6 +496,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+casper+skate',
     points: 40,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Primo',
@@ -463,6 +507,7 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+primo+stall',
     points: 50,
     prerequisites: [],
+    isPublic: true,
   },
   {
     name: 'Fingerflip',
@@ -473,5 +518,6 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
     video_url: 'https://www.youtube.com/results?search_query=how+to+fingerflip',
     points: 25,
     prerequisites: [],
+    isPublic: true,
   },
 ];

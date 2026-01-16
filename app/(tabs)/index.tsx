@@ -1,7 +1,8 @@
+import AddTrickModal from '@/components/AddTrickModal';
 import TrickGrid from '@/components/TrickGrid';
 import { COLORS } from '@/constants/AppTheme';
-import { Trick, useTricks } from '@/context/TrickContext';
-import { TrickCategory } from '@/types';
+import { useTricks } from '@/context/TrickContext';
+import { Trick, TrickCategory } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -15,11 +16,12 @@ const SORT_OPTIONS = [
 ];
 
 export default function AllTricksScreen() {
-  const { tricks, updateTrickStatus, loading } = useTricks();
+  const { tricks, updateTrickStatus, addTrick, loading } = useTricks();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<TrickCategory | 'All'>('All');
   const [sortOption, setSortOption] = useState<string>('name_asc');
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleAddProcess = (trick: Trick) => {
     if (trick.status === 'NOT_STARTED') {
@@ -156,6 +158,22 @@ export default function AllTricksScreen() {
             onAddProcess={handleAddProcess}
             loading={loading}
             // Remove internal header since we have a custom one now
+        />
+
+        {/* Floating Action Button */}
+        <TouchableOpacity
+            style={styles.fab}
+            onPress={() => setModalVisible(true)}
+            activeOpacity={0.8}
+        >
+            <Ionicons name="add" size={32} color={COLORS.background} />
+        </TouchableOpacity>
+
+        {/* Add Trick Modal */}
+        <AddTrickModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            onAddTrick={addTrick}
         />
     </View>
   );
@@ -308,5 +326,22 @@ const styles = StyleSheet.create({
   sortOptionTextActive: {
       color: COLORS.background,
       fontWeight: 'bold',
+  },
+  fab: {
+      position: 'absolute',
+      bottom: 24,
+      right: 24,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: COLORS.secondary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: COLORS.secondary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.5,
+      shadowRadius: 8,
+      elevation: 8,
+      zIndex: 20,
   },
 });

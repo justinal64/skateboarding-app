@@ -14,6 +14,8 @@ export interface TrickMeta {
   video_url: string;
   points: number;
   prerequisites: string[]; // List of Trick IDs or Names
+  ownerId?: string; // If present, only visible to this user
+  isPublic?: boolean; // If true, visible to everyone
 }
 
 export interface UserTrickProgress {

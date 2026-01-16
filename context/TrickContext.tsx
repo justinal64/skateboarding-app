@@ -1,4 +1,5 @@
 import {
+    addDoc,
     collection,
     deleteDoc,
     doc,
@@ -11,13 +12,14 @@ import {
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { db } from '@/lib/firebase';
-import { Trick, TrickStatus } from '@/types';
+import { Trick, TrickMeta, TrickStatus } from '@/types';
 import { useAuth } from './AuthContext';
 
 type TrickContextType = {
   tricks: Trick[];
   refreshTricks: () => Promise<void>;
   updateTrickStatus: (trickId: string, status: TrickStatus) => Promise<void>;
+  addTrick: (trick: Omit<TrickMeta, 'id'>) => Promise<void>;
   loading: boolean;
 };
 
@@ -32,12 +34,37 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       // 1. Get Static Tricks (Metadata)
+      // 1. Get Static / Public Tricks
       const tricksCollection = collection(db, 'tricks');
-      const tricksSnapshot = await getDocs(tricksCollection);
-      const tricksData = tricksSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as any[]; // Temporary cast, will map to Trick interface
+
+      // Parallel Queries:
+      // A. Public Tricks (isPublic == true)
+      // B. My Private Tricks (ownerId == myUid)
+      const publicQuery = query(tricksCollection, where('isPublic', '==', true));
+      const myTricksQuery = user
+        ? query(tricksCollection, where('ownerId', '==', user.uid))
+        : null;
+
+      const [publicSnapshot, myTricksSnapshot] = await Promise.all([
+          getDocs(publicQuery),
+          myTricksQuery ? getDocs(myTricksQuery) : Promise.resolve({ docs: [] })
+      ]);
+
+      // Merge Docs (Dedup by ID if overlap, though shouldn't fetch same doc twice ideally)
+      const trickDocsMap = new Map();
+
+      publicSnapshot.docs.forEach(doc => {
+          trickDocsMap.set(doc.id, { id: doc.id, ...doc.data() });
+      });
+
+      // User tricks override public ones if ID collision (unlikely but safe)
+      if (myTricksSnapshot && 'docs' in myTricksSnapshot) {
+           myTricksSnapshot.docs.forEach(doc => {
+              trickDocsMap.set(doc.id, { id: doc.id, ...doc.data() });
+           });
+      }
+
+      const tricksData = Array.from(trickDocsMap.values());
 
       // 2. Get User Progress (if logged in)
       let userTricksMap = new Map();
@@ -52,7 +79,9 @@ export function TrickProvider({ children }: { children: ReactNode }) {
       }
 
       // 3. Merge Flow
-      const mergedTricks: Trick[] = tricksData.map((trickMeta) => {
+      // 3. Merge Flow & Filter
+      const mergedTricks: Trick[] = tricksData
+        .map((trickMeta) => {
         const userProgress = userTricksMap.get(trickMeta.id);
 
         let status: TrickStatus = 'NOT_STARTED';
@@ -106,6 +135,7 @@ export function TrickProvider({ children }: { children: ReactNode }) {
            userId: user.uid,
            trickId: trickId,
            status: newStatus,
+           updatedAt: now,
         };
 
         if (newStatus === 'IN_PROGRESS') {
@@ -126,6 +156,27 @@ export function TrickProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const addTrick = async (trickData: Omit<TrickMeta, 'id'>) => {
+      try {
+          if (!user) throw new Error("Must be logged in to add a trick");
+
+          const tricksCollection = collection(db, 'tricks');
+          // Add ownerId to the saved data
+          const dataWithOwnership = {
+              ...trickData,
+              ownerId: user.uid
+          };
+
+          await addDoc(tricksCollection, dataWithOwnership);
+
+          // Optimistic update or just refresh
+          await fetchTricks();
+      } catch (error) {
+          console.error("Error adding trick: ", error);
+          throw error;
+      }
+  };
+
   // Initial fetch
   useEffect(() => {
     fetchTricks();
@@ -133,7 +184,7 @@ export function TrickProvider({ children }: { children: ReactNode }) {
 
   return (
     <TrickContext.Provider
-      value={{ tricks, refreshTricks: fetchTricks, updateTrickStatus, loading }}
+      value={{ tricks, refreshTricks: fetchTricks, updateTrickStatus, addTrick, loading }}
     >
       {children}
     </TrickContext.Provider>
