@@ -34,11 +34,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="inprogress"
+        name="learning"
         options={{
-          title: 'In Progress',
+          title: 'Learning',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="time" size={size} color={color} />
+            <Ionicons name="school" size={size} color={color} />
           ),
         }}
       />
@@ -52,11 +52,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="learning"
+        name="inprogress"
         options={{
-          title: 'Learning',
+          title: 'In Progress',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="school" size={size} color={color} />
+            <Ionicons name="time" size={size} color={color} />
           ),
         }}
       />
