@@ -1,12 +1,11 @@
 import TrickGrid from '@/components/TrickGrid';
 import { COLORS } from '@/constants/AppTheme';
-import { Trick, useTricks } from '@/context/TrickContext';
-import { TrickCategory } from '@/types';
+import { Trick } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const CATEGORIES: (TrickCategory | 'All')[] = ['All', 'Flip', 'Grind', 'Slide', 'Transition'];
+const CATEGORIES: (any | 'All')[] = ['All', 'Basics', 'Flip', 'Grind', 'Slide', 'Transition'];
 const SORT_OPTIONS = [
     { label: 'Name (A-Z)', value: 'name_asc' },
     { label: 'Points (High-Low)', value: 'points_desc' },
@@ -14,18 +13,19 @@ const SORT_OPTIONS = [
     { label: 'Difficulty (Easy-Adv)', value: 'difficulty_asc' },
 ];
 
-export default function AllTricksScreen() {
-  const { tricks, updateTrickStatus, loading } = useTricks();
+type TrickDirectoryProps = {
+    tricks: Trick[];
+    onAddProcess: (trick: Trick) => void;
+    loading?: boolean;
+    title?: string;
+    subtitle?: string;
+};
+
+export default function TrickDirectory({ tricks, onAddProcess, loading, title = "TRICK LIBRARY", subtitle }: TrickDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<TrickCategory | 'All'>('All');
+  const [selectedCategory, setSelectedCategory] = useState<any | 'All'>('All');
   const [sortOption, setSortOption] = useState<string>('name_asc');
   const [showSortMenu, setShowSortMenu] = useState(false);
-
-  const handleAddProcess = (trick: Trick) => {
-    if (trick.status === 'NOT_STARTED') {
-        updateTrickStatus(trick.id, 'IN_PROGRESS');
-    }
-  };
 
   const filteredTricks = useMemo(() => {
      let result = [...tricks];
@@ -52,7 +52,7 @@ export default function AllTricksScreen() {
                  return a.points - b.points;
              case 'difficulty_asc':
                  const diffOrder = { 'Easy': 1, 'Intermediate': 2, 'Advanced': 3 };
-                 return diffOrder[a.difficulty] - diffOrder[b.difficulty];
+                 return (diffOrder[a.difficulty as keyof typeof diffOrder] || 0) - (diffOrder[b.difficulty as keyof typeof diffOrder] || 0);
              default:
                  return 0;
          }
@@ -61,17 +61,15 @@ export default function AllTricksScreen() {
      return result;
   }, [tricks, searchQuery, selectedCategory, sortOption]);
 
-  const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortOption)?.label;
-
   return (
     <View style={styles.container}>
         {/* Header Section */}
         <View style={styles.header}>
             <View style={styles.titleRow}>
                 <View style={styles.neonTitleContainer}>
-                    <Text style={styles.neonTitle}>TRICK LIBRARY</Text>
+                    <Text style={styles.neonTitle}>{title}</Text>
                 </View>
-                <Text style={styles.subtitle}>Select a trick to start learning</Text>
+                {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
             </View>
 
             {/* Search Bar */}
@@ -153,9 +151,8 @@ export default function AllTricksScreen() {
 
         <TrickGrid
             tricks={filteredTricks}
-            onAddProcess={handleAddProcess}
+            onAddProcess={onAddProcess}
             loading={loading}
-            // Remove internal header since we have a custom one now
         />
     </View>
   );
@@ -223,6 +220,7 @@ const styles = StyleSheet.create({
       flex: 1,
       color: COLORS.text,
       fontSize: 16,
+      fontWeight: '500',
   },
   filtersRow: {
       flexDirection: 'row',

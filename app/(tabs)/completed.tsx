@@ -1,21 +1,35 @@
-import TrickList from '@/components/TrickList';
+import TrickDirectory from '@/components/TrickDirectory';
+import { COLORS } from '@/constants/AppTheme';
 import { Trick, useTricks } from '@/context/TrickContext';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 export default function CompletedScreen() {
   const { tricks, updateTrickStatus, loading } = useTricks();
   const completedTricks = tricks.filter(t => t.status === 'COMPLETED');
 
-  const handlePress = (trick: Trick) => {
-      // Logic: Move back to "All Tricks" (Not Started)
-      updateTrickStatus(trick.id, 'NOT_STARTED');
+  const handleAddProcess = (trick: Trick) => {
+      // Logic: If they want to "re-learn" it? Or maybe un-complete?
+      // For now, let's allow them to move it back to IN_PROGRESS if they want to practice more.
+      updateTrickStatus(trick.id, 'IN_PROGRESS');
   };
 
   return (
-    <TrickList
-      tricks={completedTricks}
-      onTrickPress={handlePress}
-      loading={loading}
-      headerTitle="COMPLETED"
-    />
+    <View style={styles.container}>
+        <TrickDirectory
+            tricks={completedTricks}
+            onAddProcess={handleAddProcess}
+            loading={loading}
+            title="COMPLETED"
+            subtitle="Look at all you've achieved!"
+        />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: COLORS.background,
+  },
+});
