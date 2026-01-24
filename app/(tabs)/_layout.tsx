@@ -11,9 +11,9 @@ export default function TabLayout() {
           backgroundColor: COLORS.background,
           borderTopColor: COLORS.secondary,
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 90,
+          paddingBottom: 30,
+          paddingTop: 10,
         },
         tabBarActiveTintColor: COLORS.secondary,
         tabBarInactiveTintColor: COLORS.textDim,
@@ -28,8 +28,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'All Tricks',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="list" size={30} color={color} />
           ),
         }}
       />
@@ -37,8 +37,8 @@ export default function TabLayout() {
         name="learning"
         options={{
           title: 'Learning',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="school" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="school" size={30} color={color} />
           ),
         }}
       />
@@ -46,8 +46,8 @@ export default function TabLayout() {
         name="completed"
         options={{
           title: 'Done',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="checkmark-done-circle" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="checkmark-done-circle" size={30} color={color} />
           ),
         }}
       />
@@ -55,8 +55,8 @@ export default function TabLayout() {
         name="inprogress"
         options={{
           title: 'In Progress',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="time" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="time" size={30} color={color} />
           ),
         }}
       />
@@ -64,8 +64,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-circle" size={30} color={color} />
           ),
         }}
       />
