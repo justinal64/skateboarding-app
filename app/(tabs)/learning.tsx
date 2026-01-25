@@ -1,6 +1,7 @@
 import TrickDirectory from '@/components/TrickDirectory';
 import { COLORS } from '@/constants/AppTheme';
-import { Trick, useTricks } from '@/context/TrickContext';
+import { useTricks } from '@/context/TrickContext';
+import { Trick } from '@/types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 

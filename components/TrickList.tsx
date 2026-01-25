@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import React, { memo, useCallback } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COLORS } from '@/constants/AppTheme';
@@ -13,8 +15,48 @@ type TrickListProps = {
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
 };
 
+// Memoized Card Component to prevent unnecessary re-renders
+const TrickCard = memo(({ item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) => (
+  <Pressable onPress={() => onPress(item)}>
+    <View style={[
+        styles.card,
+        item.status === 'COMPLETED' && styles.cardCompleted,
+        item.status === 'IN_PROGRESS' && styles.cardInProgress
+    ]}>
+        <View style={[
+            styles.glowDot,
+            item.status === 'COMPLETED' && styles.glowDotCompleted,
+            item.status === 'IN_PROGRESS' && styles.glowDotInProgress
+        ]} />
+        <View style={styles.textContainer}>
+            <Text style={styles.trickName}>{item.name}</Text>
+            <Text style={styles.trickDesc}>{item.description}</Text>
+        </View>
+
+        {item.status === 'COMPLETED' && (
+            <View style={styles.checkIcon}>
+               <Text style={styles.checkText}>✓</Text>
+            </View>
+        )}
+        {item.status === 'IN_PROGRESS' && (
+             <Ionicons name="time-outline" size={24} color={COLORS.secondary} style={{ marginLeft: 8 }} />
+        )}
+    </View>
+  </Pressable>
+));
+
 export default function TrickList({ tricks, onTrickPress, loading, headerTitle, ListHeaderComponent }: TrickListProps) {
   const insets = useSafeAreaInsets();
+
+  const handleTrickPress = useCallback((trick: Trick) => {
+    onTrickPress(trick);
+  }, [onTrickPress]);
+
+  const renderItem = useCallback(({ item }: { item: Trick }) => (
+    <TrickCard item={item} onPress={handleTrickPress} />
+  ), [handleTrickPress]);
+
+  const keyExtractor = useCallback((item: Trick) => item.id, []);
 
   if (loading && tricks.length === 0) {
     return (
@@ -37,39 +79,14 @@ export default function TrickList({ tricks, onTrickPress, loading, headerTitle, 
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <FlatList
+      <FlashList
         data={tricks}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         contentContainerStyle={styles.listContent}
-        ListHeaderComponent={ListHeaderComponent || DefaultHeader}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => onTrickPress(item)}>
-            <View style={[
-                styles.card,
-                item.status === 'COMPLETED' && styles.cardCompleted,
-                item.status === 'IN_PROGRESS' && styles.cardInProgress
-            ]}>
-                <View style={[
-                    styles.glowDot,
-                    item.status === 'COMPLETED' && styles.glowDotCompleted,
-                    item.status === 'IN_PROGRESS' && styles.glowDotInProgress
-                ]} />
-                <View style={styles.textContainer}>
-                    <Text style={styles.trickName}>{item.name}</Text>
-                    <Text style={styles.trickDesc}>{item.description}</Text>
-                </View>
-
-                {item.status === 'COMPLETED' && (
-                    <View style={styles.checkIcon}>
-                       <Text style={styles.checkText}>✓</Text>
-                    </View>
-                )}
-                {item.status === 'IN_PROGRESS' && (
-                     <Ionicons name="time-outline" size={24} color={COLORS.secondary} style={{ marginLeft: 8 }} />
-                )}
-            </View>
-          </Pressable>
-        )}
+        ListHeaderComponent={ListHeaderComponent || (headerTitle ? DefaultHeader : null)}
+        renderItem={renderItem}
+        // @ts-ignore
+        estimatedItemSize={120}
       />
     </View>
   );
