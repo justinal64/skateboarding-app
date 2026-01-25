@@ -27,7 +27,7 @@ export default function LearningScreen() {
             tricks={inProgressTricks}
             onAddProcess={handleAddProcess}
             loading={loading}
-            title="IN PROGRESS"
+            title="Learning"
             subtitle="Keep pushing your limits!"
             allowCompletion={true}
         />
