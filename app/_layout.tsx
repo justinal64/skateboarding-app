@@ -6,39 +6,42 @@ import 'react-native-reanimated';
 
 import { NeonTheme } from '@/constants/AppTheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { TrickProvider } from '@/context/TrickContext';
+
+import { useTrickStore } from '@/store/trickStore';
 
 function RootLayoutNav() {
   const { user, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const fetchTricks = useTrickStore((state) => state.fetchTricks);
+
+  useEffect(() => {
+    // Sync store with auth
+    if (!loading) {
+       fetchTricks(user?.uid);
+    }
+  }, [user, loading, fetchTricks]);
 
   useEffect(() => {
     if (loading) return;
 
-    // Simple check: if no user, and not on login/register, go to login
-
-    // Check if on login, register, or verify-email
+    // ... existing auth redirect logic
     const isLoginPage = segments[0] === 'login';
     const isRegisterPage = segments[0] === 'register';
     const isVerifyPage = segments[0] === 'verify-email';
     const isPublicPage = isLoginPage || isRegisterPage;
 
     if (!user && !isPublicPage) {
-      // Not logged in -> Go to login
       router.replace('/login');
     } else if (user && !user.emailVerified && !isVerifyPage) {
-       // Logged in BUT not verified -> Go to verify email
        router.replace('/verify-email');
     } else if (user && user.emailVerified && (isPublicPage || isVerifyPage)) {
-      // Logged in AND verified -> Go to home (if currently on auth/verify pages)
       router.replace('/');
     }
   }, [user, loading, segments, router]);
 
   return (
     <ThemeProvider value={NeonTheme}>
-      <TrickProvider>
         <Stack
         screenOptions={{
           headerStyle: {
@@ -59,7 +62,6 @@ function RootLayoutNav() {
         <Stack.Screen name="verify-email" options={{ headerShown: false }} />
       </Stack>
         <StatusBar style="light" />
-      </TrickProvider>
     </ThemeProvider>
   );
 }

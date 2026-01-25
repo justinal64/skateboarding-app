@@ -1,11 +1,13 @@
-import AddTrickModal from '@/components/AddTrickModal';
-import TrickGrid from '@/components/TrickGrid';
-import { COLORS } from '@/constants/AppTheme';
-import { useTricks } from '@/context/TrickContext';
-import { Trick, TrickCategory } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+import AddTrickModal from '@/components/AddTrickModal';
+import TrickGrid from '@/components/TrickGrid';
+import { COLORS } from '@/constants/AppTheme';
+import { useAuth } from '@/context/AuthContext';
+import { useTrickStore } from '@/store/trickStore';
+import { Trick, TrickCategory } from '@/types';
 
 const CATEGORIES: (TrickCategory | 'All')[] = ['All', 'Flip', 'Grind', 'Slide', 'Transition'];
 const SORT_OPTIONS = [
@@ -16,7 +18,12 @@ const SORT_OPTIONS = [
 ];
 
 export default function AllTricksScreen() {
-  const { tricks, updateTrickStatus, addTrick, loading } = useTricks();
+  const { user } = useAuth();
+  const tricks = useTrickStore((state) => state.tricks);
+  const loading = useTrickStore((state) => state.loading);
+  const updateTrickStatus = useTrickStore((state) => state.updateTrickStatus);
+  const addTrick = useTrickStore((state) => state.addTrick);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<TrickCategory | 'All'>('All');
   const [sortOption, setSortOption] = useState<string>('name_asc');
@@ -24,8 +31,9 @@ export default function AllTricksScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleAddProcess = (trick: Trick) => {
+    if (!user) return;
     if (trick.status === 'NOT_STARTED') {
-        updateTrickStatus(trick.id, 'IN_PROGRESS');
+        updateTrickStatus(user.uid, trick.id, 'IN_PROGRESS');
     }
   };
 
@@ -173,7 +181,7 @@ export default function AllTricksScreen() {
         <AddTrickModal
             visible={modalVisible}
             onClose={() => setModalVisible(false)}
-            onAddTrick={addTrick}
+            onAddTrick={(trick) => user ? addTrick(user.uid, trick) : Promise.reject('No User')}
         />
     </View>
   );
