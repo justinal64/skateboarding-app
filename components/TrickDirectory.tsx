@@ -3,7 +3,7 @@ import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const CATEGORIES: (any | 'All')[] = ['All', 'Basics', 'Flip', 'Grind', 'Slide', 'Transition'];
 const SORT_OPTIONS = [
@@ -63,21 +63,29 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
   }, [tricks, searchQuery, selectedCategory, sortOption]);
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
         {/* Header Section */}
-        <View style={styles.header}>
-            <View style={styles.titleRow}>
-                <View style={styles.neonTitleContainer}>
-                    <Text style={styles.neonTitle}>{title}</Text>
+        <View className="pt-[60px] pb-5 px-4 bg-background z-10">
+            <View className="items-center mb-5">
+                <View
+                    className="border-2 border-secondary rounded-xl py-1.5 px-4 bg-black/40 mb-2"
+                    // @ts-ignore
+                    style={{ boxShadow: `0px 0px 8px ${COLORS.secondary}` }}
+                >
+                    <Text
+                        className="text-[#CCFFFF] text-base font-black tracking-widest"
+                        // @ts-ignore
+                        style={{ textShadow: `0px 0px 10px ${COLORS.secondary}` }}
+                    >{title}</Text>
                 </View>
-                {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+                {subtitle && <Text className="text-textDim text-sm font-medium tracking-[0.5px]">{subtitle}</Text>}
             </View>
 
             {/* Search Bar */}
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color={COLORS.secondary} style={styles.searchIcon} />
+            <View className="flex-row items-center bg-[#1E1E30] rounded-xl px-3 py-2.5 mb-4 border border-white/10">
+                <Ionicons name="search" size={20} color={COLORS.secondary} className="mr-2" />
                 <TextInput
-                    style={styles.searchInput}
+                    className="flex-1 text-text text-base font-medium"
                     placeholder="Search tricks..."
                     placeholderTextColor={COLORS.textDim}
                     value={searchQuery}
@@ -91,21 +99,19 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
             </View>
 
             {/* Filters Row */}
-            <View style={styles.filtersRow}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+            <View className="flex-row items-center gap-3">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingRight: 16 }}>
                     {CATEGORIES.map(cat => (
                         <TouchableOpacity
                             key={cat}
-                            style={[
-                                styles.categoryChip,
-                                selectedCategory === cat && styles.categoryChipActive
-                            ]}
+                            className={`px-3.5 py-2 rounded-full border ${selectedCategory === cat ? 'bg-primary/15 border-primary' : 'bg-white/5 border-white/10'}`}
                             onPress={() => setSelectedCategory(cat)}
                         >
-                            <Text style={[
-                                styles.categoryText,
-                                selectedCategory === cat && styles.categoryTextActive
-                            ]}>
+                            <Text
+                                className={`text-[13px] ${selectedCategory === cat ? 'text-primary font-bold' : 'text-textDim font-semibold'}`}
+                                // @ts-ignore
+                                style={selectedCategory === cat ? { textShadow: `0px 0px 5px ${COLORS.primary}` } : {}}
+                            >
                                 {cat}
                             </Text>
                         </TouchableOpacity>
@@ -114,7 +120,7 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
 
                 {/* Sort Button */}
                 <TouchableOpacity
-                    style={styles.sortButton}
+                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 items-center justify-center"
                     onPress={() => setShowSortMenu(!showSortMenu)}
                 >
                     <Ionicons name="filter" size={18} color={COLORS.primary} />
@@ -123,24 +129,24 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
 
             {/* Sort Menu (Simple Toggle View for now) */}
             {showSortMenu && (
-                <View style={styles.sortMenu}>
-                    <Text style={styles.sortMenuTitle}>Sort By:</Text>
+                <View
+                    className="absolute top-[180px] right-4 w-[200px] bg-[#1E1E30] rounded-2xl border border-secondary p-3 z-50 shadow-xl"
+                    // @ts-ignore
+                    style={{ boxShadow: '0px 4px 12px rgba(0,0,0,0.5)' }}
+                >
+                    <Text className="text-textDim text-xs font-bold mb-2 uppercase">Sort By:</Text>
                     {SORT_OPTIONS.map(opt => (
                         <TouchableOpacity
                             key={opt.value}
-                            style={[
-                                styles.sortOption,
-                                sortOption === opt.value && styles.sortOptionActive
-                            ]}
+                            className={`flex-row items-center justify-between py-2.5 px-3 rounded-lg ${sortOption === opt.value ? 'bg-secondary' : ''}`}
                             onPress={() => {
                                 setSortOption(opt.value);
                                 setShowSortMenu(false);
                             }}
                         >
-                            <Text style={[
-                                styles.sortOptionText,
-                                sortOption === opt.value && styles.sortOptionTextActive
-                            ]}>
+                            <Text
+                                className={`text-sm ${sortOption === opt.value ? 'text-background font-bold' : 'text-text'}`}
+                            >
                                 {opt.label}
                             </Text>
                             {sortOption === opt.value && <Ionicons name="checkmark" size={16} color={COLORS.background} />}
@@ -159,150 +165,3 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: COLORS.background,
-  },
-  header: {
-      paddingTop: 60, // Safe Area
-      paddingBottom: 20,
-      paddingHorizontal: 16,
-      backgroundColor: COLORS.background,
-      zIndex: 10,
-  },
-  titleRow: {
-      alignItems: 'center',
-      marginBottom: 20,
-  },
-  neonTitleContainer: {
-    borderWidth: 2,
-    borderColor: COLORS.secondary,
-    borderRadius: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    paddingHorizontal: 16,
-    // @ts-ignore
-    boxShadow: `0px 0px 8px ${COLORS.secondary}`,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    marginBottom: 8,
-  },
-  neonTitle: {
-    color: '#CCFFFF',
-    fontSize: 16,
-    fontWeight: '900',
-    letterSpacing: 2,
-    // @ts-ignore
-    textShadow: `0px 0px 10px ${COLORS.secondary}`,
-  },
-  subtitle: {
-    color: COLORS.textDim,
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-  },
-  searchContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#1E1E30',
-      borderRadius: 12,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.1)',
-      marginBottom: 16,
-  },
-  searchIcon: {
-      marginRight: 8,
-  },
-  searchInput: {
-      flex: 1,
-      color: COLORS.text,
-      fontSize: 16,
-      fontWeight: '500',
-  },
-  filtersRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 12,
-  },
-  categoryScroll: {
-      gap: 8,
-      paddingRight: 16,
-  },
-  categoryChip: {
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 20,
-      backgroundColor: 'rgba(255,255,255,0.05)',
-      borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.1)',
-  },
-  categoryChipActive: {
-      backgroundColor: 'rgba(255, 0, 255, 0.15)',
-      borderColor: COLORS.primary,
-  },
-  categoryText: {
-      color: COLORS.textDim,
-      fontWeight: '600',
-      fontSize: 13,
-  },
-  categoryTextActive: {
-      color: COLORS.primary,
-      fontWeight: 'bold',
-      // @ts-ignore
-      textShadow: `0px 0px 5px ${COLORS.primary}`,
-  },
-  sortButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: 'rgba(255,255,255,0.05)',
-      borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.1)',
-      alignItems: 'center',
-      justifyContent: 'center',
-  },
-  sortMenu: {
-      position: 'absolute',
-      top: 180, // Adjust based on header height
-      right: 16,
-      width: 200,
-      backgroundColor: '#1E1E30',
-      borderRadius: 16,
-      borderWidth: 1,
-      borderColor: COLORS.secondary,
-      padding: 12,
-      // @ts-ignore
-      boxShadow: '0px 4px 12px rgba(0,0,0,0.5)',
-      elevation: 10,
-      zIndex: 100,
-  },
-  sortMenuTitle: {
-      color: COLORS.textDim,
-      fontSize: 12,
-      fontWeight: 'bold',
-      marginBottom: 8,
-      textTransform: 'uppercase',
-  },
-  sortOption: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: 10,
-      paddingHorizontal: 12,
-      borderRadius: 8,
-  },
-  sortOptionActive: {
-      backgroundColor: COLORS.secondary,
-  },
-  sortOptionText: {
-      color: COLORS.text,
-      fontSize: 14,
-  },
-  sortOptionTextActive: {
-      color: COLORS.background,
-      fontWeight: 'bold',
-  },
-});

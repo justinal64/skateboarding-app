@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import TrickDirectory from '@/components/TrickDirectory';
-import { COLORS } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
 import { useTrickStore } from '@/store/trickStore';
 import { Trick } from '@/types';
@@ -29,7 +28,7 @@ export default function LearningScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
         <TrickDirectory
             tricks={inProgressTricks}
             onAddProcess={handleAddProcess}
@@ -41,10 +40,3 @@ export default function LearningScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: COLORS.background,
-  },
-});

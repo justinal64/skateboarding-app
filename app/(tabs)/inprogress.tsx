@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import TrickDetailModal from '@/components/TrickDetailModal';
 import TrickGrid from '@/components/TrickGrid';
@@ -31,12 +31,20 @@ export default function InProgressScreen() {
   };
 
   return (
-    <View style={styles.container}>
-        <View style={styles.header}>
-             <View style={styles.neonHeader}>
-                <Text style={styles.headerTitle}>IN PROGRESS</Text>
+    <View className="flex-1 bg-background pt-[60px]">
+        <View className="items-center mb-5">
+             <View
+                className="border-2 border-primary rounded-xl py-1.5 px-4 bg-black/40 mb-2"
+                // @ts-ignore
+                style={{ boxShadow: `0px 0px 8px ${COLORS.primary}` }}
+             >
+                <Text
+                    className="text-primary text-base font-black tracking-widest"
+                    // @ts-ignore
+                    style={{ textShadow: `0px 0px 10px ${COLORS.primary}` }}
+                >IN PROGRESS</Text>
             </View>
-            <Text style={styles.subTitle}>Keep pushing!</Text>
+            <Text className="text-textDim text-sm">Keep pushing!</Text>
         </View>
 
         <TrickGrid
@@ -64,38 +72,3 @@ export default function InProgressScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: COLORS.background,
-      paddingTop: 60,
-  },
-  header: {
-      alignItems: 'center',
-      marginBottom: 20,
-  },
-  neonHeader: {
-    borderWidth: 2,
-    borderColor: COLORS.primary, // Different color for distinction
-    borderRadius: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    // @ts-ignore
-    boxShadow: `0px 0px 8px ${COLORS.primary}`,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    marginBottom: 8,
-  },
-  headerTitle: {
-      color: COLORS.primary,
-      fontSize: 16,
-      fontWeight: '900',
-      letterSpacing: 2,
-      // @ts-ignore
-      textShadow: `0px 0px 10px ${COLORS.primary}`,
-  },
-  subTitle: {
-      color: COLORS.textDim,
-      fontSize: 14,
-  },
-});

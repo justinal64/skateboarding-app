@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 
 import { COLORS } from '@/constants/AppTheme';
 
@@ -17,20 +17,20 @@ export default function AddTrickScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>TRICK NAME</Text>
+    <View className="flex-1 p-6 bg-background">
+      <View className="mb-6">
+        <Text className="text-sm mb-2 font-bold text-textDim tracking-widest">TRICK NAME</Text>
         <TextInput
-          style={styles.input}
+          className="border border-border bg-card rounded-xl p-4 text-base text-text"
           placeholder="e.g. Kickflip"
           placeholderTextColor={COLORS.textDim}
           value={name}
           onChangeText={setName}
         />
 
-        <Text style={styles.label}>DESCRIPTION</Text>
+        <Text className="text-sm mb-2 font-bold text-textDim tracking-widest mt-6">DESCRIPTION</Text>
         <TextInput
-          style={[styles.input, styles.textArea]}
+          className="border border-border bg-card rounded-xl p-4 text-base text-text h-[120px] align-top"
           placeholder="How do you do it?"
           placeholderTextColor={COLORS.textDim}
           multiline
@@ -39,59 +39,15 @@ export default function AddTrickScreen() {
           onChangeText={setDescription}
         />
 
-        <Pressable style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>SAVE TRICK</Text>
+        <Pressable
+            className="bg-primary p-[18px] rounded-[30px] items-center mt-6 border border-white shadow-lg elevation-6"
+            // @ts-ignore
+            style={{ boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)` }}
+            onPress={handleSubmit}
+        >
+          <Text className="text-white text-lg font-bold tracking-widest">SAVE TRICK</Text>
         </Pressable>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: COLORS.background,
-  },
-  formGroup: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    marginBottom: 8,
-    fontWeight: 'bold',
-    color: COLORS.textDim,
-    letterSpacing: 1,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    color: COLORS.text,
-  },
-  textArea: {
-    height: 120,
-    textAlignVertical: 'top',
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    padding: 18,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginTop: 24,
-    // @ts-ignore
-    boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)`, // Primary
-    elevation: 6,
-    borderWidth: 1,
-    borderColor: '#FFF',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-});

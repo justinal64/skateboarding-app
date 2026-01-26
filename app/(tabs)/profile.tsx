@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 
 import { COLORS } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
@@ -45,29 +45,40 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.avatarContainer}>
+    <View className="flex-1 bg-background p-6">
+      <View className="items-center mt-10 mb-10">
+        <View
+            className="w-[120px] h-[120px] rounded-full bg-primary/10 items-center justify-center border-2 border-primary mb-4"
+            // @ts-ignore
+            style={{ boxShadow: `0px 0px 20px rgba(255, 0, 255, 0.5)` }}
+        >
           <Ionicons name="person" size={64} color={COLORS.primary} />
         </View>
-        <Text style={styles.name}>{user?.displayName || 'Skater'}</Text>
-        <Text style={styles.email}>{user?.email}</Text>
+        <Text className="text-3xl font-bold text-white mb-2 text-center">{user?.displayName || 'Skater'}</Text>
+        <Text className="text-base text-textDim text-center">{user?.email}</Text>
       </View>
 
-      <View style={styles.content}>
-        <View style={styles.statsCard}>
-            <Ionicons name="trophy" size={32} color={COLORS.secondary} style={styles.statIcon} />
-            <Text style={styles.statTitle}>Keep Skating!</Text>
-            <Text style={styles.statDesc}>Track your progress in the other tabs.</Text>
+      <View className="flex-1 justify-between pb-10">
+        <View className="bg-card rounded-2xl p-6 items-center border border-secondary/30">
+            <Ionicons name="trophy" size={32} color={COLORS.secondary} className="mb-4" />
+            <Text className="text-lg font-bold text-secondary mb-2">Keep Skating!</Text>
+            <Text className="text-sm text-textDim text-center">Track your progress in the other tabs.</Text>
         </View>
 
-        <View style={{ gap: 16 }}>
-          <Pressable style={styles.seedButton} onPress={seedDatabase} disabled={seeding}>
-             <Text style={styles.seedText}>{seeding ? 'RESTORING...' : 'RESTORE DEFAULT TRICKS'}</Text>
+        <View className="gap-4">
+          <Pressable
+            className="bg-green-500/10 border border-secondary p-4 rounded-3xl items-center justify-center"
+            onPress={seedDatabase}
+            disabled={seeding}
+          >
+             <Text className="text-secondary text-base font-bold tracking-widest">{seeding ? 'RESTORING...' : 'RESTORE DEFAULT TRICKS'}</Text>
           </Pressable>
 
-          <Pressable style={styles.signOutButton} onPress={signOut}>
-              <Text style={styles.signOutText}>SIGN OUT</Text>
+          <Pressable
+            className="flex-row bg-red-500/20 border border-red-500/80 p-4 rounded-3xl items-center justify-center"
+            onPress={signOut}
+          >
+              <Text className="text-white text-lg font-bold tracking-widest">SIGN OUT</Text>
               <Ionicons name="log-out-outline" size={24} color="#FFF" style={{ marginLeft: 8 }} />
           </Pressable>
         </View>
@@ -75,99 +86,3 @@ export default function ProfileScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    padding: 24,
-  },
-  header: {
-    alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 40,
-  },
-  avatarContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255, 0, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-    marginBottom: 16,
-    // @ts-ignore
-    boxShadow: `0px 0px 20px rgba(255, 0, 255, 0.5)`,
-  },
-  name: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFF',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  email: {
-    fontSize: 16,
-    color: COLORS.textDim,
-    textAlign: 'center',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'space-between',
-    paddingBottom: 40,
-  },
-  statsCard: {
-      backgroundColor: COLORS.card,
-      borderRadius: 20,
-      padding: 24,
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: 'rgba(0, 255, 255, 0.3)',
-  },
-  statIcon: {
-      marginBottom: 16,
-  },
-  statTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: COLORS.secondary,
-      marginBottom: 8,
-  },
-  statDesc: {
-      fontSize: 14,
-      color: COLORS.textDim,
-      textAlign: 'center',
-  },
-  seedButton: {
-    backgroundColor: 'rgba(0, 255, 0, 0.1)',
-    borderWidth: 1,
-    borderColor: COLORS.secondary,
-    padding: 18,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  seedText: {
-    color: COLORS.secondary,
-    fontSize: 16,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-  signOutButton: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 0, 50, 0.2)', // Red-ish tint
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 50, 0.8)',
-    padding: 18,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  signOutText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-});

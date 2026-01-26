@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 
 import { COLORS } from '@/constants/AppTheme';
 import { auth } from '@/lib/firebase';
@@ -37,24 +37,25 @@ export default function RegisterScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>JOIN THE CREW</Text>
+    <View className="flex-1 p-6 justify-center bg-background">
+      {/* @ts-ignore */}
+      <Text className="text-3xl font-bold text-primary text-center mb-12 tracking-widest" style={{ textShadow: `0px 0px 10px ${COLORS.primary}` }}>JOIN THE CREW</Text>
 
-      <View style={styles.row}>
-        <View style={[styles.formGroup, styles.half]}>
-          <Text style={styles.label}>FIRST NAME</Text>
+      <View className="flex-row justify-between">
+        <View className="w-[48%] mb-6">
+          <Text className="text-sm mb-2 font-bold text-textDim tracking-widest">FIRST NAME</Text>
           <TextInput
-            style={styles.input}
+            className="border border-border bg-card rounded-xl p-4 text-base text-text"
             onChangeText={setFirstName}
             value={firstName}
             placeholder="Tony"
             placeholderTextColor={COLORS.textDim}
           />
         </View>
-        <View style={[styles.formGroup, styles.half]}>
-          <Text style={styles.label}>LAST NAME</Text>
+        <View className="w-[48%] mb-6">
+          <Text className="text-sm mb-2 font-bold text-textDim tracking-widest">LAST NAME</Text>
           <TextInput
-            style={styles.input}
+            className="border border-border bg-card rounded-xl p-4 text-base text-text"
             onChangeText={setLastName}
             value={lastName}
             placeholder="Hawk"
@@ -63,10 +64,10 @@ export default function RegisterScreen() {
         </View>
       </View>
 
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>EMAIL</Text>
+      <View className="mb-6">
+        <Text className="text-sm mb-2 font-bold text-textDim tracking-widest">EMAIL</Text>
         <TextInput
-          style={styles.input}
+          className="border border-border bg-card rounded-xl p-4 text-base text-text"
           onChangeText={setEmail}
           value={email}
           placeholder="email@address.com"
@@ -75,10 +76,10 @@ export default function RegisterScreen() {
         />
       </View>
 
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>PASSWORD</Text>
+      <View className="mb-6">
+        <Text className="text-sm mb-2 font-bold text-textDim tracking-widest">PASSWORD</Text>
         <TextInput
-          style={styles.input}
+          className="border border-border bg-card rounded-xl p-4 text-base text-text"
           onChangeText={setPassword}
           value={password}
           secureTextEntry={true}
@@ -88,91 +89,21 @@ export default function RegisterScreen() {
         />
       </View>
 
-      <Pressable style={[styles.button, loading && styles.buttonDisabled]} onPress={signUp} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'CREATING...' : 'CREATE ACCOUNT'}</Text>
+      <Pressable
+        className={`bg-primary p-[18px] rounded-[30px] items-center mt-6 border border-white shadow-lg elevation-6 ${loading ? 'opacity-70' : ''}`}
+        // @ts-ignore
+        style={{ boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)` }}
+        onPress={signUp}
+        disabled={loading}
+      >
+        <Text className="text-white text-lg font-bold tracking-widest">{loading ? 'CREATING...' : 'CREATE ACCOUNT'}</Text>
       </Pressable>
 
       <Link href="/login" asChild>
-        <Pressable style={styles.linkButton}>
-          <Text style={styles.linkText}>ALREADY HAVE AN ACCOUNT?</Text>
+        <Pressable className="mt-6 items-center">
+          <Text className="text-secondary font-bold text-sm tracking-widest">ALREADY HAVE AN ACCOUNT?</Text>
         </Pressable>
       </Link>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    backgroundColor: COLORS.background,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: COLORS.primary,
-    textAlign: 'center',
-    marginBottom: 48,
-    // @ts-ignore
-    textShadow: `0px 0px 10px ${COLORS.primary}`,
-    letterSpacing: 2,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  half: {
-    width: '48%',
-  },
-  formGroup: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    marginBottom: 8,
-    fontWeight: 'bold',
-    color: COLORS.textDim,
-    letterSpacing: 1,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    color: COLORS.text,
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    padding: 18,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginTop: 24,
-    // @ts-ignore
-    boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)`, // Primary is #FF00FF
-    elevation: 6,
-    borderWidth: 1,
-    borderColor: '#FFF',
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-  linkButton: {
-    marginTop: 24,
-    alignItems: 'center',
-  },
-  linkText: {
-    color: COLORS.secondary,
-    fontWeight: 'bold',
-    fontSize: 14,
-    letterSpacing: 1,
-  },
-});

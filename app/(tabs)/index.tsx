@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import AddTrickModal from '@/components/AddTrickModal';
 import TrickGrid from '@/components/TrickGrid';
@@ -74,21 +74,29 @@ export default function AllTricksScreen() {
   const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortOption)?.label;
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
         {/* Header Section */}
-        <View style={styles.header}>
-            <View style={styles.titleRow}>
-                <View style={styles.neonTitleContainer}>
-                    <Text style={styles.neonTitle}>TRICK LIBRARY</Text>
+        <View className="pt-[60px] pb-5 px-4 bg-background z-10">
+            <View className="items-center mb-5">
+                <View
+                    className="border-2 border-secondary rounded-xl py-1.5 px-4 bg-black/40 mb-2"
+                    // @ts-ignore
+                    style={{ boxShadow: `0px 0px 8px ${COLORS.secondary}` }}
+                >
+                    <Text
+                        className="text-[#CCFFFF] text-base font-black tracking-widest"
+                        // @ts-ignore
+                        style={{ textShadow: `0px 0px 10px ${COLORS.secondary}` }}
+                    >TRICK LIBRARY</Text>
                 </View>
-                <Text style={styles.subtitle}>Select a trick to start learning</Text>
+                <Text className="text-textDim text-sm">Select a trick to start learning</Text>
             </View>
 
             {/* Search Bar */}
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color={COLORS.secondary} style={styles.searchIcon} />
+            <View className="flex-row items-center bg-card rounded-xl px-4 py-3 mb-5 border border-border">
+                <Ionicons name="search" size={20} color={COLORS.secondary} className="mr-2" />
                 <TextInput
-                    style={styles.searchInput}
+                    className="flex-1 text-white text-base"
                     placeholder="Search tricks..."
                     placeholderTextColor={COLORS.textDim}
                     value={searchQuery}
@@ -102,21 +110,19 @@ export default function AllTricksScreen() {
             </View>
 
             {/* Filters Row */}
-            <View style={styles.filtersRow}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+            <View className="flex-row items-center mb-5">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 16 }}>
                     {CATEGORIES.map(cat => (
                         <TouchableOpacity
                             key={cat}
-                            style={[
-                                styles.categoryChip,
-                                selectedCategory === cat && styles.categoryChipActive
-                            ]}
+                            className={`px-4 py-2 rounded-full border mr-2 ${selectedCategory === cat ? 'bg-secondary/15 border-secondary' : 'bg-white/5 border-white/10'}`}
                             onPress={() => setSelectedCategory(cat)}
                         >
-                            <Text style={[
-                                styles.categoryText,
-                                selectedCategory === cat && styles.categoryTextActive
-                            ]}>
+                            <Text
+                                className={`font-medium ${selectedCategory === cat ? 'text-secondary font-bold' : 'text-textDim'}`}
+                                // @ts-ignore
+                                style={selectedCategory === cat ? { textShadow: `0px 0px 5px ${COLORS.primary}` } : {}}
+                            >
                                 {cat}
                             </Text>
                         </TouchableOpacity>
@@ -125,7 +131,7 @@ export default function AllTricksScreen() {
 
                 {/* Sort Button */}
                 <TouchableOpacity
-                    style={styles.sortButton}
+                    className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border ml-2"
                     onPress={() => setShowSortMenu(!showSortMenu)}
                 >
                     <Ionicons name="filter" size={18} color={COLORS.primary} />
@@ -134,24 +140,22 @@ export default function AllTricksScreen() {
 
             {/* Sort Menu (Simple Toggle View for now) */}
             {showSortMenu && (
-                <View style={styles.sortMenu}>
-                    <Text style={styles.sortMenuTitle}>Sort By:</Text>
+                <View
+                    className="absolute top-[180px] right-4 w-[200px] bg-[#1E1E30] rounded-2xl border border-secondary p-3 z-50 shadow-xl"
+                    // @ts-ignore
+                    style={{ boxShadow: '0px 4px 12px rgba(0,0,0,0.5)' }}
+                >
+                    <Text className="text-textDim text-sm font-bold mb-2 ml-1">Sort By:</Text>
                     {SORT_OPTIONS.map(opt => (
                         <TouchableOpacity
                             key={opt.value}
-                            style={[
-                                styles.sortOption,
-                                sortOption === opt.value && styles.sortOptionActive
-                            ]}
+                            className={`flex-row items-center justify-between py-3 px-2 rounded-lg ${sortOption === opt.value ? 'bg-white/5' : ''}`}
                             onPress={() => {
                                 setSortOption(opt.value);
                                 setShowSortMenu(false);
                             }}
                         >
-                            <Text style={[
-                                styles.sortOptionText,
-                                sortOption === opt.value && styles.sortOptionTextActive
-                            ]}>
+                            <Text className={`${sortOption === opt.value ? 'text-white font-bold' : 'text-textDim'}`}>
                                 {opt.label}
                             </Text>
                             {sortOption === opt.value && <Ionicons name="checkmark" size={16} color={COLORS.background} />}
@@ -170,7 +174,9 @@ export default function AllTricksScreen() {
 
         {/* Floating Action Button */}
         <TouchableOpacity
-            style={styles.fab}
+            className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-secondary items-center justify-center shadow-lg z-20"
+            // @ts-ignore
+            style={{ boxShadow: `0px 4px 8px rgba(0,0,0,0.5)` }}
             onPress={() => setModalVisible(true)}
             activeOpacity={0.8}
         >
@@ -186,76 +192,3 @@ export default function AllTricksScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: COLORS.background,
-  },
-  header: {
-      paddingTop: 60, // Safe Area
-      paddingBottom: 20,
-      paddingHorizontal: 16,
-      backgroundColor: COLORS.background,
-      zIndex: 10,
-  },
-  titleRow: {
-      alignItems: 'center',
-      marginBottom: 20,
-  },
-  neonTitleContainer: {
-    borderWidth: 2,
-    borderColor: COLORS.secondary,
-    borderRadius: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    // @ts-ignore
-    boxShadow: `0px 0px 8px ${COLORS.secondary}`,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    marginBottom: 8,
-  },
-  neonTitle: {
-    color: '#CCFFFF',
-    fontSize: 16,
-    fontWeight: '900',
-    letterSpacing: 2,
-    // @ts-ignore
-    textShadow: `0px 0px 10px ${COLORS.secondary}`,
-  },
-  // ...
-  categoryTextActive: {
-      color: COLORS.primary,
-      fontWeight: 'bold',
-      textShadow: `0px 0px 5px ${COLORS.primary}`,
-  },
-  // ...
-  sortMenu: {
-      position: 'absolute',
-      top: 180, // Adjust based on header height
-      right: 16,
-      width: 200,
-      backgroundColor: '#1E1E30',
-      borderRadius: 16,
-      borderWidth: 1,
-      borderColor: COLORS.secondary,
-      padding: 12,
-      boxShadow: '0px 4px 12px rgba(0,0,0,0.5)',
-      elevation: 10,
-      zIndex: 100,
-  },
-  // ...
-  fab: {
-      position: 'absolute',
-      bottom: 24,
-      right: 24,
-      width: 56,
-      height: 56,
-      borderRadius: 28,
-      backgroundColor: COLORS.secondary,
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: `0px 4px 8px rgba(0,0,0,0.5)`,
-      elevation: 8,
-      zIndex: 20,
-  },
-});

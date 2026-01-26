@@ -6,11 +6,10 @@ import {
     ActivityIndicator,
     Modal,
     ScrollView,
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 
 type AddTrickModalProps = {
@@ -81,30 +80,30 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
       visible={visible}
       onRequestClose={onClose}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-            <View style={styles.header}>
-                <Text style={styles.modalTitle}>New Trick</Text>
+      <View className="flex-1 bg-black/80 justify-end">
+        <View className="bg-[#1E1E1E] rounded-t-3xl h-[90%] p-5 border-t border-secondary">
+            <View className="flex-row justify-between items-center mb-5">
+                <Text className="text-2xl font-bold text-text">New Trick</Text>
                 <TouchableOpacity onPress={onClose}>
                     <Ionicons name="close" size={24} color={COLORS.textDim} />
                 </TouchableOpacity>
             </View>
 
-            <ScrollView contentContainerStyle={styles.formScroll}>
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+                {error ? <Text className="text-red-500 mb-2.5 text-sm">{error}</Text> : null}
 
-                <Text style={styles.label}>Trick Name</Text>
+                <Text className="text-textDim text-sm font-semibold mb-2 mt-3">Trick Name</Text>
                 <TextInput
-                    style={styles.input}
+                    className="bg-white/5 rounded-xl border border-white/10 p-3 text-text text-base"
                     placeholder="e.g. Kickflip"
                     placeholderTextColor={COLORS.textDim}
                     value={name}
                     onChangeText={setName}
                 />
 
-                <Text style={styles.label}>Description</Text>
+                <Text className="text-textDim text-sm font-semibold mb-2 mt-3">Description</Text>
                 <TextInput
-                    style={[styles.input, styles.textArea]}
+                    className="bg-white/5 rounded-xl border border-white/10 p-3 text-text text-base h-[100px] align-top"
                     placeholder="How do you do it?"
                     placeholderTextColor={COLORS.textDim}
                     value={description}
@@ -112,47 +111,35 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
                     multiline
                 />
 
-                <Text style={styles.label}>Difficulty</Text>
-                <View style={styles.chipsContainer}>
+                <Text className="text-textDim text-sm font-semibold mb-2 mt-3">Difficulty</Text>
+                <View className="flex-row flex-wrap gap-2">
                     {DIFFICULTIES.map(diff => (
                         <TouchableOpacity
                             key={diff}
-                            style={[
-                                styles.chip,
-                                difficulty === diff && styles.chipActive
-                            ]}
+                            className={`px-4 py-2 rounded-xl border ${difficulty === diff ? 'bg-[rgba(0,255,255,0.15)] border-secondary' : 'bg-white/5 border-white/10'}`}
                             onPress={() => setDifficulty(diff)}
                         >
-                            <Text style={[
-                                styles.chipText,
-                                difficulty === diff && styles.chipTextActive
-                            ]}>{diff}</Text>
+                            <Text className={`text-sm ${difficulty === diff ? 'text-secondary font-bold' : 'text-textDim font-medium'}`}>{diff}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
 
-                <Text style={styles.label}>Category</Text>
-                 <View style={styles.chipsContainer}>
+                <Text className="text-textDim text-sm font-semibold mb-2 mt-3">Category</Text>
+                 <View className="flex-row flex-wrap gap-2">
                     {CATEGORIES.map(cat => (
                         <TouchableOpacity
                             key={cat}
-                            style={[
-                                styles.chip,
-                                category === cat && styles.chipActive
-                            ]}
+                            className={`px-4 py-2 rounded-xl border ${category === cat ? 'bg-[rgba(0,255,255,0.15)] border-secondary' : 'bg-white/5 border-white/10'}`}
                              onPress={() => setCategory(cat)}
                         >
-                            <Text style={[
-                                styles.chipText,
-                                category === cat && styles.chipTextActive
-                            ]}>{cat}</Text>
+                            <Text className={`text-sm ${category === cat ? 'text-secondary font-bold' : 'text-textDim font-medium'}`}>{cat}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
 
-                 <Text style={styles.label}>Points</Text>
+                 <Text className="text-textDim text-sm font-semibold mb-2 mt-3">Points</Text>
                 <TextInput
-                    style={styles.input}
+                    className="bg-white/5 rounded-xl border border-white/10 p-3 text-text text-base"
                     placeholder="10"
                     placeholderTextColor={COLORS.textDim}
                     value={points}
@@ -160,9 +147,9 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
                     keyboardType="numeric"
                 />
 
-                <Text style={styles.label}>Video URL (Optional)</Text>
+                <Text className="text-textDim text-sm font-semibold mb-2 mt-3">Video URL (Optional)</Text>
                  <TextInput
-                    style={styles.input}
+                    className="bg-white/5 rounded-xl border border-white/10 p-3 text-text text-base"
                     placeholder="https://..."
                     placeholderTextColor={COLORS.textDim}
                     value={videoUrl}
@@ -172,20 +159,22 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
 
             </ScrollView>
 
-            <View style={styles.footer}>
-                <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                    <Text style={styles.cancelButtonText}>Cancel</Text>
+            <View className="flex-row gap-3 pt-4 border-t border-white/10">
+                <TouchableOpacity className="flex-1 py-3.5 rounded-xl bg-white/5 items-center" onPress={onClose}>
+                    <Text className="text-textDim font-bold text-base">Cancel</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
+                    className={`flex-[2] py-3.5 rounded-xl bg-secondary items-center ${submitting ? 'opacity-70' : ''}`}
+                    // @ts-ignore
+                    style={{ boxShadow: `0px 0px 10px ${COLORS.secondary}` }}
                     onPress={handleSubmit}
                     disabled={submitting}
                 >
                     {submitting ? (
                         <ActivityIndicator color={COLORS.background} />
                     ) : (
-                        <Text style={styles.submitButtonText}>Add Trick</Text>
+                        <Text className="text-background font-bold text-base">Add Trick</Text>
                     )}
                 </TouchableOpacity>
             </View>
@@ -194,121 +183,3 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#1E1E1E',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    height: '90%',
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.secondary,
-  },
-  header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 20,
-  },
-  modalTitle: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: COLORS.text,
-  },
-  formScroll: {
-      paddingBottom: 20,
-  },
-  label: {
-      color: COLORS.textDim,
-      fontSize: 14,
-      fontWeight: '600',
-      marginBottom: 8,
-      marginTop: 12,
-  },
-  input: {
-      backgroundColor: 'rgba(255,255,255,0.05)',
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.1)',
-      padding: 12,
-      color: COLORS.text,
-      fontSize: 16,
-  },
-  textArea: {
-      height: 100,
-      textAlignVertical: 'top',
-  },
-  chipsContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 8,
-  },
-  chip: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 20,
-      backgroundColor: 'rgba(255,255,255,0.05)',
-      borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.1)',
-  },
-  chipActive: {
-      backgroundColor: 'rgba(0, 255, 255, 0.15)',
-      borderColor: COLORS.secondary,
-  },
-  chipText: {
-      color: COLORS.textDim,
-      fontSize: 14,
-      fontWeight: '500',
-  },
-  chipTextActive: {
-      color: COLORS.secondary,
-      fontWeight: 'bold',
-  },
-  errorText: {
-      color: '#FF4444',
-      marginBottom: 10,
-      fontSize: 14,
-  },
-  footer: {
-      flexDirection: 'row',
-      gap: 12,
-      paddingTop: 16,
-      borderTopWidth: 1,
-      borderTopColor: 'rgba(255,255,255,0.1)',
-  },
-  cancelButton: {
-      flex: 1,
-      paddingVertical: 14,
-      borderRadius: 12,
-      backgroundColor: 'rgba(255,255,255,0.05)',
-      alignItems: 'center',
-  },
-  cancelButtonText: {
-      color: COLORS.textDim,
-      fontWeight: 'bold',
-      fontSize: 16,
-  },
-  submitButton: {
-      flex: 2,
-      paddingVertical: 14,
-      borderRadius: 12,
-      backgroundColor: COLORS.secondary,
-      alignItems: 'center',
-      // @ts-ignore
-      boxShadow: `0px 0px 10px ${COLORS.secondary}`,
-  },
-  submitButtonDisabled: {
-      opacity: 0.7,
-  },
-  submitButtonText: {
-      color: COLORS.background, // Dark text on bright button
-      fontWeight: 'bold',
-      fontSize: 16,
-  },
-});

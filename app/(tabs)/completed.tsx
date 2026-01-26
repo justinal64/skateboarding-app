@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import TrickDirectory from '@/components/TrickDirectory';
-import { COLORS } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
 import { useTrickStore } from '@/store/trickStore';
 import { Trick } from '@/types';
@@ -23,7 +22,7 @@ export default function CompletedScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
         <TrickDirectory
             tricks={completedTricks}
             onAddProcess={handleAddProcess}
@@ -34,10 +33,3 @@ export default function CompletedScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: COLORS.background,
-  },
-});

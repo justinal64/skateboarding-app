@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Text, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -114,28 +114,28 @@ export default function TrickDeck({ tricks, onTrickPress }: TrickDeckProps) {
   // Condition check AFTER all hooks
   if (!hasTricks) {
     return (
-      <View style={styles.emptyContainer}>
+      <View className="flex-1 items-center justify-center">
         <Ionicons name="trophy-outline" size={64} color={COLORS.secondary} />
-        <Text style={styles.emptyText}>No more tricks in progress!</Text>
-        <Text style={styles.emptySubText}>Go to &quot;All Tricks&quot; to add more.</Text>
+        <Text className="text-secondary text-xl font-bold mt-4">No more tricks in progress!</Text>
+        <Text className="text-textDim text-sm mt-2">Go to &quot;All Tricks&quot; to add more.</Text>
       </View>
     );
   }
 
   // If we have tricks, render deck (currentTrick is guaranteed not null here)
   return (
-    <GestureHandlerRootView style={styles.container}>
-       <View style={styles.deckContainer}>
+    <GestureHandlerRootView className="flex-1 items-center justify-center -mt-10">
+       <View className="items-center justify-center" style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
           {/* Background Card (2 steps behind) */}
           {nextNextTrick && (
-            <Animated.View style={[styles.cardWrapper, styles.cardNextNext, nextNextCardStyle]}>
+            <Animated.View className="absolute" style={[{ width: CARD_WIDTH, height: CARD_HEIGHT }, nextNextCardStyle]}>
                  <NeonCard trick={nextNextTrick} isBackground />
             </Animated.View>
           )}
 
           {/* Next Card */}
           {nextTrick && (
-             <Animated.View style={[styles.cardWrapper, styles.cardNext, nextCardStyle]}>
+             <Animated.View className="absolute" style={[{ width: CARD_WIDTH, height: CARD_HEIGHT }, nextCardStyle]}>
                  <NeonCard trick={nextTrick} isBackground />
              </Animated.View>
           )}
@@ -231,7 +231,7 @@ function SwipeableCard({
 
   return (
     <GestureDetector gesture={composedGesture}>
-      <Animated.View style={[styles.cardWrapper, animatedStyle]}>
+      <Animated.View className="absolute" style={[{ width: CARD_WIDTH, height: CARD_HEIGHT }, animatedStyle]}>
          <NeonCard trick={trick} />
       </Animated.View>
     </GestureDetector>
@@ -271,7 +271,7 @@ function GhostCard({ ghost, onComplete }: { ghost: Ghost, onComplete: () => void
     }));
 
     return (
-        <Animated.View style={[styles.cardWrapper, animatedStyle, { position: 'absolute' }]}>
+        <Animated.View className="absolute" style={[{ width: CARD_WIDTH, height: CARD_HEIGHT }, animatedStyle]}>
             <NeonCard trick={ghost.trick} />
         </Animated.View>
     );
@@ -287,22 +287,30 @@ function NeonCard({ trick, isBackground = false }: { trick: Trick, isBackground?
     const imageUrl = getTrickImage(trick.id);
 
     return (
-        <View style={[styles.card, isBackground && styles.cardBackground]}>
+        <View
+            className={`flex-1 bg-[#1E1E1E] rounded-3xl overflow-hidden relative border border-white/10 ${isBackground ? 'opacity-80' : ''}`}
+            // @ts-ignore
+            style={{ boxShadow: '0px 4px 10px rgba(0,0,0,0.5)', elevation: 8 }}
+        >
              <Image
                 source={{ uri: imageUrl }}
-                style={styles.backgroundImage}
+                className="w-full h-full absolute"
                 contentFit="cover"
                 transition={300}
             />
             <LinearGradient
                 colors={['transparent', 'rgba(13, 13, 37, 0.9)']}
-                style={styles.gradient}
+                className="absolute left-0 right-0 bottom-0 h-3/5"
             />
 
-            <View style={styles.textContainer}>
-                <Text style={styles.trickName}>{trick.name}</Text>
+            <View className="absolute bottom-5 left-4 right-4">
+                <Text
+                    className="text-[28px] font-bold text-text mb-1"
+                    // @ts-ignore
+                    style={{ textShadow: '0px 2px 6px rgba(0,0,0,0.5)' }}
+                >{trick.name}</Text>
                  {!isBackground && (
-                    <Text style={styles.trickStatus} numberOfLines={1}>
+                    <Text className="text-sm text-primary font-bold uppercase" numberOfLines={1}>
                         {trick.status === 'NOT_STARTED' ? trick.difficulty : trick.status.replace('_', ' ')}
                     </Text>
                  )}
@@ -310,126 +318,12 @@ function NeonCard({ trick, isBackground = false }: { trick: Trick, isBackground?
 
             {/* Status Indicator (if needed in future, but clean for now) */}
              {trick.status === 'COMPLETED' && !isBackground && (
-                 <View style={styles.statusIconContainer}>
-                     <View style={styles.checkIcon}>
-                        <Text style={styles.checkText}>✓</Text>
+                 <View className="absolute top-3 right-3">
+                     <View className="w-8 h-8 border-2 border-success rounded-md items-center justify-center bg-black/50">
+                        <Text className="text-success text-xl font-bold -mt-0.5">✓</Text>
                      </View>
                  </View>
             )}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -40,
-  },
-  deckContainer: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardWrapper: {
-    position: 'absolute',
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-  },
-  // Stack Styles
-  cardNext: {
-     // Transform and Opacity handled by useAnimatedStyle
-  },
-  cardNextNext: {
-     // Transform and Opacity handled by useAnimatedStyle
-  },
-  // Card Visuals
-  card: {
-    flex: 1,
-    backgroundColor: '#1E1E1E',
-    borderRadius: 24,
-    overflow: 'hidden',
-    position: 'relative',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    // @ts-ignore
-    boxShadow: '0px 4px 10px rgba(0,0,0,0.5)',
-    elevation: 8,
-  },
-  cardBackground: {
-     opacity: 0.8, // Slightly dimmed if background
-  },
-  backgroundImage: {
-      width: '100%',
-      height: '100%',
-      position: 'absolute',
-  },
-  gradient: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      height: '60%',
-  },
-  textContainer: {
-      position: 'absolute',
-      bottom: 20,
-      left: 16,
-      right: 16,
-  },
-  trickName: {
-      fontSize: 28,
-      fontWeight: 'bold',
-      color: COLORS.text,
-      // @ts-ignore
-      textShadow: '0px 2px 6px rgba(0,0,0,0.5)',
-      marginBottom: 4,
-  },
-  trickStatus: {
-      fontSize: 14,
-      color: COLORS.primary,
-      fontWeight: 'bold',
-      textTransform: 'uppercase',
-  },
-  statusIconContainer: {
-      position: 'absolute',
-      top: 12,
-      right: 12,
-  },
-  checkIcon: {
-    width: 32,
-    height: 32,
-    borderWidth: 2,
-    borderColor: COLORS.success,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  checkText: {
-    color: COLORS.success,
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: -2,
-  },
-
-  // Empty State
-  emptyContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-  },
-  emptyText: {
-      color: COLORS.secondary,
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginTop: 16,
-  },
-  emptySubText: {
-      color: COLORS.textDim,
-      fontSize: 14,
-      marginTop: 8,
-  },
-});
