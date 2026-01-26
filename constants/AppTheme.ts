@@ -13,23 +13,11 @@ export const COLORS = {
 
 export const SHADOWS = {
   small: {
-    shadowColor: COLORS.secondary,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    boxShadow: `0px 2px 3.84px rgba(0,0,0,0.25)`,
     elevation: 2,
   },
   medium: {
-    shadowColor: COLORS.secondary,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.35,
-    shadowRadius: 5.84,
+    boxShadow: `0px 4px 5.84px rgba(0,0,0,0.35)`,
     elevation: 8,
   },
 };

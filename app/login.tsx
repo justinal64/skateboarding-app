@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import { COLORS } from '@/constants/AppTheme';
 import { auth } from '@/lib/firebase';
@@ -81,9 +81,8 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     textAlign: 'center',
     marginBottom: 48,
-    textShadowColor: COLORS.primary,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    // @ts-ignore
+    textShadow: `0px 0px 10px ${COLORS.primary}`,
     letterSpacing: 2,
   },
   formGroup: {
@@ -111,10 +110,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     marginTop: 24,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    // @ts-ignore
+    boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)`,
     elevation: 6,
     borderWidth: 1,
     borderColor: '#FFF',

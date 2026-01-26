@@ -114,9 +114,8 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     textAlign: 'center',
     marginBottom: 48,
-    textShadowColor: COLORS.primary,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    // @ts-ignore
+    textShadow: `0px 0px 10px ${COLORS.primary}`,
     letterSpacing: 2,
   },
   row: {
@@ -151,10 +150,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     marginTop: 24,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    // @ts-ignore
+    boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)`, // Primary is #FF00FF
     elevation: 6,
     borderWidth: 1,
     borderColor: '#FFF',

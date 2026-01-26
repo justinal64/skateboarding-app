@@ -81,10 +81,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 6,
     paddingHorizontal: 16,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
+    // @ts-ignore
+    boxShadow: `0px 0px 8px ${COLORS.primary}`,
     backgroundColor: 'rgba(0,0,0,0.4)',
     marginBottom: 8,
   },
@@ -93,9 +91,8 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: '900',
       letterSpacing: 2,
-      textShadowColor: COLORS.primary,
-      textShadowOffset: { width: 0, height: 0 },
-      textShadowRadius: 10,
+      // @ts-ignore
+      textShadow: `0px 0px 10px ${COLORS.primary}`,
   },
   subTitle: {
       color: COLORS.textDim,

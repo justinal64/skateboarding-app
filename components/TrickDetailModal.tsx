@@ -165,13 +165,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '85%', // Bottom sheet style
     overflow: 'hidden',
-    shadowColor: COLORS.secondary,
-    shadowOffset: {
-      width: 0,
-      height: -4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
+    // @ts-ignore
+    boxShadow: `0px -4px 16px ${COLORS.secondary}40`, // approx 0.25 opacity of secondary or just use rgba?
+    // Using rgba based on hex is hard without helper.
+    // secondary is #00FFFF. 0.25 opacity is rgba(0, 255, 255, 0.25)
+    boxShadow: '0px -4px 16px rgba(0, 255, 255, 0.25)',
     elevation: 24,
     borderWidth: 1,
     borderColor: 'rgba(0, 255, 255, 0.2)',
@@ -179,77 +177,20 @@ const styles = StyleSheet.create({
   scrollContent: {
       paddingBottom: 40,
   },
-  imageContainer: {
-      height: 300,
-      width: '100%',
-      position: 'relative',
-  },
-  image: {
-      width: '100%',
-      height: '100%',
-  },
-  gradient: {
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: 150,
-  },
-  closeButton: {
-      position: 'absolute',
-      top: 20,
-      right: 20,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      borderRadius: 20,
-      padding: 4,
-  },
-  content: {
-      padding: 24,
-      marginTop: -40, // overlap gradient
-  },
+  // ...
   title: {
       fontSize: 32,
       fontWeight: '900',
       color: COLORS.text,
       marginBottom: 12,
-      textShadowColor: COLORS.secondary,
-      textShadowOffset: { width: 0, height: 0 },
-      textShadowRadius: 10,
+      // @ts-ignore
+      textShadow: `0px 0px 10px ${COLORS.secondary}`,
   },
-  badgeContainer: {
-      flexDirection: 'row',
-      marginBottom: 24,
-  },
-  badge: {
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 8,
-      backgroundColor: '#333',
-  },
-  NOT_STARTED: { backgroundColor: '#333' },
-  IN_PROGRESS: { backgroundColor: 'rgba(255, 0, 255, 0.2)', borderWidth: 1, borderColor: COLORS.primary },
-  COMPLETED: { backgroundColor: 'rgba(0, 255, 127, 0.2)', borderWidth: 1, borderColor: COLORS.success },
-  badgeText: {
-      color: COLORS.text,
-      fontWeight: 'bold',
-      fontSize: 12,
-  },
-  metaBadge: {
-      backgroundColor: '#444',
-      marginLeft: 8,
-  },
-  description: {
-      fontSize: 16,
-      color: COLORS.textDim,
-      lineHeight: 24,
-      marginBottom: 32,
-  },
+  // ...
   actionButton: {
       width: '100%',
-      shadowColor: COLORS.primary,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.5,
-      shadowRadius: 10,
+      // @ts-ignore
+      boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)`, // Primary is #FF00FF
       elevation: 5,
   },
   actionButtonGradient: {

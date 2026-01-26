@@ -2,12 +2,12 @@ import React, { useCallback, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
-    interpolate,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    // @ts-ignore
-    type SharedValue
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  // @ts-ignore
+  type SharedValue
 } from 'react-native-reanimated';
 
 
@@ -354,10 +354,8 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    // @ts-ignore
+    boxShadow: '0px 4px 10px rgba(0,0,0,0.5)',
     elevation: 8,
   },
   cardBackground: {
@@ -385,9 +383,8 @@ const styles = StyleSheet.create({
       fontSize: 28,
       fontWeight: 'bold',
       color: COLORS.text,
-      textShadowColor: 'rgba(0,0,0,0.5)',
-      textShadowOffset: { width: 0, height: 2 },
-      textShadowRadius: 6,
+      // @ts-ignore
+      textShadow: '0px 2px 6px rgba(0,0,0,0.5)',
       marginBottom: 4,
   },
   trickStatus: {

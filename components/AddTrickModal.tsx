@@ -300,10 +300,8 @@ const styles = StyleSheet.create({
       borderRadius: 12,
       backgroundColor: COLORS.secondary,
       alignItems: 'center',
-      shadowColor: COLORS.secondary,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.5,
-      shadowRadius: 10,
+      // @ts-ignore
+      boxShadow: `0px 0px 10px ${COLORS.secondary}`,
   },
   submitButtonDisabled: {
       opacity: 0.7,

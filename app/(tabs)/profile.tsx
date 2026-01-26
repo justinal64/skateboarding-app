@@ -97,10 +97,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.primary,
     marginBottom: 16,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
+    // @ts-ignore
+    boxShadow: `0px 0px 20px rgba(255, 0, 255, 0.5)`,
   },
   name: {
     fontSize: 28,

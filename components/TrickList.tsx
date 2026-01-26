@@ -108,10 +108,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 24,
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
+    paddingHorizontal: 24,
+    // @ts-ignore
+    boxShadow: `0px 0px 10px ${COLORS.secondary}`,
     elevation: 5,
     backgroundColor: 'transparent',
   },
@@ -121,9 +120,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    textShadowColor: COLORS.secondary,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    // @ts-ignore
+    textShadow: `0px 0px 10px ${COLORS.secondary}`,
   },
   centered: {
     justifyContent: 'center',
@@ -146,10 +144,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: COLORS.secondary,
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    // @ts-ignore
+    boxShadow: `0px 0px 5px rgba(0, 255, 255, 0.3)`,
     elevation: 3,
     flexDirection: 'row',
     alignItems: 'center',
@@ -162,7 +158,8 @@ const styles = StyleSheet.create({
   cardInProgress: {
     // Subtle distinction? Maybe border color?
     borderColor: COLORS.primary,
-    shadowColor: COLORS.primary,
+    // @ts-ignore
+    boxShadow: `0px 0px 5px ${COLORS.primary}`, // assuming primary doesn't need alpha for glow
   },
   textContainer: {
     flex: 1,
@@ -173,9 +170,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.text,
     marginBottom: 4,
-    textShadowColor: COLORS.secondary,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 5,
+    // @ts-ignore
+    textShadow: `0px 0px 5px ${COLORS.secondary}`,
   },
   trickDesc: {
     fontSize: 14,
@@ -186,18 +182,18 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: COLORS.secondary,
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 4,
+    // @ts-ignore
+    boxShadow: `0px 0px 4px ${COLORS.secondary}`,
   },
   glowDotCompleted: {
      backgroundColor: COLORS.success,
-     shadowColor: COLORS.success,
+     // @ts-ignore
+     boxShadow: `0px 0px 4px ${COLORS.success}`,
   },
   glowDotInProgress: {
       backgroundColor: COLORS.primary,
-      shadowColor: COLORS.primary,
+      // @ts-ignore
+      boxShadow: `0px 0px 4px ${COLORS.primary}`,
   },
   checkIcon: {
     width: 24,

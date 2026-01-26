@@ -234,9 +234,7 @@ const styles = StyleSheet.create({
       fontSize: 18,
       fontWeight: 'bold',
       color: COLORS.text,
-      textShadowColor: 'rgba(0,0,0,0.5)',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 4,
+      textShadow: '0px 1px 4px rgba(0,0,0,0.5)',
   },
   trickStatus: {
       fontSize: 10,
@@ -285,10 +283,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 24,
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
+    // @ts-ignore
+    boxShadow: `0px 0px 10px ${COLORS.secondary}`,
     elevation: 5,
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
@@ -298,8 +294,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    textShadowColor: COLORS.secondary,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    textShadow: `0px 0px 10px ${COLORS.secondary}`,
   },
 });

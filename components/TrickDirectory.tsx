@@ -182,10 +182,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 6,
     paddingHorizontal: 16,
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
+    paddingHorizontal: 16,
+    // @ts-ignore
+    boxShadow: `0px 0px 8px ${COLORS.secondary}`,
     backgroundColor: 'rgba(0,0,0,0.4)',
     marginBottom: 8,
   },
@@ -194,9 +193,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '900',
     letterSpacing: 2,
-    textShadowColor: COLORS.secondary,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    // @ts-ignore
+    textShadow: `0px 0px 10px ${COLORS.secondary}`,
   },
   subtitle: {
     color: COLORS.textDim,
@@ -253,8 +251,8 @@ const styles = StyleSheet.create({
   categoryTextActive: {
       color: COLORS.primary,
       fontWeight: 'bold',
-      textShadowColor: COLORS.primary,
-      textShadowRadius: 5,
+      // @ts-ignore
+      textShadow: `0px 0px 5px ${COLORS.primary}`,
   },
   sortButton: {
       width: 40,
@@ -276,10 +274,8 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: COLORS.secondary,
       padding: 12,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.5,
-      shadowRadius: 12,
+      // @ts-ignore
+      boxShadow: '0px 4px 12px rgba(0,0,0,0.5)',
       elevation: 10,
       zIndex: 100,
   },
