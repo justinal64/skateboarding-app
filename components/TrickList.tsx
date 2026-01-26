@@ -32,7 +32,7 @@ const TrickCard = memo(({ item, onPress }: { item: Trick; onPress: (trick: Trick
             <Text
                 className="text-lg font-bold text-text mb-1"
                 // @ts-ignore
-                style={{ textShadow: `0px 0px 5px ${COLORS.secondary}` }}
+                style={{ textShadow: { width: 0, height: 0, color: COLORS.secondary, radius: 5 } }}
             >{item.name}</Text>
             <Text className="text-sm text-textDim">{item.description}</Text>
         </View>
@@ -82,7 +82,7 @@ export default function TrickList({ tricks, onTrickPress, loading, headerTitle, 
                 <Text
                     className="text-[#CCFFFF] text-base font-bold uppercase tracking-[1.5px]"
                     // @ts-ignore
-                    style={{ textShadow: `0px 0px 10px ${COLORS.secondary}` }}
+                    style={{ textShadow: { width: 0, height: 0, color: COLORS.secondary, radius: 10 } }}
                 >{headerTitle}</Text>
             </View>
         </View>

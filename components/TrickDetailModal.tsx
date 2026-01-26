@@ -66,7 +66,8 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
                 <Text
                     className="text-3xl font-black text-text mb-3"
                     // @ts-ignore
-                    style={{ textShadow: `0px 0px 10px ${COLORS.secondary}` }}
+                    // @ts-ignore
+                    style={{ textShadow: { width: 0, height: 0, color: COLORS.secondary, radius: 10 } }}
                 >{trick.name}</Text>
 
                 <View className="flex-row flex-wrap gap-2 mb-6">

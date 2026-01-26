@@ -45,7 +45,8 @@ const TrickGridItem = memo(({ item, onPress }: { item: Trick, onPress: (trick: T
         <View className="absolute bottom-3 left-3 right-3">
             <Text
                 className="text-lg font-bold text-text"
-                style={{ textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 }}
+                // @ts-ignore
+                style={{ textShadow: { width: 0, height: 1, color: 'rgba(0,0,0,0.5)', radius: 4 } }}
             >{item.name}</Text>
             <Text className="text-[10px] text-primary font-bold mt-1 uppercase" numberOfLines={1}>
                 {item.status === 'NOT_STARTED' ? item.difficulty : item.status.replace('_', ' ')}

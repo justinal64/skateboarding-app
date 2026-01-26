@@ -75,7 +75,7 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
                     <Text
                         className="text-[#CCFFFF] text-base font-black tracking-widest"
                         // @ts-ignore
-                        style={{ textShadow: `0px 0px 10px ${COLORS.secondary}` }}
+                        style={{ textShadow: { width: 0, height: 0, color: COLORS.secondary, radius: 10 } }}
                     >{title}</Text>
                 </View>
                 {subtitle && <Text className="text-textDim text-sm font-medium tracking-[0.5px]">{subtitle}</Text>}
@@ -110,7 +110,7 @@ export default function TrickDirectory({ tricks, onAddProcess, loading, title = 
                             <Text
                                 className={`text-[13px] ${selectedCategory === cat ? 'text-primary font-bold' : 'text-textDim font-semibold'}`}
                                 // @ts-ignore
-                                style={selectedCategory === cat ? { textShadow: `0px 0px 5px ${COLORS.primary}` } : {}}
+                                style={selectedCategory === cat ? { textShadow: { width: 0, height: 0, color: COLORS.primary, radius: 5 } } : {}}
                             >
                                 {cat}
                             </Text>
