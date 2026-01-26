@@ -51,15 +51,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="inprogress"
-        options={{
-          title: 'In Progress',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="time" size={30} color={color} />
-          ),
-        }}
-      />
+
       <Tabs.Screen
         name="profile"
         options={{
