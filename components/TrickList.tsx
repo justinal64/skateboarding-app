@@ -16,38 +16,62 @@ type TrickListProps = {
 };
 
 // Memoized Card Component to prevent unnecessary re-renders
-const TrickCard = memo(({ item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) => (
-  <Pressable onPress={() => onPress(item)}>
-    <View
-        className={`bg-card rounded-xl p-4 mb-4 border flex-row items-center ${item.status === 'IN_PROGRESS' ? 'border-primary' : 'border-secondary'}`}
-        // @ts-ignore
-        style={{ boxShadow: item.status === 'IN_PROGRESS' ? `0px 0px 5px ${COLORS.primary}` : `0px 0px 5px rgba(0, 255, 255, 0.3)` }}
-    >
-        <View
-            className={`w-2 h-2 rounded-full ${item.status === 'COMPLETED' ? 'bg-success' : item.status === 'IN_PROGRESS' ? 'bg-primary' : 'bg-secondary'}`}
-            // @ts-ignore
-            style={{ boxShadow: `0px 0px 4px ${item.status === 'COMPLETED' ? COLORS.success : item.status === 'IN_PROGRESS' ? COLORS.primary : COLORS.secondary}` }}
-        />
-        <View className="flex-1 ml-3">
-            <Text
-                className="text-lg font-bold text-text mb-1"
-                // @ts-ignore
-                style={{ textShadow: { width: 0, height: 0, color: COLORS.secondary, radius: 5 } }}
-            >{item.name}</Text>
-            <Text className="text-sm text-textDim">{item.description}</Text>
-        </View>
+import { getTrickImage } from '@/utils/mockImages';
+import { Image } from 'expo-image';
 
-        {item.status === 'COMPLETED' && (
-            <View className="w-6 h-6 border-2 border-success rounded items-center justify-center ml-2">
-               <Text className="text-success text-base font-bold -mt-0.5">✓</Text>
+const TrickCard = memo(({ item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) => {
+    const imageUrl = item.imageUrl || getTrickImage(item.id);
+
+    return (
+      <Pressable onPress={() => onPress(item)}>
+        <View
+            className={`bg-card rounded-xl overflow-hidden mb-4 border ${item.status === 'IN_PROGRESS' ? 'border-primary' : 'border-secondary'}`}
+            // @ts-ignore
+            style={{ boxShadow: item.status === 'IN_PROGRESS' ? `0px 0px 5px ${COLORS.primary}` : `0px 0px 5px rgba(0, 255, 255, 0.3)` }}
+        >
+            <View className="flex-row">
+                 {/* Image Section */}
+                 <View className="w-24 h-24 bg-black/50">
+                     <Image
+                        source={{ uri: imageUrl }}
+                        className="w-full h-full"
+                        contentFit="cover"
+                        transition={300}
+                     />
+                 </View>
+
+                 {/* Content Section */}
+                 <View className="flex-1 p-3 justify-center">
+                    <View className="flex-row items-center justify-between mb-1">
+                        <Text
+                            className="text-lg font-bold text-text"
+                            // @ts-ignore
+                            style={{ textShadow: { width: 0, height: 0, color: COLORS.secondary, radius: 5 } }}
+                            numberOfLines={1}
+                        >{item.name}</Text>
+                        {/* Status Icon */}
+                         {item.status === 'COMPLETED' && (
+                            <View className="w-5 h-5 border border-success rounded items-center justify-center bg-success/20">
+                               <Text className="text-success text-xs font-bold">✓</Text>
+                            </View>
+                        )}
+                        {item.status === 'IN_PROGRESS' && (
+                             <Ionicons name="time" size={18} color={COLORS.primary} />
+                        )}
+                    </View>
+
+                    <Text className="text-xs text-textDim mb-1" numberOfLines={2}>{item.description}</Text>
+
+                    <View className="flex-row items-center gap-2 mt-1">
+                        <View className={`w-2 h-2 rounded-full ${item.status === 'COMPLETED' ? 'bg-success' : item.status === 'IN_PROGRESS' ? 'bg-primary' : 'bg-secondary'}`} />
+                        <Text className="text-[10px] text-textDim uppercase font-bold">{item.difficulty}</Text>
+                    </View>
+                 </View>
             </View>
-        )}
-        {item.status === 'IN_PROGRESS' && (
-             <Ionicons name="time-outline" size={24} color={COLORS.secondary} style={{ marginLeft: 8 }} />
-        )}
-    </View>
-  </Pressable>
-));
+        </View>
+      </Pressable>
+    );
+});
 
 export default function TrickList({ tricks, onTrickPress, loading, headerTitle, ListHeaderComponent }: TrickListProps) {
   const insets = useSafeAreaInsets();

@@ -19,7 +19,7 @@ type TrickDetailModalProps = {
 export default function TrickDetailModal({ visible, onClose, trick, onAddToInProgress, onPrerequisitePress, allowCompletion = false }: TrickDetailModalProps) {
   if (!trick) return null;
 
-  const imageUrl = getTrickImage(trick.id);
+  const imageUrl = trick.imageUrl || getTrickImage(trick.id);
 
   // Actionable if NOT_STARTED or (IN_PROGRESS AND allowCompletion is true)
   const isActionable = trick.status === 'NOT_STARTED' || (trick.status === 'IN_PROGRESS' && allowCompletion);

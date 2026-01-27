@@ -24,7 +24,7 @@ type TrickGridProps = {
 
 // Memoized Grid Item
 const TrickGridItem = memo(({ item, onPress }: { item: Trick, onPress: (trick: Trick) => void }) => {
-    const imageUrl = getTrickImage(item.id);
+    const imageUrl = item.imageUrl || getTrickImage(item.id);
     return (
       <TouchableOpacity
         className="rounded-xl overflow-hidden bg-[#1E1E1E] relative border border-white/10"
