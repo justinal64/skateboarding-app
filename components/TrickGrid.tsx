@@ -34,7 +34,7 @@ const TrickGridItem = memo(({ item, onPress }: { item: Trick, onPress: (trick: T
       >
         <Image
             source={{ uri: imageUrl }}
-            className="w-full h-full"
+            style={{ width: '100%', height: '100%' }}
             contentFit="cover"
             transition={300}
         />

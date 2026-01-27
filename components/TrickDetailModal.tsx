@@ -45,7 +45,7 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
             <View className="relative w-full h-[300px]">
                 <Image
                     source={{ uri: imageUrl }}
-                    className="w-full h-full"
+                    style={{ width: '100%', height: '100%' }}
                     contentFit="cover"
                     transition={500}
                 />

@@ -34,7 +34,7 @@ const TrickCard = memo(({ item, onPress }: { item: Trick; onPress: (trick: Trick
                  <View className="w-24 h-24 bg-black/50">
                      <Image
                         source={{ uri: imageUrl }}
-                        className="w-full h-full"
+                        style={{ width: '100%', height: '100%' }}
                         contentFit="cover"
                         transition={300}
                      />
