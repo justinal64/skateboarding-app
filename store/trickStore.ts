@@ -1,15 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  Timestamp,
-  where,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    setDoc,
+    Timestamp,
+    where,
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -40,32 +41,13 @@ export const useTrickStore = create<TrickStore>()(
         // With current logic, we need to be careful not to hang on loading.
         set({ loading: true });
         try {
-          // 1. Get Static / Public Tricks
-          const tricksCollection = collection(db, 'tricks');
+          // 1. Get Tricks via Cloud Function (Public + Private)
+          const functions = getFunctions();
+          const getTricks = httpsCallable(functions, 'getTricks');
 
-          const publicQuery = query(tricksCollection, where('isPublic', '==', true));
-          const myTricksQuery = userId
-            ? query(tricksCollection, where('ownerId', '==', userId))
-            : null;
-
-          const [publicSnapshot, myTricksSnapshot] = await Promise.all([
-              getDocs(publicQuery),
-              myTricksQuery ? getDocs(myTricksQuery) : Promise.resolve({ docs: [] })
-          ]);
-
-          const trickDocsMap = new Map();
-
-          publicSnapshot.docs.forEach(doc => {
-              trickDocsMap.set(doc.id, { id: doc.id, ...doc.data() });
-          });
-
-          if (myTricksSnapshot && 'docs' in myTricksSnapshot) {
-               myTricksSnapshot.docs.forEach(doc => {
-                  trickDocsMap.set(doc.id, { id: doc.id, ...doc.data() });
-               });
-          }
-
-          const tricksData = Array.from(trickDocsMap.values());
+          const result = await getTricks();
+          // @ts-ignore
+          const tricksData: TrickMeta[] = result.data.tricks;
 
           // 2. Get User Progress (if logged in)
           const userTricksMap = new Map();
