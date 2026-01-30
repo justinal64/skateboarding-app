@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-    addDoc,
     collection,
     deleteDoc,
     doc,
@@ -8,7 +7,7 @@ import {
     query,
     setDoc,
     Timestamp,
-    where,
+    where
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { create } from 'zustand';
@@ -129,13 +128,14 @@ export const useTrickStore = create<TrickStore>()(
 
       addTrick: async (userId: string, trickData: Omit<TrickMeta, 'id'>) => {
           try {
-              const tricksCollection = collection(db, 'tricks');
-              const dataWithOwnership = {
-                  ...trickData,
-                  ownerId: userId
-              };
+              const functions = getFunctions();
+              const addTrick = httpsCallable(functions, 'addTrick');
 
-              await addDoc(tricksCollection, dataWithOwnership);
+              await addTrick({
+                  ...trickData,
+                  prerequisite_ids: trickData.prerequisites
+              });
+
               await get().fetchTricks(userId);
           } catch (error) {
               console.error("Error adding trick: ", error);

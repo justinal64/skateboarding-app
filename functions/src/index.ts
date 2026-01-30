@@ -52,3 +52,39 @@ export const getTricks = onCall(async (request) => {
     throw new HttpsError("internal", "Unable to fetch tricks");
   }
 });
+
+export const addTrick = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
+  }
+
+  const { name, description, difficulty, category, video_url, prerequisite_ids } = request.data;
+
+  // Basic validation
+  if (!name || typeof name !== "string") {
+    throw new HttpsError("invalid-argument", "The function must be called with a valid trick name.");
+  }
+
+  const db = getFirestore();
+  const tricksRef = db.collection("tricks");
+
+  try {
+    const newTrick = {
+      name,
+      description: description || "",
+      difficulty: difficulty || "Intermediate", // Default
+      category: category || "Basics", // Default
+      video_url: video_url || "",
+      prerequisites: prerequisite_ids || [],
+      ownerId: request.auth.uid,
+      isPublic: false,
+      created_at: new Date()
+    };
+
+    const docRef = await tricksRef.add(newTrick);
+    return { id: docRef.id };
+  } catch (error) {
+    logger.error("Error adding trick", error);
+    throw new HttpsError("internal", "Unable to add trick");
+  }
+});
