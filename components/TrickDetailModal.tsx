@@ -139,7 +139,7 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
                                 : [COLORS.primary, COLORS.secondary]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
-                            className="p-4 rounded-xl items-center justify-center border border-white/20"
+                            className="px-4 py-5 rounded-xl items-center justify-center border border-white/20"
                         >
                             <Text className="text-white text-base font-bold uppercase tracking-widest">
                                 {trick.status === 'IN_PROGRESS' ? 'Mark as Completed' : 'Start Learning'}
