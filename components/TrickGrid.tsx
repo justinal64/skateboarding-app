@@ -1,18 +1,27 @@
 import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/types';
-import { getTrickImage } from '@/utils/mockImages';
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
-import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { memo, useCallback, useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import TrickCardContent from './TrickCardContent';
 import TrickDetailModal from './TrickDetailModal';
 
 const { width } = Dimensions.get('window');
-const COLUMN_COUNT = 2;
 const GAP = 12;
-const ITEM_WIDTH = (width - (GAP * (COLUMN_COUNT + 1))) / COLUMN_COUNT;
+const MIN_ITEM_WIDTH = 150;
+
+// Calculate max columns that fit
+// Content has padding GAP (12) on both sides. width - 24.
+const availableListWidth = width - (GAP * 2);
+const numColumnsRaw = Math.floor((availableListWidth + GAP) / (MIN_ITEM_WIDTH + GAP));
+const COLUMN_COUNT = Math.max(1, numColumnsRaw);
+
+// Calculate exact item width to fill the space
+// Total Width = (ItemWidth * Cols) + (Gap * (Cols - 1))
+// ItemWidth * Cols = Total Width - (Gap * (Cols - 1))
+// ItemWidth = (Total Width - (Gap * (Cols - 1))) / Cols
+const ITEM_WIDTH = (availableListWidth - (GAP * (COLUMN_COUNT - 1))) / COLUMN_COUNT;
 
 type TrickGridProps = {
   tricks: Trick[];
@@ -24,7 +33,6 @@ type TrickGridProps = {
 
 // Memoized Grid Item
 const TrickGridItem = memo(({ item, onPress }: { item: Trick, onPress: (trick: Trick) => void }) => {
-    const imageUrl = item.imageUrl || getTrickImage(item.id);
     return (
       <TouchableOpacity
         className="rounded-xl overflow-hidden bg-[#1E1E1E] relative border border-white/10"
@@ -32,25 +40,8 @@ const TrickGridItem = memo(({ item, onPress }: { item: Trick, onPress: (trick: T
         onPress={() => onPress(item)}
         activeOpacity={0.8}
       >
-        <Image
-            source={{ uri: imageUrl }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-            transition={300}
-        />
-        <LinearGradient
-            colors={['transparent', 'rgba(13, 13, 37, 0.9)']}
-            className="absolute left-0 right-0 bottom-0 h-3/5"
-        />
-        <View className="absolute bottom-3 left-3 right-3">
-            <Text
-                className="text-lg font-bold text-text"
-                // @ts-ignore
-                style={{ textShadow: { width: 0, height: 1, color: 'rgba(0,0,0,0.5)', radius: 4 } }}
-            >{item.name}</Text>
-            <Text className="text-[10px] text-primary font-bold mt-1 uppercase" numberOfLines={1}>
-                {item.status === 'NOT_STARTED' ? item.difficulty : item.status.replace('_', ' ')}
-            </Text>
+        <View className="flex-1 w-full h-full bg-[#1E1E1E]">
+            <TrickCardContent trick={item} size={ITEM_WIDTH} />
         </View>
 
         {/* Status Indicator */}
@@ -72,6 +63,16 @@ const TrickGridItem = memo(({ item, onPress }: { item: Trick, onPress: (trick: T
 export default function TrickGrid({ tricks, onAddProcess, loading, headerTitle, allowCompletion = false }: TrickGridProps) {
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  // Keep selectedTrick in sync with tricks prop updates
+  React.useEffect(() => {
+    if (selectedTrick) {
+        const updatedTrick = tricks.find(t => t.id === selectedTrick.id);
+        if (updatedTrick && updatedTrick !== selectedTrick) {
+            setSelectedTrick(updatedTrick);
+        }
+    }
+  }, [tricks]);
 
   const handlePress = useCallback((trick: Trick) => {
     setSelectedTrick(trick);

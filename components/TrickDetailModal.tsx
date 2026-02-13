@@ -1,11 +1,11 @@
 import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/types';
-import { getTrickImage } from '@/utils/mockImages';
+// import { getTrickImage } from '@/utils/mockImages';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Linking, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import TrickCardContent from './TrickCardContent';
 
 type TrickDetailModalProps = {
   visible: boolean;
@@ -19,7 +19,7 @@ type TrickDetailModalProps = {
 export default function TrickDetailModal({ visible, onClose, trick, onAddToInProgress, onPrerequisitePress, allowCompletion = false }: TrickDetailModalProps) {
   if (!trick) return null;
 
-  const imageUrl = trick.imageUrl || getTrickImage(trick.id);
+
 
   // Actionable if NOT_STARTED or (IN_PROGRESS AND allowCompletion is true)
   const isActionable = trick.status === 'NOT_STARTED' || (trick.status === 'IN_PROGRESS' && allowCompletion);
@@ -42,13 +42,10 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
         >
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
             {/* Header Image */}
-            <View className="relative w-full h-[300px]">
-                <Image
-                    source={{ uri: imageUrl }}
-                    style={{ width: '100%', height: '100%' }}
-                    contentFit="cover"
-                    transition={500}
-                />
+            <View className="relative w-full h-[300px] bg-[#0D0D25] items-center justify-center">
+                <View className="opacity-50">
+                    <TrickCardContent trick={trick} size={300} showName={false} />
+                </View>
                 <LinearGradient
                     colors={['transparent', '#0D0D25']}
                     className="absolute inset-0"
@@ -130,7 +127,7 @@ export default function TrickDetailModal({ visible, onClose, trick, onAddToInPro
                         style={{ boxShadow: `0px 0px 10px rgba(255, 0, 255, 0.5)` }}
                         onPress={() => {
                             onAddToInProgress(trick);
-                            onClose();
+                            // Don't close modal to allow user to see status change
                         }}
                     >
                         <LinearGradient
