@@ -57,7 +57,6 @@ function RootLayoutNav() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="add" options={{ title: 'ADD TRICK', presentation: 'modal' }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="verify-email" options={{ headerShown: false }} />
