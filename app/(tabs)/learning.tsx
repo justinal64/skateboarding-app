@@ -12,31 +12,35 @@ export default function LearningScreen() {
   const loading = useTrickStore((state) => state.loading);
   const updateTrickStatus = useTrickStore((state) => state.updateTrickStatus);
 
-  // Filter for IN_PROGRESS and COMPLETED? Or just IN_PROGRESS?
-  // User said "only show tricks makes as in progress".
-  // Assuming strict IN_PROGRESS.
-  // If the user wants to see "what I'm learning", usually that implies in progress.
-  const inProgressTricks = tricks.filter(t => t.status === 'IN_PROGRESS');
+  const inProgressTricks = tricks.filter((t) => t.status === 'IN_PROGRESS');
 
   const handleAddProcess = (trick: Trick) => {
-    if (!user) return; // Should likely show login modal, but for now safe guard
+    if (!user) return;
     if (trick.status === 'IN_PROGRESS') {
-        updateTrickStatus(user.uid, trick.id, 'COMPLETED');
+      updateTrickStatus(user.uid, trick.id, 'COMPLETED');
     } else if (trick.status === 'NOT_STARTED') {
-        updateTrickStatus(user.uid, trick.id, 'IN_PROGRESS');
+      updateTrickStatus(user.uid, trick.id, 'IN_PROGRESS');
+    }
+  };
+
+  const handleRemoveFromProgress = (trick: Trick) => {
+    if (!user) return;
+    if (trick.status === 'IN_PROGRESS') {
+      updateTrickStatus(user.uid, trick.id, 'NOT_STARTED');
     }
   };
 
   return (
     <View className="flex-1 bg-background">
-        <TrickDirectory
-            tricks={inProgressTricks}
-            onAddProcess={handleAddProcess}
-            loading={loading}
-            title="Learning"
-            subtitle="Keep pushing your limits!"
-            allowCompletion={true}
-        />
+      <TrickDirectory
+        tricks={inProgressTricks}
+        onAddProcess={handleAddProcess}
+        onRemoveFromProgress={handleRemoveFromProgress}
+        loading={loading}
+        title="Learning"
+        subtitle="Keep pushing your limits!"
+        allowCompletion={true}
+      />
     </View>
   );
 }

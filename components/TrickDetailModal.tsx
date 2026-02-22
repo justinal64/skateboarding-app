@@ -13,6 +13,7 @@ type TrickDetailModalProps = {
   onClose: () => void;
   trick: Trick | null;
   onAddToInProgress: (trick: Trick) => void;
+  onRemoveFromProgress?: (trick: Trick) => void;
   onPrerequisitePress?: (trickName: string) => void;
   allowCompletion?: boolean;
 };
@@ -22,6 +23,7 @@ export default function TrickDetailModal({
   onClose,
   trick,
   onAddToInProgress,
+  onRemoveFromProgress,
   onPrerequisitePress,
   allowCompletion = false,
 }: TrickDetailModalProps) {
@@ -157,28 +159,41 @@ export default function TrickDetailModal({
 
               {/* Action Button */}
               {isActionable ? (
-                <TouchableOpacity
-                  className="w-full shadow-lg"
-                  style={neonGlow('rgba(255, 0, 255, 0.5)', 10)}
-                  onPress={() => onAddToInProgress(trick)}
-                >
-                  <LinearGradient
-                    colors={
-                      trick.status === 'IN_PROGRESS'
-                        ? [COLORS.success, '#00CC66']
-                        : [COLORS.primary, COLORS.secondary]
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    className="px-4 py-5 rounded-xl items-center justify-center border border-white/20"
+                <View className="w-full gap-3">
+                  <TouchableOpacity
+                    className="w-full shadow-lg"
+                    style={neonGlow('rgba(255, 0, 255, 0.5)', 10)}
+                    onPress={() => onAddToInProgress(trick)}
                   >
-                    <Text className="text-white text-base font-bold uppercase tracking-widest">
-                      {trick.status === 'IN_PROGRESS'
-                        ? 'Mark as Completed'
-                        : 'Start Learning'}
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                    <LinearGradient
+                      colors={
+                        trick.status === 'IN_PROGRESS'
+                          ? [COLORS.success, '#00CC66']
+                          : [COLORS.primary, COLORS.secondary]
+                      }
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      className="px-4 py-5 rounded-xl items-center justify-center border border-white/20"
+                    >
+                      <Text className="text-white text-base font-bold uppercase tracking-widest">
+                        {trick.status === 'IN_PROGRESS'
+                          ? 'Mark as Completed'
+                          : 'Start Learning'}
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+
+                  {trick.status === 'IN_PROGRESS' && onRemoveFromProgress && (
+                    <TouchableOpacity
+                      className="w-full py-3 items-center justify-center"
+                      onPress={() => onRemoveFromProgress(trick)}
+                    >
+                      <Text className="text-textDim text-sm font-bold uppercase tracking-wider">
+                        No Longer Learning
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               ) : (
                 <View className="flex-row items-center justify-center gap-2.5 p-4 bg-white/5 rounded-2xl border border-white/10">
                   <Ionicons

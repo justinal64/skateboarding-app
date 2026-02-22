@@ -26,6 +26,7 @@ const DIFFICULTY_ORDER: Record<string, number> = {
 type TrickDirectoryProps = {
   tricks: Trick[];
   onAddProcess: (trick: Trick) => void;
+  onRemoveFromProgress?: (trick: Trick) => void | Promise<void>;
   loading?: boolean;
   title?: string;
   subtitle?: string;
@@ -35,6 +36,7 @@ type TrickDirectoryProps = {
 export default function TrickDirectory({
   tricks,
   onAddProcess,
+  onRemoveFromProgress,
   loading,
   title = 'TRICK LIBRARY',
   subtitle,
@@ -179,6 +181,7 @@ export default function TrickDirectory({
       <TrickGrid
         tricks={filteredTricks}
         onAddProcess={onAddProcess}
+        onRemoveFromProgress={onRemoveFromProgress}
         loading={loading}
         allowCompletion={allowCompletion}
       />

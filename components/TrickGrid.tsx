@@ -22,6 +22,7 @@ const ITEM_WIDTH = (availableListWidth - GAP * (COLUMN_COUNT - 1)) / COLUMN_COUN
 type TrickGridProps = {
   tricks: Trick[];
   onAddProcess: (trick: Trick) => void;
+  onRemoveFromProgress?: (trick: Trick) => void | Promise<void>;
   loading?: boolean;
   headerTitle?: string;
   allowCompletion?: boolean;
@@ -69,6 +70,7 @@ const TrickGridItem = memo(
 export default function TrickGrid({
   tricks,
   onAddProcess,
+  onRemoveFromProgress,
   loading,
   headerTitle,
   allowCompletion = false,
@@ -125,7 +127,18 @@ export default function TrickGrid({
         visible={modalVisible}
         trick={selectedTrick}
         onClose={() => setModalVisible(false)}
-        onAddToInProgress={onAddProcess}
+        onAddToInProgress={async (trick) => {
+          await onAddProcess(trick);
+          setModalVisible(false);
+        }}
+        onRemoveFromProgress={
+          onRemoveFromProgress
+            ? async (trick) => {
+                await onRemoveFromProgress(trick);
+                setModalVisible(false);
+              }
+            : undefined
+        }
         allowCompletion={allowCompletion}
         onPrerequisitePress={(trickName) => {
           const target = tricks.find((t) => t.name === trickName);
