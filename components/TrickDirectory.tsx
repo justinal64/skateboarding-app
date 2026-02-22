@@ -11,10 +11,10 @@ import { Trick, TrickCategory } from '@/types';
 const CATEGORIES: (TrickCategory | 'All')[] = ['All', 'Basics', 'Flip', 'Grind', 'Slide', 'Transition'];
 
 const SORT_OPTIONS = [
+  { label: 'Difficulty (Easy-Adv)', value: 'difficulty_asc' },
   { label: 'Name (A-Z)', value: 'name_asc' },
   { label: 'Points (High-Low)', value: 'points_desc' },
   { label: 'Points (Low-High)', value: 'points_asc' },
-  { label: 'Difficulty (Easy-Adv)', value: 'difficulty_asc' },
 ] as const;
 
 const DIFFICULTY_ORDER: Record<string, number> = {
@@ -44,7 +44,7 @@ export default function TrickDirectory({
 }: TrickDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<TrickCategory | 'All'>('All');
-  const [sortOption, setSortOption] = useState('name_asc');
+  const [sortOption, setSortOption] = useState('difficulty_asc');
   const [showSortMenu, setShowSortMenu] = useState(false);
 
   const filteredTricks = useMemo(() => {
