@@ -1,9 +1,9 @@
 import React from 'react';
 import { Image, View } from 'react-native';
 
-const SPRITE_SHEET = require('@/assets/images/trick-sprites.png');
-const COLS = 4;
-const ROWS = 4;
+const SPRITE_SHEET = require('@/assets/images/skate-sprites-multicolor.png');
+const COLS = 6;
+const ROWS = 5;
 
 type SpriteIconProps = {
     index: number;

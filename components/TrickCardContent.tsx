@@ -1,8 +1,7 @@
-import { COLORS } from '@/constants/AppTheme';
-import { Trick } from '@/types';
-import { getTrickSpriteIndex } from '@/utils/trickIcons';
 import React from 'react';
 import { Text, View } from 'react-native';
+
+import { Trick } from '@/types';
 import SpriteIcon from './SpriteIcon';
 
 type TrickCardContentProps = {
@@ -12,59 +11,55 @@ type TrickCardContentProps = {
 };
 
 export default function TrickCardContent({ trick, size, showName = true }: TrickCardContentProps) {
-    const spriteIndex = getTrickSpriteIndex(trick);
+    const spriteIndex = require('@/utils/trickIcons').getTrickSpriteIndex(trick);
 
-    // Calculate dimensions relative to size
-    // For sprite sheet, we want the icon to likely fill a good portion of the circle
-    const circleSize = size * 0.7; // Slightly larger circle for better visibility
-    const iconSize = circleSize * 0.7; // Icon size within circle
+    // Let the icon breathe more — we remove the hard circular border
+    const iconSize = size * 0.75;
 
-    // Determine colors based on difficulty or fixed neon theme
-    const isPink = trick.name.length % 2 === 0; // Simple localized randomization for variety
-    const borderColor = isPink ? COLORS.primary : COLORS.secondary;
+    // Dynamic coloring based on trick difficulty for a varied, premium feel
+    const isAdvanced = trick.difficulty === 'Advanced';
+    const isIntermediate = trick.difficulty === 'Intermediate';
+
+    const themeColor = isAdvanced
+      ? '#ff2d78'  // Pink
+      : isIntermediate
+        ? '#00e5cc' // Teal
+        : '#39ff14'; // Lime
 
     return (
-        <View className="flex-1 items-center justify-center p-2">
-            {/* Main Circle Container */}
-            <View
-                style={{
-                    width: circleSize,
-                    height: circleSize,
-                    borderRadius: circleSize / 2,
-                    borderWidth: 2,
-                    borderColor: borderColor,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    shadowColor: borderColor,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.8,
-                    shadowRadius: 10,
-                    elevation: 5,
-                    backgroundColor: 'rgba(0,0,0,0.3)', // Slight background to pop
-                    overflow: 'hidden' // Clip the sprite if it overflows (shouldn't)
-                }}
-            >
-                {/* Inner Icon */}
+        <View className="flex-1 w-full h-full relative p-3 pb-4">
+            {/* Top-left Information Badge */}
+            <View className="absolute top-2 left-2 flex-row z-10">
+                <View
+                  className="px-2 py-1 rounded border bg-black/50"
+                  style={{ borderColor: themeColor + '60' }}
+                >
+                    <Text className="text-[10px] font-black uppercase text-white/90">
+                        {trick.points} PTS
+                    </Text>
+                </View>
+            </View>
+
+            {/* Central Sprite Container */}
+            <View className="flex-1 items-center justify-center pt-2">
+                {/* The Sprite Icon */}
                 <SpriteIcon
                     index={spriteIndex}
                     size={iconSize}
                 />
             </View>
 
-            {/* Trick Name */}
+            {/* Bold, Clean Footer Text */}
             {showName && (
-                <Text
-                    className="text-white font-bold text-center mt-3 uppercase"
-                    numberOfLines={2}
-                    style={{
-                        fontSize: size * 0.1,
-                        textShadowColor: borderColor,
-                        textShadowOffset: { width: 0, height: 0 },
-                        textShadowRadius: 10
-                    }}
-                >
-                    {trick.name}
-                </Text>
+                <View className="mt-auto px-1">
+                    <Text
+                        className="text-white font-black uppercase tracking-wide leading-tight"
+                        numberOfLines={2}
+                        style={{ fontSize: Math.max(12, size * 0.11) }}
+                    >
+                        {trick.name}
+                    </Text>
+                </View>
             )}
         </View>
     );

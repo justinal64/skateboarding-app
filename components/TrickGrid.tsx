@@ -29,31 +29,41 @@ type TrickGridProps = {
 
 /** Memoized grid tile for a single trick. */
 const TrickGridItem = memo(
-  ({ item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) => (
-    <TouchableOpacity
-      className="rounded-xl overflow-hidden bg-[#1E1E1E] relative border border-white/10"
-      style={{ width: ITEM_WIDTH, height: ITEM_WIDTH, marginBottom: GAP }}
-      onPress={() => onPress(item)}
-      activeOpacity={0.8}
-    >
-      <View className="flex-1 w-full h-full bg-[#1E1E1E]">
-        <TrickCardContent trick={item} size={ITEM_WIDTH} />
-      </View>
+  ({ item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) => {
+    const isCompleted = item.status === 'COMPLETED';
+    const isLearning = item.status === 'IN_PROGRESS';
 
-      {/* Status Indicator */}
-      {item.status !== 'NOT_STARTED' && (
-        <View className="absolute top-2 right-2 bg-black/60 rounded-xl p-0.5">
-          {item.status === 'COMPLETED' ? (
-            <View className="w-6 h-6 border-2 border-success rounded items-center justify-center bg-black/50">
-              <Text className="text-success text-base font-bold -mt-0.5">✓</Text>
-            </View>
-          ) : (
-            <Ionicons name="time" size={20} color={COLORS.primary} />
-          )}
-        </View>
-      )}
-    </TouchableOpacity>
-  ),
+    return (
+      <TouchableOpacity
+        className="rounded-xl overflow-hidden relative"
+        style={{
+          width: ITEM_WIDTH,
+          height: ITEM_WIDTH,
+          marginBottom: GAP,
+          backgroundColor: '#1E1E2A',
+          borderWidth: 1,
+          borderColor: isCompleted ? 'rgba(0, 255, 102, 0.4)' : 'rgba(255,255,255,0.08)',
+        }}
+        onPress={() => onPress(item)}
+        activeOpacity={0.8}
+      >
+        <TrickCardContent trick={item} size={ITEM_WIDTH} />
+
+        {/* Status Indicator */}
+        {(isCompleted || isLearning) && (
+          <View className="absolute top-2.5 right-2.5 z-20">
+            {isCompleted ? (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />
+            ) : (
+              <View className="bg-black/60 rounded-full p-0.5">
+                 <Ionicons name="time" size={18} color={COLORS.primary} />
+              </View>
+            )}
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  },
 );
 
 export default function TrickGrid({
