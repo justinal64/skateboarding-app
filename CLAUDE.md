@@ -20,6 +20,14 @@ npm run lint
 npm run deploy:ios
 ```
 
+**Firebase Cloud Functions** (run from `functions/` directory):
+```bash
+npm run build   # TypeScript compile
+npm run serve   # Local emulator
+npm run deploy  # Deploy to Firebase
+npm run logs    # Stream function logs
+```
+
 There is no test suite in this project.
 
 ## Environment Setup
