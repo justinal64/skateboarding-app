@@ -19,12 +19,16 @@ export default function ProfileDropdown() {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [avatarColor, setAvatarColor] = useState('#00FFFF');
 
   useEffect(() => {
     if (!user) return;
     getDoc(doc(db, 'user_profiles', user.uid))
       .then((snap) => {
-        if (snap.exists()) setStreak(snap.data().streakCount ?? 0);
+        if (snap.exists()) {
+          setStreak(snap.data().streakCount ?? 0);
+          setAvatarColor(snap.data().avatarColor ?? '#00FFFF');
+        }
       })
       .catch(() => {});
   }, [user]);
@@ -57,17 +61,17 @@ export default function ProfileDropdown() {
         <TouchableOpacity
           className="relative mb-1.5 rounded-full"
           onPress={() => router.push('/(tabs)/profile')}
-          style={neonGlow('rgba(255, 0, 255, 0.4)', 8)}
+          style={neonGlow(`${avatarColor}66`, 8)}
         >
           {/* Circular Avatar */}
           <LinearGradient
-            colors={['#00FFFF', '#FF00FF']}
+            colors={[avatarColor, '#FF00FF']}
             className="w-12 h-12 rounded-full items-center justify-center p-[2px]"
           >
             <View className="w-full h-full bg-[#111122] rounded-full items-center justify-center">
               <Text
-                className="text-[#00FFFF] font-black tracking-widest text-lg"
-                style={textGlow('#00FFFF', 8)}
+                className="font-black tracking-widest text-lg"
+                style={[{ color: avatarColor }, textGlow(avatarColor, 8)]}
               >
                 {firstLetter}
               </Text>
@@ -110,18 +114,18 @@ export default function ProfileDropdown() {
             <View className="p-5">
               <View className="flex-row items-center mb-4">
                 <LinearGradient
-                  colors={['#FF00FF', '#00FFFF']}
+                  colors={[avatarColor, '#FF00FF']}
                   className="w-[60px] h-[60px] rounded-full items-center justify-center mr-4 p-[3px]"
                 >
                   <View className="w-full h-full bg-[#111122] rounded-full items-center justify-center">
-                    <Ionicons name="person" size={28} color="#00FFFF" />
+                    <Ionicons name="person" size={28} color={avatarColor} />
                   </View>
                 </LinearGradient>
 
                 <View>
                   <Text
-                    className="text-[#00FFFF] text-lg font-black tracking-widest mb-1"
-                    style={textGlow('#00FFFF', 8)}
+                    className="text-lg font-black tracking-widest mb-1"
+                    style={[{ color: avatarColor }, textGlow(avatarColor, 8)]}
                   >
                     {displayName}
                   </Text>

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
@@ -128,6 +128,19 @@ export default function TrickGrid({
         trick={selectedTrick}
         onClose={() => setModalVisible(false)}
         onAddToInProgress={async (trick) => {
+          if (trick.status === 'NOT_STARTED' && trick.prerequisites.length > 0) {
+            const unmet = trick.prerequisites.filter((name) => {
+              const prereq = tricks.find((t) => t.name === name);
+              return !prereq || prereq.status !== 'COMPLETED';
+            });
+            if (unmet.length > 0) {
+              Alert.alert(
+                'Prerequisites Needed',
+                `Complete these tricks first:\n${unmet.map((n) => `• ${n}`).join('\n')}`,
+              );
+              return;
+            }
+          }
           await onAddProcess(trick);
           setModalVisible(false);
         }}

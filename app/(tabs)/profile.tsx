@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
-import { updateProfile } from 'firebase/auth';
-import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
+import { updateProfile, verifyBeforeUpdateEmail } from 'firebase/auth';
+import { collection, doc, getDoc, getDocs, setDoc, writeBatch } from 'firebase/firestore';
 
 import ScoreBadge from '@/components/ScoreBadge';
 import { COLORS, neonGlow } from '@/constants/AppTheme';
@@ -12,11 +12,25 @@ import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { getErrorMessage } from '@/utils/errors';
 
+const AVATAR_COLORS = ['#00FFFF', '#FF00FF', '#00FF66', '#FFD700', '#FF0055', '#7B61FF'];
+
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const [seeding, setSeeding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [editEmail, setEditEmail] = useState('');
+  const [avatarColor, setAvatarColor] = useState('#00FFFF');
+
+  useEffect(() => {
+    if (!user) return;
+    getDoc(doc(db, 'user_profiles', user.uid))
+      .then((snap) => {
+        if (snap.exists()) setAvatarColor(snap.data().avatarColor ?? '#00FFFF');
+      })
+      .catch(() => {});
+  }, [user]);
 
   const handleEditName = () => {
     setEditName(user?.displayName || '');
@@ -30,6 +44,37 @@ export default function ProfileScreen() {
       setIsEditing(false);
     } catch {
       Alert.alert('Error', 'Failed to update display name.');
+    }
+  };
+
+  const handleSaveEmail = async () => {
+    if (!user || !editEmail.trim()) return;
+    try {
+      await verifyBeforeUpdateEmail(user, editEmail.trim());
+      setIsEditingEmail(false);
+      Alert.alert(
+        'Verification Sent',
+        `A confirmation link has been sent to ${editEmail.trim()}. Your email will update once you click it.`,
+      );
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code;
+      if (code === 'auth/requires-recent-login') {
+        Alert.alert('Sign in again', 'Please sign out and sign back in before changing your email.');
+      } else if (code === 'auth/email-already-in-use') {
+        Alert.alert('Error', 'That email is already in use.');
+      } else {
+        Alert.alert('Error', 'Failed to update email.');
+      }
+    }
+  };
+
+  const handleSaveAvatarColor = async (color: string) => {
+    setAvatarColor(color);
+    if (!user) return;
+    try {
+      await setDoc(doc(db, 'user_profiles', user.uid), { avatarColor: color }, { merge: true });
+    } catch {
+      // non-critical, ignore
     }
   };
 
@@ -67,12 +112,27 @@ export default function ProfileScreen() {
   return (
     <View className="flex-1 bg-background p-6">
       <View className="items-center mt-10 mb-10">
+        {/* Avatar */}
         <View
-          className="w-[120px] h-[120px] rounded-full bg-primary/10 items-center justify-center border-2 border-primary mb-4"
-          style={neonGlow('rgba(255, 0, 255, 0.5)', 20)}
+          className="w-[120px] h-[120px] rounded-full items-center justify-center border-2 mb-3"
+          style={[{ backgroundColor: `${avatarColor}22`, borderColor: avatarColor }, neonGlow(`${avatarColor}80`, 20)]}
         >
-          <Ionicons name="person" size={64} color={COLORS.primary} />
+          <Ionicons name="person" size={64} color={avatarColor} />
         </View>
+
+        {/* Color Swatches */}
+        <View className="flex-row gap-3 mb-5">
+          {AVATAR_COLORS.map((color) => (
+            <TouchableOpacity
+              key={color}
+              onPress={() => handleSaveAvatarColor(color)}
+              className="w-6 h-6 rounded-full border-2"
+              style={{ backgroundColor: color, borderColor: avatarColor === color ? '#FFF' : 'transparent' }}
+            />
+          ))}
+        </View>
+
+        {/* Display Name */}
         {isEditing ? (
           <View className="items-center mb-2">
             <TextInput
@@ -102,7 +162,38 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
         )}
-        <Text className="text-base text-textDim text-center mb-3">{user?.email}</Text>
+
+        {/* Email */}
+        {isEditingEmail ? (
+          <View className="items-center mb-3">
+            <TextInput
+              value={editEmail}
+              onChangeText={setEditEmail}
+              className="text-base text-white text-center border-b border-primary pb-1 mb-3 min-w-[220px]"
+              autoFocus
+              keyboardType="email-address"
+              autoCapitalize="none"
+              returnKeyType="done"
+              onSubmitEditing={handleSaveEmail}
+            />
+            <View className="flex-row gap-6">
+              <TouchableOpacity onPress={() => setIsEditingEmail(false)}>
+                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleSaveEmail}>
+                <Text className="text-primary text-sm font-bold uppercase tracking-wider">Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View className="flex-row items-center gap-2 mb-3">
+            <Text className="text-base text-textDim text-center">{user?.email}</Text>
+            <TouchableOpacity onPress={() => { setEditEmail(user?.email ?? ''); setIsEditingEmail(true); }}>
+              <Ionicons name="pencil" size={14} color={COLORS.textDim} />
+            </TouchableOpacity>
+          </View>
+        )}
+
         <ScoreBadge />
       </View>
 

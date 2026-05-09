@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import TrickCardContent from '@/components/TrickCardContent';
 import { COLORS, neonGlow, textGlow } from '@/constants/AppTheme';
+import { useTrickStore } from '@/store/trickStore';
 import { Trick } from '@/types';
 
 type TrickDetailModalProps = {
@@ -27,7 +28,15 @@ export default function TrickDetailModal({
   onPrerequisitePress,
   allowCompletion = false,
 }: TrickDetailModalProps) {
+  const allTricks = useTrickStore((state) => state.tricks);
+
   if (!trick) return null;
+
+  const unmetPrereqs = trick.prerequisites.filter((name) => {
+    const prereq = allTricks.find((t) => t.name === name);
+    return !prereq || prereq.status !== 'COMPLETED';
+  });
+  const hasUnmetPrereqs = trick.status === 'NOT_STARTED' && unmetPrereqs.length > 0;
 
   return (
     <Modal
@@ -117,21 +126,39 @@ export default function TrickDetailModal({
                     Prerequisites:
                   </Text>
                   <View className="flex-row flex-wrap gap-2">
-                    {trick.prerequisites.map((p, i) => (
-                      <TouchableOpacity
-                        key={i}
-                        className="bg-primary/10 px-2.5 py-1.5 rounded-full border border-primary flex-row items-center"
-                        onPress={() => onPrerequisitePress?.(p)}
-                      >
-                        <Text className="text-primary font-bold text-xs">{p}</Text>
-                        <Ionicons
-                          name="link"
-                          size={12}
-                          color={COLORS.primary}
-                          style={{ marginLeft: 4 }}
-                        />
-                      </TouchableOpacity>
-                    ))}
+                    {trick.prerequisites.map((prereqName, i) => {
+                      const prereqTrick = allTricks.find((t) => t.name === prereqName);
+                      const prereqStatus = prereqTrick?.status ?? 'NOT_STARTED';
+                      const isCompleted = prereqStatus === 'COMPLETED';
+                      const isInProgress = prereqStatus === 'IN_PROGRESS';
+                      return (
+                        <TouchableOpacity
+                          key={i}
+                          className={`px-2.5 py-1.5 rounded-full border flex-row items-center ${
+                            isCompleted
+                              ? 'bg-success/10 border-success'
+                              : isInProgress
+                                ? 'bg-primary/10 border-primary'
+                                : 'bg-white/5 border-white/20'
+                          }`}
+                          onPress={() => onPrerequisitePress?.(prereqName)}
+                        >
+                          <Text
+                            className={`font-bold text-xs ${
+                              isCompleted ? 'text-success' : isInProgress ? 'text-primary' : 'text-textDim'
+                            }`}
+                          >
+                            {prereqName}
+                          </Text>
+                          <Ionicons
+                            name={isCompleted ? 'checkmark-circle' : isInProgress ? 'time' : 'lock-closed'}
+                            size={12}
+                            color={isCompleted ? COLORS.success : isInProgress ? COLORS.primary : COLORS.textDim}
+                            style={{ marginLeft: 4 }}
+                          />
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
                 </View>
               )}
@@ -155,27 +182,47 @@ export default function TrickDetailModal({
 
               {/* Action Buttons */}
               <View className="w-full gap-3">
-                {(trick.status === 'NOT_STARTED' ||
-                  (trick.status === 'IN_PROGRESS' && allowCompletion)) && (
+                {trick.status === 'NOT_STARTED' && (
+                  <>
+                    <TouchableOpacity
+                      className="w-full shadow-lg"
+                      style={[neonGlow('rgba(255, 0, 255, 0.5)', 10), hasUnmetPrereqs && { opacity: 0.4 }]}
+                      disabled={hasUnmetPrereqs}
+                      onPress={() => onAddToInProgress(trick)}
+                    >
+                      <LinearGradient
+                        colors={[COLORS.primary, COLORS.secondary]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        className="px-4 py-5 rounded-xl items-center justify-center border border-white/20"
+                      >
+                        <Text className="text-white text-base font-bold uppercase tracking-widest">
+                          Start Learning
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                    {hasUnmetPrereqs && (
+                      <Text className="text-textDim text-xs text-center">
+                        Complete prerequisites above to unlock
+                      </Text>
+                    )}
+                  </>
+                )}
+
+                {trick.status === 'IN_PROGRESS' && allowCompletion && (
                   <TouchableOpacity
                     className="w-full shadow-lg"
-                    style={neonGlow('rgba(255, 0, 255, 0.5)', 10)}
+                    style={neonGlow('rgba(0, 255, 102, 0.5)', 10)}
                     onPress={() => onAddToInProgress(trick)}
                   >
                     <LinearGradient
-                      colors={
-                        trick.status === 'IN_PROGRESS'
-                          ? [COLORS.success, '#00CC66']
-                          : [COLORS.primary, COLORS.secondary]
-                      }
+                      colors={[COLORS.success, '#00CC66']}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
                       className="px-4 py-5 rounded-xl items-center justify-center border border-white/20"
                     >
                       <Text className="text-white text-base font-bold uppercase tracking-widest">
-                        {trick.status === 'IN_PROGRESS'
-                          ? 'Mark as Completed'
-                          : 'Start Learning'}
+                        Mark as Completed
                       </Text>
                     </LinearGradient>
                   </TouchableOpacity>
