@@ -4,6 +4,7 @@ import { Alert, Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
 
+import ScoreBadge from '@/components/ScoreBadge';
 import { COLORS, neonGlow } from '@/constants/AppTheme';
 import { FULL_TRICK_LIBRARY } from '@/constants/FullTrickLibrary';
 import { useAuth } from '@/context/AuthContext';
@@ -57,7 +58,8 @@ export default function ProfileScreen() {
         <Text className="text-3xl font-bold text-white mb-2 text-center">
           {user?.displayName || 'Skater'}
         </Text>
-        <Text className="text-base text-textDim text-center">{user?.email}</Text>
+        <Text className="text-base text-textDim text-center mb-3">{user?.email}</Text>
+        <ScoreBadge />
       </View>
 
       <View className="flex-1 justify-between pb-10">

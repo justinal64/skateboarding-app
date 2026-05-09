@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-import NeonBadge from '@/components/NeonBadge';
+import ProfileDropdown from '@/components/ProfileDropdown';
 import TrickGrid from '@/components/TrickGrid';
 import { COLORS, neonGlow, textGlow } from '@/constants/AppTheme';
 import { Trick, TrickCategory } from '@/types';
@@ -80,9 +80,38 @@ export default function TrickDirectory({
   return (
     <View className="flex-1 bg-background">
       {/* Header Section */}
-      <View className="pt-[60px] pb-5 px-4 bg-background z-10">
-        <NeonBadge title={title} subtitle={subtitle} />
+      <View className="pt-[48px] pb-5 px-4 bg-background z-10 relative">
+        <View className="flex-row justify-between items-center mb-6">
 
+          {/* Left Column: Logo */}
+          <View className="flex-1 flex-row items-center">
+            <MaterialCommunityIcons name="skateboard" size={28} color="#00FFFF" style={textGlow('#00FFFF', 5)} />
+            <Text
+              className="text-[#00FFFF] font-black tracking-widest text-base ml-2"
+              style={textGlow('#00FFFF', 5)}
+            >
+              SKL
+            </Text>
+          </View>
+
+          {/* Center Column: Title */}
+          <View className="flex-2 items-center justify-center">
+            <Text
+              className="text-white text-xl font-black tracking-widest mb-1"
+              style={textGlow('#FFFFFF', 8)}
+            >
+              {title === 'TRICK LIBRARY' ? 'Trick Library' : title}
+            </Text>
+            <Text className="text-textDim text-[10px] font-medium tracking-[0.5px]">
+              {subtitle || 'Select a trick to learn'}
+            </Text>
+          </View>
+
+          {/* Right Column: Profile */}
+          <View className="flex-1 items-end z-20">
+            <ProfileDropdown />
+          </View>
+        </View>
         {/* Search Bar */}
         <View className="flex-row items-center bg-[#1E1E30] rounded-xl px-3 py-2.5 mb-4 border border-white/10">
           <Ionicons name="search" size={20} color={COLORS.secondary} className="mr-2" />
