@@ -29,10 +29,6 @@ export default function TrickDetailModal({
 }: TrickDetailModalProps) {
   if (!trick) return null;
 
-  const isActionable =
-    trick.status === 'NOT_STARTED' ||
-    (trick.status === 'IN_PROGRESS' && allowCompletion);
-
   return (
     <Modal
       animationType="slide"
@@ -157,9 +153,10 @@ export default function TrickDetailModal({
                 </TouchableOpacity>
               )}
 
-              {/* Action Button */}
-              {isActionable ? (
-                <View className="w-full gap-3">
+              {/* Action Buttons */}
+              <View className="w-full gap-3">
+                {(trick.status === 'NOT_STARTED' ||
+                  (trick.status === 'IN_PROGRESS' && allowCompletion)) && (
                   <TouchableOpacity
                     className="w-full shadow-lg"
                     style={neonGlow('rgba(255, 0, 255, 0.5)', 10)}
@@ -182,36 +179,28 @@ export default function TrickDetailModal({
                       </Text>
                     </LinearGradient>
                   </TouchableOpacity>
+                )}
 
-                  {trick.status === 'IN_PROGRESS' && onRemoveFromProgress && (
-                    <TouchableOpacity
-                      className="w-full py-3 items-center justify-center"
-                      onPress={() => onRemoveFromProgress(trick)}
-                    >
-                      <Text className="text-textDim text-sm font-bold uppercase tracking-wider">
-                        No Longer Learning
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ) : (
-                <View className="flex-row items-center justify-center gap-2.5 p-4 bg-white/5 rounded-2xl border border-white/10">
-                  <Ionicons
-                    name={
-                      trick.status === 'COMPLETED' ? 'checkmark-circle' : 'time'
-                    }
-                    size={24}
-                    color={
-                      trick.status === 'COMPLETED' ? COLORS.success : COLORS.primary
-                    }
-                  />
-                  <Text className="text-text text-base font-semibold">
-                    {trick.status === 'COMPLETED'
-                      ? "You've mastered this trick!"
-                      : 'Currently in progress'}
-                  </Text>
-                </View>
-              )}
+                {trick.status === 'IN_PROGRESS' && onRemoveFromProgress && (
+                  <TouchableOpacity
+                    className="w-full py-3 items-center justify-center"
+                    onPress={() => onRemoveFromProgress(trick)}
+                  >
+                    <Text className="text-textDim text-sm font-bold uppercase tracking-wider">
+                      No Longer Learning
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                {trick.status === 'COMPLETED' && (
+                  <View className="flex-row items-center justify-center gap-2.5 p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />
+                    <Text className="text-text text-base font-semibold">
+                      You've mastered this trick!
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           </ScrollView>
         </View>

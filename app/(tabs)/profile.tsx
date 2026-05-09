@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
+import { updateProfile } from 'firebase/auth';
 import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
 
 import ScoreBadge from '@/components/ScoreBadge';
@@ -14,6 +15,23 @@ import { getErrorMessage } from '@/utils/errors';
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const [seeding, setSeeding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+
+  const handleEditName = () => {
+    setEditName(user?.displayName || '');
+    setIsEditing(true);
+  };
+
+  const handleSaveName = async () => {
+    if (!user || !editName.trim()) return;
+    try {
+      await updateProfile(user, { displayName: editName.trim() });
+      setIsEditing(false);
+    } catch {
+      Alert.alert('Error', 'Failed to update display name.');
+    }
+  };
 
   const seedDatabase = async () => {
     setSeeding(true);
@@ -55,9 +73,35 @@ export default function ProfileScreen() {
         >
           <Ionicons name="person" size={64} color={COLORS.primary} />
         </View>
-        <Text className="text-3xl font-bold text-white mb-2 text-center">
-          {user?.displayName || 'Skater'}
-        </Text>
+        {isEditing ? (
+          <View className="items-center mb-2">
+            <TextInput
+              value={editName}
+              onChangeText={setEditName}
+              className="text-2xl font-bold text-white text-center border-b border-primary pb-1 mb-3 min-w-[200px]"
+              autoFocus
+              returnKeyType="done"
+              onSubmitEditing={handleSaveName}
+            />
+            <View className="flex-row gap-6">
+              <TouchableOpacity onPress={() => setIsEditing(false)}>
+                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleSaveName}>
+                <Text className="text-primary text-sm font-bold uppercase tracking-wider">Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View className="flex-row items-center gap-2 mb-2">
+            <Text className="text-3xl font-bold text-white text-center">
+              {user?.displayName || 'Skater'}
+            </Text>
+            <TouchableOpacity onPress={handleEditName}>
+              <Ionicons name="pencil" size={16} color={COLORS.textDim} />
+            </TouchableOpacity>
+          </View>
+        )}
         <Text className="text-base text-textDim text-center mb-3">{user?.email}</Text>
         <ScoreBadge />
       </View>

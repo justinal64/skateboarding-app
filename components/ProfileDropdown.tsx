@@ -1,28 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { COLORS, neonGlow, textGlow } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
+import { useUserScore } from '@/hooks/useUserScore';
+import { db } from '@/lib/firebase';
 import { useTrickStore } from '@/store/trickStore';
 
 export default function ProfileDropdown() {
   const { user } = useAuth();
+  const totalScore = useUserScore();
   const tricks = useTrickStore((state) => state.tricks);
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    getDoc(doc(db, 'user_profiles', user.uid))
+      .then((snap) => {
+        if (snap.exists()) setStreak(snap.data().streakCount ?? 0);
+      })
+      .catch(() => {});
+  }, [user]);
 
   if (!user) return null;
 
   const displayName = user.displayName
     || (user.email ? user.email.split('@')[0].toUpperCase() : 'SKATER');
-
-  const completedTricks = tricks.filter((t) => t.status === 'COMPLETED');
-  const totalScore = completedTricks.reduce((sum, trick) => sum + (trick.points ?? 10), 0);
-  const tricksCount = completedTricks.length;
+  const tricksCount = tricks.filter((t) => t.status === 'COMPLETED').length;
 
   // The small points badge used in both collapsed and expanded views
   const PointsBadge = () => (
@@ -142,7 +153,7 @@ export default function ProfileDropdown() {
 
                 <View className="bg-[#1A1A3A] border border-[#FF00FF]/30 rounded-xl py-3 px-2 flex-1 items-center mr-2">
                   <Text className="text-[#FF00FF] text-lg font-black mb-1" style={textGlow('#FF00FF', 8)}>
-                    0d
+                    {streak}d
                   </Text>
                   <Text className="text-textDim text-[9px] font-bold tracking-widest">STREAK</Text>
                 </View>

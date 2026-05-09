@@ -78,7 +78,7 @@ export const useTrickStore = create<TrickStore>()(
               id: trickMeta.id ?? '',
               category: trickMeta.category || 'Basics',
               difficulty: trickMeta.difficulty || 'Easy',
-              points: trickMeta.points || 10,
+              points: trickMeta.points ?? 10,
               status: userProgress?.status ?? 'NOT_STARTED',
               imageUrl: trickMeta.imageUrl || '',
               video_url: trickMeta.video_url || '',

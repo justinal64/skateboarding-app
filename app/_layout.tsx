@@ -1,14 +1,36 @@
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
 
 import { NeonTheme } from '@/constants/AppTheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-
+import { db } from '@/lib/firebase';
 import { useTrickStore } from '@/store/trickStore';
+
+async function updateStreak(userId: string) {
+  const profileRef = doc(db, 'user_profiles', userId);
+  const profileSnap = await getDoc(profileRef);
+  const today = new Date().toISOString().split('T')[0];
+
+  if (!profileSnap.exists()) {
+    await setDoc(profileRef, { lastLogin: today, streakCount: 1 });
+    return;
+  }
+
+  const { lastLogin, streakCount = 0 } = profileSnap.data();
+  if (lastLogin === today) return;
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  const newStreak = lastLogin === yesterdayStr ? streakCount + 1 : 1;
+  await setDoc(profileRef, { lastLogin: today, streakCount: newStreak }, { merge: true });
+}
 
 function RootLayoutNav() {
   const { user, loading } = useAuth();
@@ -17,9 +39,11 @@ function RootLayoutNav() {
   const fetchTricks = useTrickStore((state) => state.fetchTricks);
 
   useEffect(() => {
-    // Sync store with auth
     if (!loading) {
-       fetchTricks(user?.uid);
+      fetchTricks(user?.uid);
+      if (user) {
+        updateStreak(user.uid).catch(console.error);
+      }
     }
   }, [user, loading, fetchTricks]);
 
