@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
+import { getTrickSpriteIndex } from '@/utils/trickIcons';
 import { Trick } from '@/types';
 import SpriteIcon from './SpriteIcon';
 
@@ -11,7 +12,7 @@ type TrickCardContentProps = {
 };
 
 export default function TrickCardContent({ trick, size, showName = true }: TrickCardContentProps) {
-    const spriteIndex = require('@/utils/trickIcons').getTrickSpriteIndex(trick);
+    const spriteIndex = getTrickSpriteIndex(trick);
 
     // Let the icon breathe more — we remove the hard circular border
     const iconSize = size * 0.75;

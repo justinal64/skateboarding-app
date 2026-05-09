@@ -31,8 +31,8 @@ type TrickGridProps = {
 };
 
 /** Memoized grid tile for a single trick. */
-const TrickGridItem = memo(
-  ({ item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) => {
+const TrickGridItem = memo(function TrickGridItem(
+  { item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) {
     const isCompleted = item.status === 'COMPLETED';
     const isLearning = item.status === 'IN_PROGRESS';
 

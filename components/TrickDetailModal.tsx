@@ -252,7 +252,7 @@ export default function TrickDetailModal({
                   <View className="flex-row items-center justify-center gap-2.5 p-4 bg-white/5 rounded-2xl border border-white/10">
                     <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />
                     <Text className="text-text text-base font-semibold">
-                      You've mastered this trick!
+                      {"You've mastered this trick!"}
                     </Text>
                   </View>
                 )}
