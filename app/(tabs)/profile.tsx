@@ -128,6 +128,9 @@ export default function ProfileScreen() {
               onPress={() => handleSaveAvatarColor(color)}
               className="w-6 h-6 rounded-full border-2"
               style={{ backgroundColor: color, borderColor: avatarColor === color ? '#FFF' : 'transparent' }}
+              accessibilityLabel={`Set avatar color${avatarColor === color ? ', currently selected' : ''}`}
+              accessibilityState={{ selected: avatarColor === color }}
+              accessibilityRole="button"
             />
           ))}
         </View>
@@ -157,7 +160,7 @@ export default function ProfileScreen() {
             <Text className="text-3xl font-bold text-white text-center">
               {user?.displayName || 'Skater'}
             </Text>
-            <TouchableOpacity onPress={handleEditName}>
+            <TouchableOpacity onPress={handleEditName} accessibilityLabel="Edit display name" accessibilityRole="button">
               <Ionicons name="pencil" size={16} color={COLORS.textDim} />
             </TouchableOpacity>
           </View>
@@ -188,7 +191,7 @@ export default function ProfileScreen() {
         ) : (
           <View className="flex-row items-center gap-2 mb-3">
             <Text className="text-base text-textDim text-center">{user?.email}</Text>
-            <TouchableOpacity onPress={() => { setEditEmail(user?.email ?? ''); setIsEditingEmail(true); }}>
+            <TouchableOpacity onPress={() => { setEditEmail(user?.email ?? ''); setIsEditingEmail(true); }} accessibilityLabel="Edit email address" accessibilityRole="button">
               <Ionicons name="pencil" size={14} color={COLORS.textDim} />
             </TouchableOpacity>
           </View>

@@ -70,6 +70,8 @@ export default function TrickDetailModal({
               <TouchableOpacity
                 className="absolute top-4 right-4 bg-black/30 rounded-full p-1"
                 onPress={onClose}
+                accessibilityLabel="Close"
+                accessibilityRole="button"
               >
                 <Ionicons name="close-circle" size={32} color={COLORS.text} />
               </TouchableOpacity>
@@ -189,6 +191,9 @@ export default function TrickDetailModal({
                       style={[neonGlow('rgba(255, 0, 255, 0.5)', 10), hasUnmetPrereqs && { opacity: 0.4 }]}
                       disabled={hasUnmetPrereqs}
                       onPress={() => onAddToInProgress(trick)}
+                      accessibilityLabel="Start Learning"
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: hasUnmetPrereqs }}
                     >
                       <LinearGradient
                         colors={[COLORS.primary, COLORS.secondary]}
@@ -214,6 +219,8 @@ export default function TrickDetailModal({
                     className="w-full shadow-lg"
                     style={neonGlow('rgba(0, 255, 102, 0.5)', 10)}
                     onPress={() => onAddToInProgress(trick)}
+                    accessibilityLabel="Mark as Completed"
+                    accessibilityRole="button"
                   >
                     <LinearGradient
                       colors={[COLORS.success, '#00CC66']}
@@ -232,6 +239,8 @@ export default function TrickDetailModal({
                   <TouchableOpacity
                     className="w-full py-3 items-center justify-center"
                     onPress={() => onRemoveFromProgress(trick)}
+                    accessibilityLabel="Remove from in progress"
+                    accessibilityRole="button"
                   >
                     <Text className="text-textDim text-sm font-bold uppercase tracking-wider">
                       No Longer Learning

@@ -26,6 +26,8 @@ type TrickGridProps = {
   loading?: boolean;
   headerTitle?: string;
   allowCompletion?: boolean;
+  emptyMessage?: string;
+  emptySubtitle?: string;
 };
 
 /** Memoized grid tile for a single trick. */
@@ -47,6 +49,9 @@ const TrickGridItem = memo(
         }}
         onPress={() => onPress(item)}
         activeOpacity={0.8}
+        accessibilityLabel={`${item.name}, ${item.status === 'COMPLETED' ? 'completed' : item.status === 'IN_PROGRESS' ? 'in progress' : 'not started'}`}
+        accessibilityHint="Opens trick details"
+        accessibilityRole="button"
       >
         <TrickCardContent trick={item} size={ITEM_WIDTH} />
 
@@ -74,6 +79,8 @@ export default function TrickGrid({
   loading,
   headerTitle,
   allowCompletion = false,
+  emptyMessage = 'No tricks found',
+  emptySubtitle,
 }: TrickGridProps) {
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -118,8 +125,19 @@ export default function TrickGrid({
         contentContainerStyle={{ padding: GAP, paddingTop: 0, paddingBottom: 40 }}
         {...({ estimatedItemSize: ITEM_WIDTH } as Record<string, unknown>)}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          headerTitle ? <NeonBadge title={headerTitle} /> : null
+        ListHeaderComponent={headerTitle ? <NeonBadge title={headerTitle} /> : null}
+        ListEmptyComponent={
+          <View className="flex-1 items-center justify-center py-24 px-8">
+            <Ionicons name="flash-outline" size={56} color={COLORS.textDim} style={{ opacity: 0.35 }} />
+            <Text className="text-textDim text-base font-bold mt-5 text-center tracking-wide">
+              {emptyMessage}
+            </Text>
+            {emptySubtitle && (
+              <Text className="text-textDim/60 text-sm mt-2 text-center leading-5">
+                {emptySubtitle}
+              </Text>
+            )}
+          </View>
         }
       />
 

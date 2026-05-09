@@ -29,6 +29,8 @@ export default function CompletedScreen() {
             loading={loading}
             title="COMPLETED"
             subtitle="Look at all you've achieved!"
+            emptyMessage="No tricks mastered yet"
+            emptySubtitle="Mark tricks as completed and they'll appear here"
         />
     </View>
   );

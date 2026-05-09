@@ -40,6 +40,8 @@ export default function LearningScreen() {
         title="Learning"
         subtitle="Keep pushing your limits!"
         allowCompletion={true}
+        emptyMessage="Nothing in progress yet"
+        emptySubtitle="Go to the Trick Library and tap a trick to start learning"
       />
     </View>
   );

@@ -31,6 +31,8 @@ type TrickDirectoryProps = {
   title?: string;
   subtitle?: string;
   allowCompletion?: boolean;
+  emptyMessage?: string;
+  emptySubtitle?: string;
 };
 
 export default function TrickDirectory({
@@ -41,6 +43,8 @@ export default function TrickDirectory({
   title = 'TRICK LIBRARY',
   subtitle,
   allowCompletion = false,
+  emptyMessage,
+  emptySubtitle,
 }: TrickDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<TrickCategory | 'All'>('All');
@@ -145,6 +149,9 @@ export default function TrickDirectory({
                     : 'bg-white/5 border-white/10'
                 }`}
                 onPress={() => setSelectedCategory(cat)}
+                accessibilityLabel={`Filter by ${cat}`}
+                accessibilityState={{ selected: selectedCategory === cat }}
+                accessibilityRole="button"
               >
                 <Text
                   className={`text-[13px] ${
@@ -164,6 +171,8 @@ export default function TrickDirectory({
           <TouchableOpacity
             className="w-10 h-10 rounded-full bg-white/5 border border-white/10 items-center justify-center"
             onPress={() => setShowSortMenu(!showSortMenu)}
+            accessibilityLabel="Sort tricks"
+            accessibilityRole="button"
           >
             <Ionicons name="filter" size={18} color={COLORS.primary} />
           </TouchableOpacity>
@@ -213,6 +222,8 @@ export default function TrickDirectory({
         onRemoveFromProgress={onRemoveFromProgress}
         loading={loading}
         allowCompletion={allowCompletion}
+        emptyMessage={emptyMessage}
+        emptySubtitle={emptySubtitle}
       />
     </View>
   );
