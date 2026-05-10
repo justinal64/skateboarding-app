@@ -1,83 +1,32 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Alert, Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 
-import NeonBadge from '@/components/NeonBadge';
-import TrickCardContent from '@/components/TrickCardContent';
+import FeaturedTrickCard from '@/components/FeaturedTrickCard';
 import TrickDetailModal from '@/components/TrickDetailModal';
+import TrickListItem from '@/components/TrickListItem';
 import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/types';
-
-const { width } = Dimensions.get('window');
-const GAP = 12;
-const MIN_ITEM_WIDTH = 150;
-
-const availableListWidth = width - GAP * 2;
-const numColumnsRaw = Math.floor((availableListWidth + GAP) / (MIN_ITEM_WIDTH + GAP));
-const COLUMN_COUNT = Math.max(1, numColumnsRaw);
-const ITEM_WIDTH = (availableListWidth - GAP * (COLUMN_COUNT - 1)) / COLUMN_COUNT;
 
 type TrickGridProps = {
   tricks: Trick[];
   onAddProcess: (trick: Trick) => void;
   onRemoveFromProgress?: (trick: Trick) => void | Promise<void>;
+  onComplete?: (trick: Trick) => void;
   loading?: boolean;
-  headerTitle?: string;
   allowCompletion?: boolean;
   emptyMessage?: string;
   emptySubtitle?: string;
 };
 
-/** Memoized grid tile for a single trick. */
-const TrickGridItem = memo(function TrickGridItem(
-  { item, onPress }: { item: Trick; onPress: (trick: Trick) => void }) {
-    const isCompleted = item.status === 'COMPLETED';
-    const isLearning = item.status === 'IN_PROGRESS';
-
-    return (
-      <TouchableOpacity
-        className="rounded-xl overflow-hidden relative"
-        style={{
-          width: ITEM_WIDTH,
-          height: ITEM_WIDTH,
-          marginBottom: GAP,
-          backgroundColor: '#1E1E2A',
-          borderWidth: 1,
-          borderColor: isCompleted ? 'rgba(0, 255, 102, 0.4)' : 'rgba(255,255,255,0.08)',
-        }}
-        onPress={() => onPress(item)}
-        activeOpacity={0.8}
-        accessibilityLabel={`${item.name}, ${item.status === 'COMPLETED' ? 'completed' : item.status === 'IN_PROGRESS' ? 'in progress' : 'not started'}`}
-        accessibilityHint="Opens trick details"
-        accessibilityRole="button"
-      >
-        <TrickCardContent trick={item} size={ITEM_WIDTH} />
-
-        {/* Status Indicator */}
-        {(isCompleted || isLearning) && (
-          <View className="absolute top-2.5 right-2.5 z-20">
-            {isCompleted ? (
-              <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />
-            ) : (
-              <View className="bg-black/60 rounded-full p-0.5">
-                 <Ionicons name="time" size={18} color={COLORS.primary} />
-              </View>
-            )}
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  },
-);
-
 export default function TrickGrid({
   tricks,
   onAddProcess,
   onRemoveFromProgress,
+  onComplete,
   loading,
-  headerTitle,
   allowCompletion = false,
   emptyMessage = 'No tricks found',
   emptySubtitle,
@@ -85,7 +34,6 @@ export default function TrickGrid({
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Keep selectedTrick in sync when the tricks array updates (e.g. status change)
   useEffect(() => {
     if (selectedTrick) {
       const updatedTrick = tricks.find((t) => t.id === selectedTrick.id);
@@ -100,12 +48,42 @@ export default function TrickGrid({
     setModalVisible(true);
   }, []);
 
+  const handleLandedIt = useCallback(
+    (trick: Trick) => {
+      onComplete?.(trick);
+    },
+    [onComplete],
+  );
+
+  const featuredTrick = tricks.find((t) => t.status === 'IN_PROGRESS') ?? null;
+  const listTricks = featuredTrick ? tricks.filter((t) => t.id !== featuredTrick.id) : tricks;
+
   const renderItem = useCallback(
-    ({ item }: { item: Trick }) => <TrickGridItem item={item} onPress={handlePress} />,
+    ({ item, index }: { item: Trick; index: number }) => (
+      <TrickListItem trick={item} index={index + 1} onPress={handlePress} />
+    ),
     [handlePress],
   );
 
   const keyExtractor = useCallback((item: Trick) => item.id, []);
+
+  const ListHeader = featuredTrick ? (
+    <View>
+      <FeaturedTrickCard
+        trick={featuredTrick}
+        onLogSession={handlePress}
+        onLandedIt={handleLandedIt}
+      />
+      {listTricks.length > 0 && (
+        <View className="flex-row items-center gap-3 px-4 mb-3">
+          <Text className="text-secondary font-black text-xs tracking-widest uppercase">
+            Up Next
+          </Text>
+          <View className="flex-1 h-px bg-secondary/30" />
+        </View>
+      )}
+    </View>
+  ) : null;
 
   if (loading) {
     return (
@@ -118,26 +96,27 @@ export default function TrickGrid({
   return (
     <View className="flex-1 bg-background">
       <FlashList
-        data={tricks}
+        data={listTricks}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        numColumns={COLUMN_COUNT}
-        contentContainerStyle={{ padding: GAP, paddingTop: 0, paddingBottom: 40 }}
-        {...({ estimatedItemSize: ITEM_WIDTH } as Record<string, unknown>)}
+        {...({ estimatedItemSize: 65 } as Record<string, unknown>)}
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={headerTitle ? <NeonBadge title={headerTitle} /> : null}
+        ListHeaderComponent={ListHeader}
         ListEmptyComponent={
-          <View className="flex-1 items-center justify-center py-24 px-8">
-            <Ionicons name="flash-outline" size={56} color={COLORS.textDim} style={{ opacity: 0.35 }} />
-            <Text className="text-textDim text-base font-bold mt-5 text-center tracking-wide">
-              {emptyMessage}
-            </Text>
-            {emptySubtitle && (
-              <Text className="text-textDim/60 text-sm mt-2 text-center leading-5">
-                {emptySubtitle}
+          !featuredTrick ? (
+            <View className="flex-1 items-center justify-center py-24 px-8">
+              <Ionicons name="flash-outline" size={56} color={COLORS.textDim} style={{ opacity: 0.35 }} />
+              <Text className="text-textDim text-base font-bold mt-5 text-center tracking-wide">
+                {emptyMessage}
               </Text>
-            )}
-          </View>
+              {emptySubtitle && (
+                <Text className="text-textDim/60 text-sm mt-2 text-center leading-5">
+                  {emptySubtitle}
+                </Text>
+              )}
+            </View>
+          ) : null
         }
       />
 

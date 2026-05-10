@@ -25,14 +25,20 @@ export default function AllTricksScreen() {
     }
   };
 
+  const handleComplete = (trick: Trick) => {
+    if (!user) return;
+    updateTrickStatus(user.uid, trick.id, 'COMPLETED');
+  };
+
   return (
     <View className="flex-1 bg-background">
       <TrickDirectory
         tricks={tricks}
         onAddProcess={handleAddProcess}
+        onComplete={handleComplete}
         loading={loading}
         title="TRICK LIBRARY"
-        subtitle="Select a trick to start learning"
+        subtitle="Pick up where you left off"
       />
 
       {/* Floating Action Button */}
