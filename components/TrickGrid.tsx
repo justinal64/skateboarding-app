@@ -8,6 +8,7 @@ import FeaturedTrickCard from '@/components/FeaturedTrickCard';
 import LogSessionModal from '@/components/LogSessionModal';
 import TrickDetailModal from '@/components/TrickDetailModal';
 import TrickListItem from '@/components/TrickListItem';
+import UnlockedTricksRow from '@/components/UnlockedTricksRow';
 import { COLORS } from '@/constants/AppTheme';
 import { Trick } from '@/types';
 
@@ -81,13 +82,16 @@ export default function TrickGrid({
 
   const keyExtractor = useCallback((item: Trick) => item.id, []);
 
-  const ListHeader = featuredTrick ? (
+  const ListHeader = (
     <View>
-      <FeaturedTrickCard
-        trick={featuredTrick}
-        onLogSession={handleOpenLogSession}
-        onLandedIt={handleLandedIt}
-      />
+      {featuredTrick && (
+        <FeaturedTrickCard
+          trick={featuredTrick}
+          onLogSession={handleOpenLogSession}
+          onLandedIt={handleLandedIt}
+        />
+      )}
+      <UnlockedTricksRow tricks={tricks} onPress={handlePress} />
       {listTricks.length > 0 && (
         <View className="flex-row items-center gap-3 px-4 mb-3">
           <Text className="text-secondary font-black text-xs tracking-widest uppercase">
@@ -97,7 +101,7 @@ export default function TrickGrid({
         </View>
       )}
     </View>
-  ) : null;
+  );
 
   if (loading) {
     return (
@@ -118,7 +122,7 @@ export default function TrickGrid({
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={ListHeader}
         ListEmptyComponent={
-          !featuredTrick ? (
+          !featuredTrick && !tricks.some((t) => t.status === 'NOT_STARTED' && t.prerequisites.length > 0 && t.prerequisites.every((n) => tricks.find((p) => p.name === n)?.status === 'COMPLETED')) ? (
             <View className="flex-1 items-center justify-center py-24 px-8">
               <Ionicons name="flash-outline" size={56} color={COLORS.textDim} style={{ opacity: 0.35 }} />
               <Text className="text-textDim text-base font-bold mt-5 text-center tracking-wide">
