@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Public trick library — anyone can read, authenticated users can write
+    match /tricks/{trickId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Per-user trick progress — owner only
+    match /user_tricks/{docId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.userId;
+    }
+
+    // User profiles (avatar colour, streak) — owner only
+    match /user_profiles/{userId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+    }
+
+    // Practice sessions — owner only
+    match /sessions/{sessionId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.userId;
+    }
+  }
+}
