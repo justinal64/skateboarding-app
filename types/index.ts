@@ -32,3 +32,13 @@ export interface Trick extends TrickMeta {
   id: string; // Must have ID
   status: TrickStatus; // From user progress
 }
+
+export interface Session {
+  id?: string;
+  userId: string;
+  trickId: string;
+  trickName: string;
+  attempts: number;
+  note: string;
+  date: Timestamp;
+}

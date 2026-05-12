@@ -6,6 +6,7 @@ import AddTrickModal from '@/components/AddTrickModal';
 import TrickDirectory from '@/components/TrickDirectory';
 import { COLORS } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
+import { useSessionStore } from '@/store/sessionStore';
 import { useTrickStore } from '@/store/trickStore';
 import { Trick } from '@/types';
 
@@ -15,6 +16,7 @@ export default function AllTricksScreen() {
   const loading = useTrickStore((state) => state.loading);
   const updateTrickStatus = useTrickStore((state) => state.updateTrickStatus);
   const addTrick = useTrickStore((state) => state.addTrick);
+  const logSession = useSessionStore((state) => state.logSession);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -30,12 +32,18 @@ export default function AllTricksScreen() {
     updateTrickStatus(user.uid, trick.id, 'COMPLETED');
   };
 
+  const handleLogSession = async (trick: Trick, attempts: number, note: string) => {
+    if (!user) return;
+    await logSession(user.uid, trick.id, trick.name, attempts, note);
+  };
+
   return (
     <View className="flex-1 bg-background">
       <TrickDirectory
         tricks={tricks}
         onAddProcess={handleAddProcess}
         onComplete={handleComplete}
+        onLogSession={handleLogSession}
         loading={loading}
         title="TRICK LIBRARY"
         subtitle="Pick up where you left off"

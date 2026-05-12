@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 
 import FeaturedTrickCard from '@/components/FeaturedTrickCard';
+import LogSessionModal from '@/components/LogSessionModal';
 import TrickDetailModal from '@/components/TrickDetailModal';
 import TrickListItem from '@/components/TrickListItem';
 import { COLORS } from '@/constants/AppTheme';
@@ -15,6 +16,7 @@ type TrickGridProps = {
   onAddProcess: (trick: Trick) => void;
   onRemoveFromProgress?: (trick: Trick) => void | Promise<void>;
   onComplete?: (trick: Trick) => void;
+  onLogSession?: (trick: Trick, attempts: number, note: string) => Promise<void>;
   loading?: boolean;
   allowCompletion?: boolean;
   emptyMessage?: string;
@@ -26,6 +28,7 @@ export default function TrickGrid({
   onAddProcess,
   onRemoveFromProgress,
   onComplete,
+  onLogSession,
   loading,
   allowCompletion = false,
   emptyMessage = 'No tricks found',
@@ -33,6 +36,8 @@ export default function TrickGrid({
 }: TrickGridProps) {
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [logSessionTrick, setLogSessionTrick] = useState<Trick | null>(null);
+  const [logSessionVisible, setLogSessionVisible] = useState(false);
 
   useEffect(() => {
     if (selectedTrick) {
@@ -46,6 +51,11 @@ export default function TrickGrid({
   const handlePress = useCallback((trick: Trick) => {
     setSelectedTrick(trick);
     setModalVisible(true);
+  }, []);
+
+  const handleOpenLogSession = useCallback((trick: Trick) => {
+    setLogSessionTrick(trick);
+    setLogSessionVisible(true);
   }, []);
 
   const handleLandedIt = useCallback(
@@ -75,7 +85,7 @@ export default function TrickGrid({
     <View>
       <FeaturedTrickCard
         trick={featuredTrick}
-        onLogSession={handlePress}
+        onLogSession={handleOpenLogSession}
         onLandedIt={handleLandedIt}
       />
       {listTricks.length > 0 && (
@@ -159,6 +169,18 @@ export default function TrickGrid({
           if (target) {
             setSelectedTrick(target);
           }
+        }}
+      />
+
+      <LogSessionModal
+        visible={logSessionVisible}
+        trick={logSessionTrick}
+        onClose={() => setLogSessionVisible(false)}
+        onSave={async (attempts, note) => {
+          if (onLogSession && logSessionTrick) {
+            await onLogSession(logSessionTrick, attempts, note);
+          }
+          setLogSessionVisible(false);
         }}
       />
     </View>

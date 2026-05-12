@@ -28,6 +28,7 @@ type TrickDirectoryProps = {
   onAddProcess: (trick: Trick) => void;
   onRemoveFromProgress?: (trick: Trick) => void | Promise<void>;
   onComplete?: (trick: Trick) => void;
+  onLogSession?: (trick: Trick, attempts: number, note: string) => Promise<void>;
   loading?: boolean;
   title?: string;
   subtitle?: string;
@@ -41,6 +42,7 @@ export default function TrickDirectory({
   onAddProcess,
   onRemoveFromProgress,
   onComplete,
+  onLogSession,
   loading,
   title = 'TRICK LIBRARY',
   subtitle,
@@ -223,6 +225,7 @@ export default function TrickDirectory({
         onAddProcess={onAddProcess}
         onRemoveFromProgress={onRemoveFromProgress}
         onComplete={onComplete}
+        onLogSession={onLogSession}
         loading={loading}
         allowCompletion={allowCompletion}
         emptyMessage={emptyMessage}

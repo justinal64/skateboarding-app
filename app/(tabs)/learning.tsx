@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import TrickDirectory from '@/components/TrickDirectory';
 import { useAuth } from '@/context/AuthContext';
+import { useSessionStore } from '@/store/sessionStore';
 import { useTrickStore } from '@/store/trickStore';
 import { Trick } from '@/types';
 
@@ -11,6 +12,7 @@ export default function LearningScreen() {
   const tricks = useTrickStore((state) => state.tricks);
   const loading = useTrickStore((state) => state.loading);
   const updateTrickStatus = useTrickStore((state) => state.updateTrickStatus);
+  const logSession = useSessionStore((state) => state.logSession);
 
   const inProgressTricks = tricks.filter((t) => t.status === 'IN_PROGRESS');
 
@@ -21,6 +23,11 @@ export default function LearningScreen() {
     } else if (trick.status === 'NOT_STARTED') {
       updateTrickStatus(user.uid, trick.id, 'IN_PROGRESS');
     }
+  };
+
+  const handleLogSession = async (trick: Trick, attempts: number, note: string) => {
+    if (!user) return;
+    await logSession(user.uid, trick.id, trick.name, attempts, note);
   };
 
   const handleRemoveFromProgress = (trick: Trick) => {
@@ -36,6 +43,7 @@ export default function LearningScreen() {
         tricks={inProgressTricks}
         onAddProcess={handleAddProcess}
         onRemoveFromProgress={handleRemoveFromProgress}
+        onLogSession={handleLogSession}
         loading={loading}
         title="Learning"
         subtitle="Keep pushing your limits!"
