@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import { updateProfile, verifyBeforeUpdateEmail } from 'firebase/auth';
 import { collection, doc, getDoc, getDocs, setDoc, writeBatch } from 'firebase/firestore';
 
 import ScoreBadge from '@/components/ScoreBadge';
+import StatsSection from '@/components/StatsSection';
 import { COLORS, neonGlow } from '@/constants/AppTheme';
 import { FULL_TRICK_LIBRARY } from '@/constants/FullTrickLibrary';
 import { useAuth } from '@/context/AuthContext';
@@ -22,12 +23,17 @@ export default function ProfileScreen() {
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [editEmail, setEditEmail] = useState('');
   const [avatarColor, setAvatarColor] = useState('#00FFFF');
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     if (!user) return;
     getDoc(doc(db, 'user_profiles', user.uid))
       .then((snap) => {
-        if (snap.exists()) setAvatarColor(snap.data().avatarColor ?? '#00FFFF');
+        if (snap.exists()) {
+          const data = snap.data();
+          setAvatarColor(data.avatarColor ?? '#00FFFF');
+          setStreak(data.streakCount ?? 0);
+        }
       })
       .catch(() => {});
   }, [user]);
@@ -74,7 +80,7 @@ export default function ProfileScreen() {
     try {
       await setDoc(doc(db, 'user_profiles', user.uid), { avatarColor: color }, { merge: true });
     } catch {
-      // non-critical, ignore
+      // non-critical
     }
   };
 
@@ -83,26 +89,14 @@ export default function ProfileScreen() {
     try {
       const batch = writeBatch(db);
       const tricksRef = collection(db, 'tricks');
-
-      // Delete all existing tricks to avoid duplicates
       const existingSnapshot = await getDocs(tricksRef);
-      existingSnapshot.forEach((document) => {
-        batch.delete(document.ref);
-      });
-
-      // Add new tricks
+      existingSnapshot.forEach((document) => batch.delete(document.ref));
       FULL_TRICK_LIBRARY.forEach((trick) => {
-        const docRef = doc(tricksRef);
-        batch.set(docRef, {
-          ...trick,
-          created_at: new Date(),
-        });
+        batch.set(doc(tricksRef), { ...trick, created_at: new Date() });
       });
-
       await batch.commit();
       Alert.alert('Success', 'Database restored with enriched trick data.');
     } catch (error: unknown) {
-      console.error('Seed database error:', error);
       Alert.alert('Error', getErrorMessage(error));
     } finally {
       setSeeding(false);
@@ -110,9 +104,13 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background p-6">
-      <View className="items-center mt-10 mb-10">
-        {/* Avatar */}
+    <ScrollView
+      className="flex-1 bg-background"
+      contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── Avatar ── */}
+      <View className="items-center mt-10 mb-8">
         <View
           className="w-[120px] h-[120px] rounded-full items-center justify-center border-2 mb-3"
           style={[{ backgroundColor: `${avatarColor}22`, borderColor: avatarColor }, neonGlow(`${avatarColor}80`, 20)]}
@@ -120,7 +118,7 @@ export default function ProfileScreen() {
           <Ionicons name="person" size={64} color={avatarColor} />
         </View>
 
-        {/* Color Swatches */}
+        {/* Color swatches */}
         <View className="flex-row gap-3 mb-5">
           {AVATAR_COLORS.map((color) => (
             <TouchableOpacity
@@ -135,7 +133,7 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        {/* Display Name */}
+        {/* Display name */}
         {isEditing ? (
           <View className="items-center mb-2">
             <TextInput
@@ -191,7 +189,11 @@ export default function ProfileScreen() {
         ) : (
           <View className="flex-row items-center gap-2 mb-3">
             <Text className="text-base text-textDim text-center">{user?.email}</Text>
-            <TouchableOpacity onPress={() => { setEditEmail(user?.email ?? ''); setIsEditingEmail(true); }} accessibilityLabel="Edit email address" accessibilityRole="button">
+            <TouchableOpacity
+              onPress={() => { setEditEmail(user?.email ?? ''); setIsEditingEmail(true); }}
+              accessibilityLabel="Edit email address"
+              accessibilityRole="button"
+            >
               <Ionicons name="pencil" size={14} color={COLORS.textDim} />
             </TouchableOpacity>
           </View>
@@ -200,49 +202,29 @@ export default function ProfileScreen() {
         <ScoreBadge />
       </View>
 
-      <View className="flex-1 justify-between pb-10">
-        <View className="bg-card rounded-2xl p-6 items-center border border-secondary/30">
-          <Ionicons
-            name="trophy"
-            size={32}
-            color={COLORS.secondary}
-            style={{ marginBottom: 16 }}
-          />
-          <Text className="text-lg font-bold text-secondary mb-2">
-            Keep Skating!
-          </Text>
-          <Text className="text-sm text-textDim text-center">
-            Track your progress in the other tabs.
-          </Text>
-        </View>
+      {/* ── Stats ── */}
+      <StatsSection streak={streak} />
 
-        <View className="gap-4">
-          <Pressable
-            className="bg-green-500/10 border border-secondary p-4 rounded-3xl items-center justify-center"
-            onPress={seedDatabase}
-            disabled={seeding}
-          >
-            <Text className="text-secondary text-base font-bold tracking-widest">
-              {seeding ? 'RESTORING...' : 'RESTORE DEFAULT TRICKS'}
-            </Text>
-          </Pressable>
+      {/* ── Actions ── */}
+      <View className="gap-4 mt-8">
+        <Pressable
+          className="bg-green-500/10 border border-secondary p-4 rounded-3xl items-center justify-center"
+          onPress={seedDatabase}
+          disabled={seeding}
+        >
+          <Text className="text-secondary text-base font-bold tracking-widest">
+            {seeding ? 'RESTORING...' : 'RESTORE DEFAULT TRICKS'}
+          </Text>
+        </Pressable>
 
-          <Pressable
-            className="flex-row bg-red-500/20 border border-red-500/80 p-4 rounded-3xl items-center justify-center"
-            onPress={signOut}
-          >
-            <Text className="text-white text-lg font-bold tracking-widest">
-              SIGN OUT
-            </Text>
-            <Ionicons
-              name="log-out-outline"
-              size={24}
-              color="#FFF"
-              style={{ marginLeft: 8 }}
-            />
-          </Pressable>
-        </View>
+        <Pressable
+          className="flex-row bg-red-500/20 border border-red-500/80 p-4 rounded-3xl items-center justify-center"
+          onPress={signOut}
+        >
+          <Text className="text-white text-lg font-bold tracking-widest">SIGN OUT</Text>
+          <Ionicons name="log-out-outline" size={24} color="#FFF" style={{ marginLeft: 8 }} />
+        </Pressable>
       </View>
-    </View>
+    </ScrollView>
   );
 }
