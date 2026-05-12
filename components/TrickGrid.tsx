@@ -55,7 +55,11 @@ export default function TrickGrid({
     [onComplete],
   );
 
-  const featuredTrick = tricks.find((t) => t.status === 'IN_PROGRESS') ?? null;
+  const DIFFICULTY_ORDER: Record<string, number> = { Easy: 1, Intermediate: 2, Advanced: 3 };
+  const featuredTrick =
+    tricks
+      .filter((t) => t.status === 'IN_PROGRESS')
+      .sort((a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0))[0] ?? null;
   const listTricks = featuredTrick ? tricks.filter((t) => t.id !== featuredTrick.id) : tricks;
 
   const renderItem = useCallback(
