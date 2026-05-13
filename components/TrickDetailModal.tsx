@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Linking, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import TrickCardContent from '@/components/TrickCardContent';
 import { COLORS, neonGlow, textGlow } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
@@ -35,10 +37,12 @@ export default function TrickDetailModal({
   const { user } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loadingSessions, setLoadingSessions] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     if (!visible || !trick || !user) {
       setSessions([]);
+      setShowConfetti(false);
       return;
     }
     setLoadingSessions(true);
@@ -83,6 +87,7 @@ export default function TrickDetailModal({
           className="bg-[#0D0D25] rounded-t-[30px] w-full h-[85%] overflow-hidden border border-secondary/20"
           style={neonGlow('rgba(0, 255, 255, 0.25)', 16)}
         >
+          <ConfettiOverlay visible={showConfetti} />
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
             {/* Header Image */}
             <View className="relative w-full h-[300px] bg-[#0D0D25] items-center justify-center">
@@ -298,7 +303,12 @@ export default function TrickDetailModal({
                   <TouchableOpacity
                     className="w-full shadow-lg"
                     style={neonGlow('rgba(0, 255, 102, 0.5)', 10)}
-                    onPress={() => onAddToInProgress(trick)}
+                    onPress={() => {
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      setShowConfetti(true);
+                      setTimeout(() => setShowConfetti(false), 2800);
+                      onAddToInProgress(trick);
+                    }}
                     accessibilityLabel="Mark as Completed"
                     accessibilityRole="button"
                   >
