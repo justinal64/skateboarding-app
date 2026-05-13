@@ -10,7 +10,7 @@ export const helloWorld = onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 
-export const getTricks = onCall(async (request) => {
+export const getTricks = onCall({ cors: true }, async (request) => {
   const db = getFirestore();
   const tricksRef = db.collection("tricks");
 
@@ -53,7 +53,7 @@ export const getTricks = onCall(async (request) => {
   }
 });
 
-export const addTrick = onCall(async (request) => {
+export const addTrick = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
   }
