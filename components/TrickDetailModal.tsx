@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Linking, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 
 import TrickCardContent from '@/components/TrickCardContent';
 import { COLORS, neonGlow, textGlow } from '@/constants/AppTheme';
+import { useAuth } from '@/context/AuthContext';
+import { db } from '@/lib/firebase';
 import { useTrickStore } from '@/store/trickStore';
-import { Trick } from '@/types';
+import { Session, Trick } from '@/types';
 
 type TrickDetailModalProps = {
   visible: boolean;
@@ -29,6 +32,29 @@ export default function TrickDetailModal({
   allowCompletion = false,
 }: TrickDetailModalProps) {
   const allTricks = useTrickStore((state) => state.tricks);
+  const { user } = useAuth();
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
+
+  useEffect(() => {
+    if (!visible || !trick || !user) {
+      setSessions([]);
+      return;
+    }
+    setLoadingSessions(true);
+    getDocs(
+      query(
+        collection(db, 'sessions'),
+        where('trickId', '==', trick.id),
+        where('userId', '==', user.uid),
+        orderBy('date', 'desc'),
+      ),
+    )
+      .then((snap) =>
+        setSessions(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Session))),
+      )
+      .finally(() => setLoadingSessions(false));
+  }, [visible, trick?.id, user?.uid]);
 
   if (!trick) return null;
 
@@ -168,6 +194,60 @@ export default function TrickDetailModal({
               <Text className="text-base text-text leading-6 mb-6">
                 {trick.description}
               </Text>
+
+              {/* Session History */}
+              {trick.status !== 'NOT_STARTED' && (
+                <View className="mb-6">
+                  <View className="flex-row items-center gap-2 mb-3">
+                    <Ionicons name="time-outline" size={14} color={COLORS.textDim} />
+                    <Text className="text-textDim text-xs font-black uppercase tracking-widest">
+                      Session History
+                    </Text>
+                    {sessions.length > 0 && (
+                      <Text className="text-textDim/50 text-xs font-bold ml-auto">
+                        {sessions.length} session{sessions.length !== 1 ? 's' : ''}
+                      </Text>
+                    )}
+                  </View>
+
+                  {loadingSessions ? (
+                    <Text className="text-textDim/50 text-sm text-center py-4">Loading…</Text>
+                  ) : sessions.length === 0 ? (
+                    <View className="bg-white/5 rounded-xl px-4 py-5 items-center border border-white/5">
+                      <Text className="text-textDim/60 text-sm text-center">
+                        No sessions logged yet
+                      </Text>
+                    </View>
+                  ) : (
+                    <View className="gap-2">
+                      {sessions.map((session) => {
+                        const dateStr = session.date
+                          .toDate()
+                          .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        return (
+                          <View
+                            key={session.id}
+                            className="bg-white/5 rounded-xl px-4 py-3 border border-white/5"
+                          >
+                            <View className="flex-row items-center justify-between mb-1">
+                              <Text className="text-textDim text-xs font-bold">{dateStr}</Text>
+                              <View className="flex-row items-center gap-1">
+                                <Ionicons name="refresh-outline" size={11} color={COLORS.secondary} />
+                                <Text className="text-secondary text-xs font-black">
+                                  {session.attempts} attempt{session.attempts !== 1 ? 's' : ''}
+                                </Text>
+                              </View>
+                            </View>
+                            {session.note ? (
+                              <Text className="text-text/70 text-sm leading-5">{session.note}</Text>
+                            ) : null}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
+              )}
 
               {/* Video Link */}
               {trick.video_url && (
