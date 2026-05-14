@@ -1,11 +1,13 @@
-import { auth } from '@/lib/firebase';
-import { User } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { EmailAuthProvider, reauthenticateWithCredential, User } from 'firebase/auth';
+import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from 'firebase/firestore';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  deleteAccount: (password: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,8 +29,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await auth.signOut();
   };
 
+  const deleteAccount = async (password: string) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser?.email) throw new Error('No authenticated user');
+
+    const credential = EmailAuthProvider.credential(currentUser.email, password);
+    await reauthenticateWithCredential(currentUser, credential);
+
+    const uid = currentUser.uid;
+    const CHUNK = 400;
+
+    const [userTricksSnap, sessionsSnap] = await Promise.all([
+      getDocs(query(collection(db, 'user_tricks'), where('userId', '==', uid))),
+      getDocs(query(collection(db, 'sessions'), where('userId', '==', uid))),
+    ]);
+
+    const allDocs = [...userTricksSnap.docs, ...sessionsSnap.docs];
+    for (let i = 0; i < allDocs.length; i += CHUNK) {
+      const batch = writeBatch(db);
+      allDocs.slice(i, i + CHUNK).forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+    }
+
+    await deleteDoc(doc(db, 'user_profiles', uid));
+    await currentUser.delete();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signOut, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

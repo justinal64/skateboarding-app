@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -16,7 +16,7 @@ import { getErrorMessage } from '@/utils/errors';
 const AVATAR_COLORS = ['#00FFFF', '#FF00FF', '#00FF66', '#FFD700', '#FF0055', '#7B61FF'];
 
 export default function ProfileScreen() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, deleteAccount } = useAuth();
   const [seeding, setSeeding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
@@ -24,6 +24,10 @@ export default function ProfileScreen() {
   const [editEmail, setEditEmail] = useState('');
   const [avatarColor, setAvatarColor] = useState('#00FFFF');
   const [streak, setStreak] = useState(0);
+  const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm' | 'reauth'>('idle');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const deletePasswordRef = useRef<TextInput>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -81,6 +85,53 @@ export default function ProfileScreen() {
       await setDoc(doc(db, 'user_profiles', user.uid), { avatarColor: color }, { merge: true });
     } catch {
       // non-critical
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This will permanently delete your account and all your data. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () =>
+            Alert.alert(
+              'Are you sure?',
+              'All your progress, sessions, and notes will be lost forever.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Yes, delete everything',
+                  style: 'destructive',
+                  onPress: () => {
+                    setDeletePassword('');
+                    setDeleteStep('reauth');
+                    setTimeout(() => deletePasswordRef.current?.focus(), 300);
+                  },
+                },
+              ],
+            ),
+        },
+      ],
+    );
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletePassword.trim()) return;
+    setDeleteLoading(true);
+    try {
+      await deleteAccount(deletePassword);
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code;
+      setDeleteLoading(false);
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        Alert.alert('Incorrect password', 'Please check your password and try again.');
+      } else {
+        Alert.alert('Error', 'Failed to delete account. Please try again.');
+      }
     }
   };
 
@@ -224,6 +275,64 @@ export default function ProfileScreen() {
           <Text className="text-white text-lg font-bold tracking-widest">SIGN OUT</Text>
           <Ionicons name="log-out-outline" size={24} color="#FFF" style={{ marginLeft: 8 }} />
         </Pressable>
+
+        {/* Delete Account */}
+        {deleteStep === 'idle' ? (
+          <TouchableOpacity
+            className="items-center py-3"
+            onPress={handleDeleteAccount}
+            accessibilityLabel="Delete account"
+            accessibilityRole="button"
+          >
+            <Text className="text-red-500/60 text-sm font-bold uppercase tracking-wider">
+              Delete Account
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 gap-3">
+            <Text className="text-red-400 text-sm font-bold text-center uppercase tracking-wider">
+              Confirm your password to delete
+            </Text>
+            <TextInput
+              ref={deletePasswordRef}
+              value={deletePassword}
+              onChangeText={setDeletePassword}
+              placeholder="Password"
+              placeholderTextColor={COLORS.textDim + '80'}
+              secureTextEntry
+              autoCapitalize="none"
+              returnKeyType="done"
+              onSubmitEditing={handleConfirmDelete}
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.05)',
+                borderWidth: 1,
+                borderColor: 'rgba(255,80,80,0.3)',
+                borderRadius: 10,
+                padding: 12,
+                color: COLORS.text,
+                fontSize: 16,
+              }}
+            />
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="flex-1 items-center py-3 rounded-xl bg-white/5"
+                onPress={() => { setDeleteStep('idle'); setDeletePassword(''); }}
+              >
+                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="flex-1 items-center py-3 rounded-xl bg-red-500/20 border border-red-500/50"
+                onPress={handleConfirmDelete}
+                disabled={deleteLoading || !deletePassword.trim()}
+                style={{ opacity: deleteLoading || !deletePassword.trim() ? 0.5 : 1 }}
+              >
+                <Text className="text-red-400 text-sm font-bold uppercase tracking-wider">
+                  {deleteLoading ? 'Deleting…' : 'Delete Forever'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </View>
     </ScrollView>
   );
