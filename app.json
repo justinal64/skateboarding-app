@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "skateboard",
-    "slug": "skateboard",
+    "name": "BOLTS",
+    "slug": "bolts",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "skateboard",
+    "scheme": "bolts",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
