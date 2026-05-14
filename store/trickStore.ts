@@ -37,6 +37,7 @@ type TrickStore = {
 
   fetchTricks: (userId?: string) => Promise<void>;
   updateTrickStatus: (userId: string, trickId: string, status: TrickStatus) => Promise<void>;
+  saveNote: (userId: string, trickId: string, note: string) => Promise<void>;
   addTrick: (userId: string, trick: Omit<TrickMeta, 'id'>) => Promise<void>;
   setLoading: (loading: boolean) => void;
 };
@@ -59,14 +60,14 @@ export const useTrickStore = create<TrickStore>()(
           const tricksData: TrickMeta[] = result.data.tricks;
 
           // Build user progress lookup
-          const userTricksMap = new Map<string, { status: TrickStatus }>();
+          const userTricksMap = new Map<string, { status: TrickStatus; note?: string }>();
           if (userId) {
             const userTricksCollection = collection(db, 'user_tricks');
             const userTricksQuery = query(userTricksCollection, where('userId', '==', userId));
             const userTricksSnapshot = await getDocs(userTricksQuery);
             userTricksSnapshot.docs.forEach((document) => {
               const data = document.data();
-              userTricksMap.set(data.trickId, data as { status: TrickStatus });
+              userTricksMap.set(data.trickId, data as { status: TrickStatus; note?: string });
             });
           }
 
@@ -80,6 +81,7 @@ export const useTrickStore = create<TrickStore>()(
               difficulty: trickMeta.difficulty || 'Easy',
               points: trickMeta.points ?? 10,
               status: userProgress?.status ?? 'NOT_STARTED',
+              note: userProgress?.note ?? '',
               imageUrl: trickMeta.imageUrl || '',
               video_url: trickMeta.video_url || '',
               prerequisites: trickMeta.prerequisites || [],
@@ -129,6 +131,19 @@ export const useTrickStore = create<TrickStore>()(
         } catch (error) {
           console.error('Error updating trick:', error);
           // Revert by re-fetching
+          get().fetchTricks(userId);
+        }
+      },
+
+      saveNote: async (userId: string, trickId: string, note: string) => {
+        set((state) => ({
+          tricks: state.tricks.map((t) => (t.id === trickId ? { ...t, note } : t)),
+        }));
+        try {
+          const userTrickDoc = doc(db, 'user_tricks', `${userId}_${trickId}`);
+          await setDoc(userTrickDoc, { note }, { merge: true });
+        } catch (error) {
+          console.error('Error saving note:', error);
           get().fetchTricks(userId);
         }
       },

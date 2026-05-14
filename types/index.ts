@@ -25,12 +25,14 @@ export interface UserTrickProgress {
   startedAt: Timestamp | null;
   masteredAt: Timestamp | null;
   attempts: number;
+  note?: string;
 }
 
 // Combined type for UI
 export interface Trick extends TrickMeta {
   id: string; // Must have ID
   status: TrickStatus; // From user progress
+  note?: string; // Per-user personal note
 }
 
 export interface Session {

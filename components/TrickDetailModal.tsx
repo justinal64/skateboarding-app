@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Linking, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Linking, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -13,6 +13,8 @@ import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { useTrickStore } from '@/store/trickStore';
 import { Session, Trick } from '@/types';
+
+const NOTE_MAX = 500;
 
 type TrickDetailModalProps = {
   visible: boolean;
@@ -34,17 +36,24 @@ export default function TrickDetailModal({
   allowCompletion = false,
 }: TrickDetailModalProps) {
   const allTricks = useTrickStore((state) => state.tricks);
+  const saveNote = useTrickStore((state) => state.saveNote);
   const { user } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loadingSessions, setLoadingSessions] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [noteText, setNoteText] = useState('');
+  const [noteSaved, setNoteSaved] = useState(false);
+  const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!visible || !trick || !user) {
       setSessions([]);
       setShowConfetti(false);
+      setNoteText('');
+      setNoteSaved(false);
       return;
     }
+    setNoteText(trick.note ?? '');
     setLoadingSessions(true);
     getDocs(
       query(
@@ -199,6 +208,58 @@ export default function TrickDetailModal({
               <Text className="text-base text-text leading-6 mb-6">
                 {trick.description}
               </Text>
+
+              {/* Personal Notes */}
+              {trick.status !== 'NOT_STARTED' && (
+                <View className="mb-6">
+                  <View className="flex-row items-center gap-2 mb-3">
+                    <Ionicons name="pencil-outline" size={14} color={COLORS.textDim} />
+                    <Text className="text-textDim text-xs font-black uppercase tracking-widest">
+                      My Notes
+                    </Text>
+                    {noteSaved && (
+                      <View className="flex-row items-center gap-1 ml-auto">
+                        <Ionicons name="checkmark" size={11} color={COLORS.success} />
+                        <Text className="text-success text-[10px] font-bold">Saved</Text>
+                      </View>
+                    )}
+                  </View>
+                  <TextInput
+                    value={noteText}
+                    onChangeText={(text) => {
+                      if (text.length <= NOTE_MAX) setNoteText(text);
+                    }}
+                    onBlur={() => {
+                      if (!user || !trick) return;
+                      if (noteSaveTimer.current) clearTimeout(noteSaveTimer.current);
+                      saveNote(user.uid, trick.id, noteText.trim());
+                      setNoteSaved(true);
+                      noteSaveTimer.current = setTimeout(() => setNoteSaved(false), 2000);
+                    }}
+                    placeholder="Add a personal note… (e.g. 'lean back more')"
+                    placeholderTextColor={COLORS.textDim + '60'}
+                    multiline
+                    numberOfLines={4}
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.04)',
+                      borderWidth: 1,
+                      borderColor: 'rgba(255,255,255,0.08)',
+                      borderRadius: 12,
+                      padding: 14,
+                      color: COLORS.text,
+                      fontSize: 14,
+                      lineHeight: 20,
+                      textAlignVertical: 'top',
+                      minHeight: 90,
+                    }}
+                  />
+                  {noteText.length > NOTE_MAX * 0.85 && (
+                    <Text className="text-textDim/50 text-[10px] text-right mt-1">
+                      {noteText.length}/{NOTE_MAX}
+                    </Text>
+                  )}
+                </View>
+              )}
 
               {/* Session History */}
               {trick.status !== 'NOT_STARTED' && (
