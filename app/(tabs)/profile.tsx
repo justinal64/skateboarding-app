@@ -89,50 +89,38 @@ export default function ProfileScreen() {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      'Delete Account',
-      'This will permanently delete your account and all your data. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () =>
-            Alert.alert(
-              'Are you sure?',
-              'All your progress, sessions, and notes will be lost forever.',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: 'Yes, delete everything',
-                  style: 'destructive',
-                  onPress: () => {
-                    setDeletePassword('');
-                    setDeleteStep('reauth');
-                    setTimeout(() => deletePasswordRef.current?.focus(), 300);
-                  },
-                },
-              ],
-            ),
-        },
-      ],
-    );
+    setDeletePassword('');
+    setDeleteStep('reauth');
+    setTimeout(() => deletePasswordRef.current?.focus(), 300);
   };
 
   const handleConfirmDelete = async () => {
     if (!deletePassword.trim()) return;
-    setDeleteLoading(true);
-    try {
-      await deleteAccount(deletePassword);
-    } catch (err: unknown) {
-      const code = (err as { code?: string }).code;
-      setDeleteLoading(false);
-      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
-        Alert.alert('Incorrect password', 'Please check your password and try again.');
-      } else {
-        Alert.alert('Error', 'Failed to delete account. Please try again.');
-      }
-    }
+    Alert.alert(
+      'Delete Account',
+      'This will permanently delete your account and all your progress. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Forever',
+          style: 'destructive',
+          onPress: async () => {
+            setDeleteLoading(true);
+            try {
+              await deleteAccount(deletePassword);
+            } catch (err: unknown) {
+              const code = (err as { code?: string }).code;
+              setDeleteLoading(false);
+              if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+                Alert.alert('Incorrect password', 'Please check your password and try again.');
+              } else {
+                Alert.alert('Error', 'Failed to delete account. Please try again.');
+              }
+            }
+          },
+        },
+      ],
+    );
   };
 
   const seedDatabase = async () => {
@@ -278,7 +266,7 @@ export default function ProfileScreen() {
 
         {/* Delete Account */}
         {deleteStep === 'idle' ? (
-          <TouchableOpacity
+          <Pressable
             className="items-center py-3"
             onPress={handleDeleteAccount}
             accessibilityLabel="Delete account"
@@ -287,7 +275,7 @@ export default function ProfileScreen() {
             <Text className="text-red-500/60 text-sm font-bold uppercase tracking-wider">
               Delete Account
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ) : (
           <View className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 gap-3">
             <Text className="text-red-400 text-sm font-bold text-center uppercase tracking-wider">
