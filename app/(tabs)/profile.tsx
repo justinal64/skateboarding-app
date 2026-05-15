@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Ionicons } from '@expo/vector-icons';
 import { updateProfile, verifyBeforeUpdateEmail } from 'firebase/auth';
@@ -16,6 +17,7 @@ import { getErrorMessage } from '@/utils/errors';
 const AVATAR_COLORS = ['#00FFFF', '#FF00FF', '#00FF66', '#FFD700', '#FF0055', '#7B61FF'];
 
 export default function ProfileScreen() {
+  const { top } = useSafeAreaInsets();
   const { user, signOut, deleteAccount } = useAuth();
   const [seeding, setSeeding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -145,11 +147,11 @@ export default function ProfileScreen() {
   return (
     <ScrollView
       className="flex-1 bg-background"
-      contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+      contentContainerStyle={{ padding: 24, paddingTop: top + 8, paddingBottom: 60 }}
       showsVerticalScrollIndicator={false}
     >
       {/* ── Avatar ── */}
-      <View className="items-center mt-10 mb-8">
+      <View className="items-center mb-8">
         <View
           className="w-[120px] h-[120px] rounded-full items-center justify-center border-2 mb-3"
           style={[{ backgroundColor: `${avatarColor}22`, borderColor: avatarColor }, neonGlow(`${avatarColor}80`, 20)]}

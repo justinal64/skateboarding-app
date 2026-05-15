@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -50,6 +51,7 @@ export default function TrickDirectory({
   emptyMessage,
   emptySubtitle,
 }: TrickDirectoryProps) {
+  const { top } = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<TrickCategory | 'All'>('All');
   const [sortOption, setSortOption] = useState('difficulty_asc');
@@ -88,7 +90,7 @@ export default function TrickDirectory({
   return (
     <View className="flex-1 bg-background">
       {/* Header Section */}
-      <View className="pt-[48px] pb-5 px-4 bg-background z-10 relative">
+      <View style={{ paddingTop: top + 8 }} className="pb-5 px-4 bg-background z-10 relative">
         <View className="flex-row justify-between items-center mb-6">
 
           {/* Left Column: Logo */}
