@@ -46,8 +46,11 @@ export default function LearningScreen() {
         onLogSession={handleLogSession}
         loading={loading}
         title="Learning"
-        subtitle="Keep pushing your limits!"
         allowCompletion={true}
+        showSearch={false}
+        showFilters={false}
+        showFeaturedCard={true}
+        listLabel="IN PROGRESS"
         emptyMessage="Nothing in progress yet"
         emptySubtitle="Go to the Trick Library and tap a trick to start learning"
       />

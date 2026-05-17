@@ -36,6 +36,10 @@ type TrickDirectoryProps = {
   allowCompletion?: boolean;
   emptyMessage?: string;
   emptySubtitle?: string;
+  showSearch?: boolean;
+  showFilters?: boolean;
+  showFeaturedCard?: boolean;
+  listLabel?: string;
 };
 
 export default function TrickDirectory({
@@ -50,6 +54,10 @@ export default function TrickDirectory({
   allowCompletion = false,
   emptyMessage,
   emptySubtitle,
+  showSearch = true,
+  showFilters = true,
+  showFeaturedCard = false,
+  listLabel,
 }: TrickDirectoryProps) {
   const { top } = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,14 +115,16 @@ export default function TrickDirectory({
           {/* Center Column: Title */}
           <View className="flex-2 items-center justify-center">
             <Text
-              className="text-white text-xl font-black tracking-widest mb-1"
+              className="text-white text-xl font-black tracking-widest"
               style={textGlow('#FFFFFF', 8)}
             >
               {title === 'TRICK LIBRARY' ? 'Trick Library' : title}
             </Text>
-            <Text className="text-textDim text-[10px] font-medium tracking-[0.5px]">
-              {subtitle || 'Select a trick to learn'}
-            </Text>
+            {subtitle ? (
+              <Text className="text-textDim text-[10px] font-medium tracking-[0.5px] mt-0.5">
+                {subtitle}
+              </Text>
+            ) : null}
           </View>
 
           {/* Right Column: Profile */}
@@ -122,67 +132,69 @@ export default function TrickDirectory({
             <ProfileDropdown />
           </View>
         </View>
-        {/* Search Bar */}
-        <View className="flex-row items-center bg-[#1E1E30] rounded-xl px-3 py-2.5 mb-4 border border-white/10">
-          <Ionicons name="search" size={20} color={COLORS.secondary} className="mr-2" />
-          <TextInput
-            className="flex-1 text-text text-base font-medium"
-            placeholder="Search tricks..."
-            placeholderTextColor={COLORS.textDim}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color={COLORS.textDim} />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Filters Row */}
-        <View className="flex-row items-center gap-3">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 8, paddingRight: 16 }}
-          >
-            {CATEGORIES.map((cat) => (
-              <TouchableOpacity
-                key={cat}
-                className={`px-3.5 py-2 rounded-full border ${
-                  selectedCategory === cat
-                    ? 'bg-primary/15 border-primary'
-                    : 'bg-white/5 border-white/10'
-                }`}
-                onPress={() => setSelectedCategory(cat)}
-                accessibilityLabel={`Filter by ${cat}`}
-                accessibilityState={{ selected: selectedCategory === cat }}
-                accessibilityRole="button"
-              >
-                <Text
-                  className={`text-[13px] ${
-                    selectedCategory === cat
-                      ? 'text-primary font-bold'
-                      : 'text-textDim font-semibold'
-                  }`}
-                  style={selectedCategory === cat ? textGlow(COLORS.primary, 5) : undefined}
-                >
-                  {cat}
-                </Text>
+        {showSearch && (
+          <View className="flex-row items-center bg-[#1E1E30] rounded-xl px-3 py-2.5 mb-4 border border-white/10">
+            <Ionicons name="search" size={20} color={COLORS.secondary} className="mr-2" />
+            <TextInput
+              className="flex-1 text-text text-base font-medium"
+              placeholder="Search tricks..."
+              placeholderTextColor={COLORS.textDim}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <Ionicons name="close-circle" size={20} color={COLORS.textDim} />
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+            )}
+          </View>
+        )}
 
-          {/* Sort Button */}
-          <TouchableOpacity
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 items-center justify-center"
-            onPress={() => setShowSortMenu(!showSortMenu)}
-            accessibilityLabel="Sort tricks"
-            accessibilityRole="button"
-          >
-            <Ionicons name="filter" size={18} color={COLORS.primary} />
-          </TouchableOpacity>
-        </View>
+        {showFilters && (
+          <View className="flex-row items-center gap-3">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8, paddingRight: 16 }}
+            >
+              {CATEGORIES.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  className={`px-3.5 py-2 rounded-full border ${
+                    selectedCategory === cat
+                      ? 'bg-primary/15 border-primary'
+                      : 'bg-white/5 border-white/10'
+                  }`}
+                  onPress={() => setSelectedCategory(cat)}
+                  accessibilityLabel={`Filter by ${cat}`}
+                  accessibilityState={{ selected: selectedCategory === cat }}
+                  accessibilityRole="button"
+                >
+                  <Text
+                    className={`text-[13px] ${
+                      selectedCategory === cat
+                        ? 'text-primary font-bold'
+                        : 'text-textDim font-semibold'
+                    }`}
+                    style={selectedCategory === cat ? textGlow(COLORS.primary, 5) : undefined}
+                  >
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Sort Button */}
+            <TouchableOpacity
+              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 items-center justify-center"
+              onPress={() => setShowSortMenu(!showSortMenu)}
+              accessibilityLabel="Sort tricks"
+              accessibilityRole="button"
+            >
+              <Ionicons name="filter" size={18} color={COLORS.primary} />
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Sort Menu */}
         {showSortMenu && (
@@ -232,6 +244,8 @@ export default function TrickDirectory({
         allowCompletion={allowCompletion}
         emptyMessage={emptyMessage}
         emptySubtitle={emptySubtitle}
+        showFeaturedCard={showFeaturedCard}
+        listLabel={listLabel}
       />
     </View>
   );

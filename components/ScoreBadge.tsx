@@ -11,8 +11,8 @@ export default function ScoreBadge() {
 
   return (
     <View
-      className="flex-row items-center border border-success/30 rounded-full py-1.5 px-3 bg-black/50"
-      style={neonGlow('rgba(0, 255, 102, 0.15)', 8)}
+      className="flex-row items-center border border-success/40 rounded-full py-1.5 px-3 bg-success/10"
+      style={neonGlow('rgba(0, 255, 102, 0.2)', 8)}
     >
       <Text
         className="text-success font-black tracking-wider text-sm mr-1"

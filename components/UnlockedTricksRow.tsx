@@ -16,8 +16,8 @@ const DIFFICULTY_COLOR: Record<string, string> = {
 
 const DIFFICULTY_ORDER: Record<string, number> = { Easy: 1, Intermediate: 2, Advanced: 3 };
 
-const CARD_W = 112;
-const CARD_H = 150;
+const CARD_W = 88;
+const CARD_H = 112;
 
 type Props = {
   tricks: Trick[];
@@ -95,8 +95,8 @@ export default function UnlockedTricksRow({ tricks, onPress }: Props) {
               </View>
 
               {/* Sprite */}
-              <View className="items-center justify-center mb-2" style={{ height: 68 }}>
-                <SpriteIcon index={spriteIndex} size={62} />
+              <View className="items-center justify-center mb-2" style={{ height: 52 }}>
+                <SpriteIcon index={spriteIndex} size={46} />
               </View>
 
               {/* Name */}

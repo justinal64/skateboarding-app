@@ -46,7 +46,8 @@ export default function AllTricksScreen() {
         onLogSession={handleLogSession}
         loading={loading}
         title="TRICK LIBRARY"
-        subtitle="Pick up where you left off"
+        showFeaturedCard={false}
+        listLabel="ALL TRICKS"
       />
 
       {/* Floating Action Button */}

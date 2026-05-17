@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import TrickDirectory from '@/components/TrickDirectory';
 import { useAuth } from '@/context/AuthContext';
+import { useUserScore } from '@/hooks/useUserScore';
 import { useTrickStore } from '@/store/trickStore';
 import { Trick } from '@/types';
 
@@ -11,27 +12,32 @@ export default function CompletedScreen() {
   const tricks = useTrickStore((state) => state.tricks);
   const loading = useTrickStore((state) => state.loading);
   const updateTrickStatus = useTrickStore((state) => state.updateTrickStatus);
+  const score = useUserScore();
 
-  const completedTricks = tricks.filter(t => t.status === 'COMPLETED');
+  const completedTricks = tricks.filter((t) => t.status === 'COMPLETED');
+  const subtitle = tricks.length > 0
+    ? `${completedTricks.length} of ${tricks.length} mastered · ${score} XP`
+    : undefined;
 
   const handleAddProcess = (trick: Trick) => {
-      if (!user) return;
-      // Logic: If they want to "re-learn" it? Or maybe un-complete?
-      // For now, let's allow them to move it back to IN_PROGRESS if they want to practice more.
-      updateTrickStatus(user.uid, trick.id, 'IN_PROGRESS');
+    if (!user) return;
+    updateTrickStatus(user.uid, trick.id, 'IN_PROGRESS');
   };
 
   return (
     <View className="flex-1 bg-background">
-        <TrickDirectory
-            tricks={completedTricks}
-            onAddProcess={handleAddProcess}
-            loading={loading}
-            title="COMPLETED"
-            subtitle="Look at all you've achieved!"
-            emptyMessage="No tricks mastered yet"
-            emptySubtitle="Mark tricks as completed and they'll appear here"
-        />
+      <TrickDirectory
+        tricks={completedTricks}
+        onAddProcess={handleAddProcess}
+        loading={loading}
+        title="MASTERED"
+        subtitle={subtitle}
+        showSearch={false}
+        showFilters={false}
+        listLabel="COMPLETED"
+        emptyMessage="No tricks mastered yet"
+        emptySubtitle="Mark tricks as completed and they'll appear here"
+      />
     </View>
   );
 }

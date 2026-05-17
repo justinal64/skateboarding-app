@@ -160,6 +160,9 @@ export default function ProfileScreen() {
         </View>
 
         {/* Color swatches */}
+        <Text className="text-textDim text-[9px] font-black uppercase tracking-widest mb-2" style={{ opacity: 0.6 }}>
+          Avatar Accent
+        </Text>
         <View className="flex-row gap-3 mb-5">
           {AVATAR_COLORS.map((color) => (
             <TouchableOpacity
@@ -248,33 +251,25 @@ export default function ProfileScreen() {
 
       {/* ── Actions ── */}
       <View className="gap-4 mt-8">
+        {/* Sign Out — neutral outline, non-destructive */}
         <Pressable
-          className="bg-green-500/10 border border-secondary p-4 rounded-3xl items-center justify-center"
-          onPress={seedDatabase}
-          disabled={seeding}
-        >
-          <Text className="text-secondary text-base font-bold tracking-widest">
-            {seeding ? 'RESTORING...' : 'RESTORE DEFAULT TRICKS'}
-          </Text>
-        </Pressable>
-
-        <Pressable
-          className="flex-row bg-red-500/20 border border-red-500/80 p-4 rounded-3xl items-center justify-center"
+          className="flex-row border border-white/20 p-4 rounded-3xl items-center justify-center"
           onPress={signOut}
         >
-          <Text className="text-white text-lg font-bold tracking-widest">SIGN OUT</Text>
-          <Ionicons name="log-out-outline" size={24} color="#FFF" style={{ marginLeft: 8 }} />
+          <Text className="text-white text-base font-bold tracking-widest">SIGN OUT</Text>
+          <Ionicons name="log-out-outline" size={20} color="#FFF" style={{ marginLeft: 8, opacity: 0.7 }} />
         </Pressable>
 
-        {/* Delete Account */}
+        {/* Delete Account — red, destructive */}
         {deleteStep === 'idle' ? (
           <Pressable
-            className="items-center py-3"
+            className="flex-row bg-red-500/20 border border-red-500/60 p-4 rounded-3xl items-center justify-center"
             onPress={handleDeleteAccount}
             accessibilityLabel="Delete account"
             accessibilityRole="button"
           >
-            <Text className="text-red-500/60 text-sm font-bold uppercase tracking-wider">
+            <Ionicons name="trash-outline" size={18} color="#FF4444" style={{ marginRight: 8 }} />
+            <Text className="text-red-400 text-base font-bold tracking-widest uppercase">
               Delete Account
             </Text>
           </Pressable>
@@ -323,6 +318,26 @@ export default function ProfileScreen() {
             </View>
           </View>
         )}
+      </View>
+
+      {/* ── Developer ── */}
+      <View className="mt-8 mb-2">
+        <View className="flex-row items-center gap-3 mb-4">
+          <View className="flex-1 h-px bg-white/5" />
+          <Text className="text-textDim text-[9px] font-black uppercase tracking-widest" style={{ opacity: 0.4 }}>
+            Developer
+          </Text>
+          <View className="flex-1 h-px bg-white/5" />
+        </View>
+        <Pressable
+          className="items-center py-2"
+          onPress={seedDatabase}
+          disabled={seeding}
+        >
+          <Text className="text-textDim text-xs font-bold tracking-wider" style={{ opacity: 0.5 }}>
+            {seeding ? 'Restoring...' : 'Restore Default Tricks'}
+          </Text>
+        </Pressable>
       </View>
     </ScrollView>
   );

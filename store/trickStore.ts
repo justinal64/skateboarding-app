@@ -72,22 +72,26 @@ export const useTrickStore = create<TrickStore>()(
             });
           }
 
+          const TEST_NAMES = new Set(['test trick', 'kickflip test', 'this is a test']);
+
           // Merge trick metadata with user progress
-          const mergedTricks: Trick[] = tricksData.map((trickMeta) => {
-            const userProgress = userTricksMap.get(trickMeta.id ?? '');
-            return {
-              ...trickMeta,
-              id: trickMeta.id ?? '',
-              category: trickMeta.category || 'Basics',
-              difficulty: trickMeta.difficulty || 'Easy',
-              points: trickMeta.points ?? 10,
-              status: userProgress?.status ?? 'NOT_STARTED',
-              note: userProgress?.note ?? '',
-              imageUrl: trickMeta.imageUrl || '',
-              video_url: trickMeta.video_url || '',
-              prerequisites: trickMeta.prerequisites || [],
-            };
-          });
+          const mergedTricks: Trick[] = tricksData
+            .filter((trickMeta) => !TEST_NAMES.has(trickMeta.name?.toLowerCase() ?? ''))
+            .map((trickMeta) => {
+              const userProgress = userTricksMap.get(trickMeta.id ?? '');
+              return {
+                ...trickMeta,
+                id: trickMeta.id ?? '',
+                category: trickMeta.category || 'Basics',
+                difficulty: trickMeta.difficulty || 'Easy',
+                points: trickMeta.points ?? 10,
+                status: userProgress?.status ?? 'NOT_STARTED',
+                note: userProgress?.note ?? '',
+                imageUrl: trickMeta.imageUrl || '',
+                video_url: trickMeta.video_url || '',
+                prerequisites: trickMeta.prerequisites || [],
+              };
+            });
 
           set({ tricks: mergedTricks });
         } catch (error) {

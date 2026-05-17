@@ -9,8 +9,22 @@ import LogSessionModal from '@/components/LogSessionModal';
 import TrickDetailModal from '@/components/TrickDetailModal';
 import TrickListItem from '@/components/TrickListItem';
 import UnlockedTricksRow from '@/components/UnlockedTricksRow';
-import { COLORS } from '@/constants/AppTheme';
+import { COLORS, textGlow } from '@/constants/AppTheme';
 import { Trick } from '@/types';
+
+const DIFFICULTY_ORDER: Record<string, number> = { Easy: 1, Intermediate: 2, Advanced: 3 };
+const DIFFICULTY_COLOR: Record<string, string> = {
+  Easy: COLORS.success,
+  Intermediate: COLORS.secondary,
+  Advanced: '#FF2D78',
+};
+
+type DividerItem = { __isDivider: true; difficulty: string; count: number };
+type ListItem = Trick | DividerItem;
+
+function isDivider(item: ListItem): item is DividerItem {
+  return '__isDivider' in item;
+}
 
 type TrickGridProps = {
   tricks: Trick[];
@@ -22,7 +36,43 @@ type TrickGridProps = {
   allowCompletion?: boolean;
   emptyMessage?: string;
   emptySubtitle?: string;
+  showFeaturedCard?: boolean;
+  listLabel?: string;
 };
+
+function isLocked(trick: Trick, allTricks: Trick[]): boolean {
+  if (trick.status !== 'NOT_STARTED') return false;
+  if (trick.prerequisites.length === 0) return false;
+  return trick.prerequisites.some((prereqName) => {
+    const prereq = allTricks.find((t) => t.name === prereqName);
+    return !prereq || prereq.status !== 'COMPLETED';
+  });
+}
+
+function getLockedByName(trick: Trick, allTricks: Trick[]): string | undefined {
+  const unmet = trick.prerequisites.find((prereqName) => {
+    const prereq = allTricks.find((t) => t.name === prereqName);
+    return !prereq || prereq.status !== 'COMPLETED';
+  });
+  return unmet;
+}
+
+function buildSectionedData(tricks: Trick[]): ListItem[] {
+  const sorted = [...tricks].sort(
+    (a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0),
+  );
+  const result: ListItem[] = [];
+  let currentDiff = '';
+  sorted.forEach((trick) => {
+    if (trick.difficulty !== currentDiff) {
+      const count = sorted.filter((t) => t.difficulty === trick.difficulty).length;
+      result.push({ __isDivider: true, difficulty: trick.difficulty, count });
+      currentDiff = trick.difficulty;
+    }
+    result.push(trick);
+  });
+  return result;
+}
 
 export default function TrickGrid({
   tricks,
@@ -34,6 +84,8 @@ export default function TrickGrid({
   allowCompletion = false,
   emptyMessage = 'No tricks found',
   emptySubtitle,
+  showFeaturedCard = true,
+  listLabel = 'UP NEXT',
 }: TrickGridProps) {
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -60,31 +112,67 @@ export default function TrickGrid({
   }, []);
 
   const handleLandedIt = useCallback(
-    (trick: Trick) => {
-      onComplete?.(trick);
-    },
+    (trick: Trick) => { onComplete?.(trick); },
     [onComplete],
   );
 
-  const DIFFICULTY_ORDER: Record<string, number> = { Easy: 1, Intermediate: 2, Advanced: 3 };
   const featuredTrick =
-    tricks
-      .filter((t) => t.status === 'IN_PROGRESS')
-      .sort((a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0))[0] ?? null;
+    showFeaturedCard
+      ? tricks
+          .filter((t) => t.status === 'IN_PROGRESS')
+          .sort((a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0))[0] ?? null
+      : null;
+
   const listTricks = featuredTrick ? tricks.filter((t) => t.id !== featuredTrick.id) : tricks;
+  const sectionedData = buildSectionedData(listTricks);
 
   const renderItem = useCallback(
-    ({ item, index }: { item: Trick; index: number }) => (
-      <TrickListItem trick={item} index={index + 1} onPress={handlePress} />
-    ),
-    [handlePress],
+    ({ item }: { item: ListItem }) => {
+      if (isDivider(item)) {
+        const color = DIFFICULTY_COLOR[item.difficulty] ?? COLORS.secondary;
+        return (
+          <View className="flex-row items-center gap-3 px-4 pt-5 pb-2">
+            <Text
+              className="text-[10px] font-black tracking-widest uppercase"
+              style={[{ color }, textGlow(color, 4)]}
+            >
+              {item.difficulty}
+            </Text>
+            <Text className="text-textDim text-[10px] font-bold" style={{ opacity: 0.5 }}>
+              · {item.count}
+            </Text>
+            <View className="flex-1 h-px" style={{ backgroundColor: `${color}33` }} />
+          </View>
+        );
+      }
+      const trick = item as Trick;
+      const locked = isLocked(trick, tricks);
+      const lockedByName = locked ? getLockedByName(trick, tricks) : undefined;
+      return (
+        <TrickListItem
+          trick={trick}
+          index={sectionedData.filter((i) => !isDivider(i)).indexOf(trick) + 1}
+          onPress={handlePress}
+          isLocked={locked}
+          lockedByName={lockedByName}
+        />
+      );
+    },
+    [handlePress, tricks, sectionedData],
   );
 
-  const keyExtractor = useCallback((item: Trick) => item.id, []);
+  const keyExtractor = useCallback((item: ListItem) => {
+    if (isDivider(item)) return `divider-${item.difficulty}`;
+    return (item as Trick).id;
+  }, []);
+
+  const getItemType = useCallback((item: ListItem) => {
+    return isDivider(item) ? 'divider' : 'trick';
+  }, []);
 
   const ListHeader = (
     <View>
-      {featuredTrick && (
+      {showFeaturedCard && featuredTrick && (
         <FeaturedTrickCard
           trick={featuredTrick}
           onLogSession={handleOpenLogSession}
@@ -92,10 +180,11 @@ export default function TrickGrid({
         />
       )}
       <UnlockedTricksRow tricks={tricks} onPress={handlePress} />
-      {listTricks.length > 0 && (
-        <View className="flex-row items-center gap-3 px-4 mb-3">
-          <Text className="text-secondary font-black text-xs tracking-widest uppercase">
-            Up Next
+      {sectionedData.length > 0 && (
+        <View className="flex-row items-center gap-3 px-4 pt-2 pb-1">
+          <Text className="text-secondary font-black text-xs tracking-widest uppercase"
+            style={textGlow(COLORS.secondary, 4)}>
+            {listLabel}
           </Text>
           <View className="flex-1 h-px bg-secondary/30" />
         </View>
@@ -114,15 +203,16 @@ export default function TrickGrid({
   return (
     <View className="flex-1 bg-background">
       <FlashList
-        data={listTricks}
+        data={sectionedData}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        {...({ estimatedItemSize: 65 } as Record<string, unknown>)}
+        getItemType={getItemType}
+        {...({ estimatedItemSize: 60 } as Record<string, unknown>)}
         contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={ListHeader}
         ListEmptyComponent={
-          !featuredTrick && !tricks.some((t) => t.status === 'NOT_STARTED' && t.prerequisites.length > 0 && t.prerequisites.every((n) => tricks.find((p) => p.name === n)?.status === 'COMPLETED')) ? (
+          !featuredTrick ? (
             <View className="flex-1 items-center justify-center py-24 px-8">
               <Ionicons name="flash-outline" size={56} color={COLORS.textDim} style={{ opacity: 0.35 }} />
               <Text className="text-textDim text-base font-bold mt-5 text-center tracking-wide">
@@ -170,9 +260,7 @@ export default function TrickGrid({
         allowCompletion={allowCompletion}
         onPrerequisitePress={(trickName) => {
           const target = tricks.find((t) => t.name === trickName);
-          if (target) {
-            setSelectedTrick(target);
-          }
+          if (target) setSelectedTrick(target);
         }}
       />
 

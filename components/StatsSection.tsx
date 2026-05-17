@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
 import { COLORS, textGlow } from '@/constants/AppTheme';
@@ -46,19 +45,55 @@ export default function StatsSection({ streak }: Props) {
 
   const completed = tricks.filter((t) => t.status === 'COMPLETED').length;
   const total = tricks.length;
+  const showSessions = totalSessions !== null && (totalSessions > 0 || totalAttempts! > 0);
+
+  const streakDays = Math.min(streak, 7);
 
   return (
     <View className="gap-5">
       {/* ── Quick stats ── */}
       <View className="flex-row gap-3">
-        <StatCard label="Total XP" value={score.toLocaleString()} icon="flash" color={COLORS.secondary} />
-        <StatCard label="Streak" value={`${streak}d`} icon="flame" color="#FFD700" />
+        <StatCard label="Total XP" value={score.toLocaleString()} color={COLORS.secondary} />
+        <StatCard label="Streak" value={`${streak}d`} color="#FFD700" />
         <StatCard
           label="Mastered"
           value={total > 0 ? `${completed}/${total}` : '—'}
-          icon="checkmark-circle"
           color={COLORS.success}
         />
+      </View>
+
+      {/* ── Streak visualization ── */}
+      <View className="bg-card rounded-2xl border border-white/10 p-4">
+        <Text className="text-textDim text-[10px] font-black uppercase tracking-widest mb-3">
+          7-Day Streak
+        </Text>
+        <View className="flex-row justify-between">
+          {Array.from({ length: 7 }, (_, i) => {
+            const dayIndex = 7 - i;
+            const filled = dayIndex <= streakDays;
+            return (
+              <View key={i} className="items-center gap-1.5">
+                <View
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: filled ? '#FFD700' : 'rgba(255,255,255,0.06)',
+                    borderWidth: 1,
+                    borderColor: filled ? '#FFD70066' : 'rgba(255,255,255,0.1)',
+                    shadowColor: filled ? '#FFD700' : 'transparent',
+                    shadowOpacity: filled ? 0.6 : 0,
+                    shadowRadius: filled ? 6 : 0,
+                    shadowOffset: { width: 0, height: 0 },
+                  }}
+                />
+                <Text className="text-textDim text-[9px]" style={{ opacity: 0.5 }}>
+                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'][i]}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
       </View>
 
       {/* ── Progress by category ── */}
@@ -76,7 +111,9 @@ export default function StatsSection({ streak }: Props) {
             <View key={cat}>
               <View className="flex-row justify-between mb-1.5">
                 <Text className="text-white text-xs font-bold">{cat}</Text>
-                <Text className="text-textDim text-xs">{done}/{catTotal}</Text>
+                <Text className="text-xs font-bold" style={{ color }}>
+                  {done} of {catTotal}
+                </Text>
               </View>
               <View className="h-2 rounded-full overflow-hidden bg-white/10">
                 <View
@@ -89,39 +126,28 @@ export default function StatsSection({ streak }: Props) {
         })}
       </View>
 
-      {/* ── Session stats ── */}
-      <View className="flex-row gap-3">
-        <StatCard
-          label="Sessions"
-          value={totalSessions === null ? '—' : totalSessions.toLocaleString()}
-          icon="time"
-          color={COLORS.primary}
-        />
-        <StatCard
-          label="Attempts"
-          value={totalAttempts === null ? '—' : totalAttempts.toLocaleString()}
-          icon="repeat"
-          color={COLORS.secondary}
-        />
-      </View>
+      {/* ── Session stats — hidden until data exists ── */}
+      {showSessions && (
+        <View className="flex-row gap-3">
+          <StatCard
+            label="Sessions"
+            value={totalSessions!.toLocaleString()}
+            color={COLORS.primary}
+          />
+          <StatCard
+            label="Attempts"
+            value={totalAttempts!.toLocaleString()}
+            color={COLORS.secondary}
+          />
+        </View>
+      )}
     </View>
   );
 }
 
-function StatCard({
-  label,
-  value,
-  icon,
-  color,
-}: {
-  label: string;
-  value: string;
-  icon: React.ComponentProps<typeof Ionicons>['name'];
-  color: string;
-}) {
+function StatCard({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <View className="flex-1 bg-card rounded-2xl border border-white/10 p-4 items-center gap-1.5">
-      <Ionicons name={icon} size={20} color={color} />
+    <View className="flex-1 bg-card rounded-2xl border border-white/10 p-4 items-center gap-1">
       <Text className="text-white font-black text-xl" style={textGlow(color, 4)}>
         {value}
       </Text>
