@@ -37,6 +37,11 @@ export default function LearningScreen() {
     }
   };
 
+  const handleComplete = (trick: Trick) => {
+    if (!user) return;
+    updateTrickStatus(user.uid, trick.id, 'COMPLETED');
+  };
+
   return (
     <View className="flex-1 bg-background">
       <TrickDirectory
@@ -44,6 +49,7 @@ export default function LearningScreen() {
         onAddProcess={handleAddProcess}
         onRemoveFromProgress={handleRemoveFromProgress}
         onLogSession={handleLogSession}
+        onComplete={handleComplete}
         loading={loading}
         title="Learning"
         allowCompletion={true}
