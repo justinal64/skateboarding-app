@@ -10,43 +10,34 @@ export const helloWorld = onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 
+const VALID_DIFFICULTIES = new Set(["Easy", "Intermediate", "Advanced"]);
+const VALID_CATEGORIES = new Set(["Basics", "Flip", "Grind", "Slide", "Transition"]);
+
 export const getTricks = onCall({ cors: true }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
+  }
+
   const db = getFirestore();
   const tricksRef = db.collection("tricks");
 
   try {
-    // 1. Fetch all public tricks
-    const publicTricksQuery = tricksRef.where("isPublic", "==", true).get();
-
-    // 2. Fetch user's private tricks if authenticated
-    let userTricksQuery: Promise<FirebaseFirestore.QuerySnapshot> | null = null;
-    if (request.auth) {
-      userTricksQuery = tricksRef.where("ownerId", "==", request.auth.uid).get();
-    }
-
     const [publicSnapshot, userSnapshot] = await Promise.all([
-      publicTricksQuery,
-      userTricksQuery ? userTricksQuery : Promise.resolve(null)
+      tricksRef.where("isPublic", "==", true).get(),
+      tricksRef.where("ownerId", "==", request.auth.uid).get(),
     ]);
 
     const tricks = new Map();
 
-    // Add public tricks
     publicSnapshot.docs.forEach(doc => {
       tricks.set(doc.id, { id: doc.id, ...doc.data() });
     });
 
-    // Add/Overwrite with user tricks (though they shouldn't overlap usually, this handles it safely)
-    if (userSnapshot) {
-      userSnapshot.docs.forEach(doc => {
-        tricks.set(doc.id, { id: doc.id, ...doc.data() });
-      });
-    }
+    userSnapshot.docs.forEach(doc => {
+      tricks.set(doc.id, { id: doc.id, ...doc.data() });
+    });
 
-    return {
-      tricks: Array.from(tricks.values())
-    };
-
+    return { tricks: Array.from(tricks.values()) };
   } catch (error) {
     logger.error("Error fetching tricks", error);
     throw new HttpsError("internal", "Unable to fetch tricks");
@@ -60,9 +51,23 @@ export const addTrick = onCall({ cors: true }, async (request) => {
 
   const { name, description, difficulty, category, video_url, prerequisite_ids } = request.data;
 
-  // Basic validation
-  if (!name || typeof name !== "string") {
-    throw new HttpsError("invalid-argument", "The function must be called with a valid trick name.");
+  if (!name || typeof name !== "string" || name.trim().length === 0) {
+    throw new HttpsError("invalid-argument", "A valid trick name is required.");
+  }
+  if (name.trim().length > 100) {
+    throw new HttpsError("invalid-argument", "Trick name must be 100 characters or fewer.");
+  }
+  if (difficulty !== undefined && !VALID_DIFFICULTIES.has(difficulty)) {
+    throw new HttpsError("invalid-argument", `difficulty must be one of: ${[...VALID_DIFFICULTIES].join(", ")}.`);
+  }
+  if (category !== undefined && !VALID_CATEGORIES.has(category)) {
+    throw new HttpsError("invalid-argument", `category must be one of: ${[...VALID_CATEGORIES].join(", ")}.`);
+  }
+  if (video_url !== undefined && video_url !== "" && typeof video_url !== "string") {
+    throw new HttpsError("invalid-argument", "video_url must be a string.");
+  }
+  if (!Array.isArray(prerequisite_ids) && prerequisite_ids !== undefined) {
+    throw new HttpsError("invalid-argument", "prerequisite_ids must be an array.");
   }
 
   const db = getFirestore();
@@ -70,15 +75,15 @@ export const addTrick = onCall({ cors: true }, async (request) => {
 
   try {
     const newTrick = {
-      name,
-      description: description || "",
-      difficulty: difficulty || "Intermediate", // Default
-      category: category || "Basics", // Default
-      video_url: video_url || "",
-      prerequisites: prerequisite_ids || [],
+      name: name.trim(),
+      description: typeof description === "string" ? description.trim() : "",
+      difficulty: difficulty ?? "Intermediate",
+      category: category ?? "Basics",
+      video_url: typeof video_url === "string" ? video_url.trim() : "",
+      prerequisites: Array.isArray(prerequisite_ids) ? prerequisite_ids : [],
       ownerId: request.auth.uid,
       isPublic: false,
-      created_at: new Date()
+      created_at: new Date(),
     };
 
     const docRef = await tricksRef.add(newTrick);
