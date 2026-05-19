@@ -4,22 +4,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Ionicons } from '@expo/vector-icons';
 import { updateProfile, verifyBeforeUpdateEmail } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, setDoc, writeBatch } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 import ScoreBadge from '@/components/ScoreBadge';
 import StatsSection from '@/components/StatsSection';
 import { COLORS, neonGlow } from '@/constants/AppTheme';
-import { FULL_TRICK_LIBRARY } from '@/constants/FullTrickLibrary';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { getErrorMessage } from '@/utils/errors';
 
 const AVATAR_COLORS = ['#00FFFF', '#FF00FF', '#00FF66', '#FFD700', '#FF0055', '#7B61FF'];
 
 export default function ProfileScreen() {
   const { top } = useSafeAreaInsets();
   const { user, signOut, deleteAccount } = useAuth();
-  const [seeding, setSeeding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -123,25 +120,6 @@ export default function ProfileScreen() {
         },
       ],
     );
-  };
-
-  const seedDatabase = async () => {
-    setSeeding(true);
-    try {
-      const batch = writeBatch(db);
-      const tricksRef = collection(db, 'tricks');
-      const existingSnapshot = await getDocs(tricksRef);
-      existingSnapshot.forEach((document) => batch.delete(document.ref));
-      FULL_TRICK_LIBRARY.forEach((trick) => {
-        batch.set(doc(tricksRef), { ...trick, created_at: new Date() });
-      });
-      await batch.commit();
-      Alert.alert('Success', 'Database restored with enriched trick data.');
-    } catch (error: unknown) {
-      Alert.alert('Error', getErrorMessage(error));
-    } finally {
-      setSeeding(false);
-    }
   };
 
   return (
@@ -320,25 +298,6 @@ export default function ProfileScreen() {
         )}
       </View>
 
-      {/* ── Developer ── */}
-      <View className="mt-8 mb-2">
-        <View className="flex-row items-center gap-3 mb-4">
-          <View className="flex-1 h-px bg-white/5" />
-          <Text className="text-textDim text-[9px] font-black uppercase tracking-widest" style={{ opacity: 0.4 }}>
-            Developer
-          </Text>
-          <View className="flex-1 h-px bg-white/5" />
-        </View>
-        <Pressable
-          className="items-center py-2"
-          onPress={seedDatabase}
-          disabled={seeding}
-        >
-          <Text className="text-textDim text-xs font-bold tracking-wider" style={{ opacity: 0.5 }}>
-            {seeding ? 'Restoring...' : 'Restore Default Tricks'}
-          </Text>
-        </Pressable>
-      </View>
     </ScrollView>
   );
 }
