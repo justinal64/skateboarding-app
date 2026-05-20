@@ -65,10 +65,7 @@ export default function FeaturedTrickCard({ trick, onLogSession, onLandedIt }: P
           </Text>
 
           {/* Points */}
-          <Text
-            className="text-[#FFD700] text-xs font-bold mt-1.5"
-            style={textGlow('#FFD700', 4)}
-          >
+          <Text className="text-[#FFD700] text-xs font-bold mt-1.5" style={textGlow('#FFD700', 4)}>
             +{trick.points} XP
           </Text>
         </View>

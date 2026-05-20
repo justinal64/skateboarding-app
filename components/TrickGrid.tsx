@@ -112,16 +112,19 @@ export default function TrickGrid({
   }, []);
 
   const handleLandedIt = useCallback(
-    (trick: Trick) => { onComplete?.(trick); },
+    (trick: Trick) => {
+      onComplete?.(trick);
+    },
     [onComplete],
   );
 
-  const featuredTrick =
-    showFeaturedCard
-      ? tricks
-          .filter((t) => t.status === 'IN_PROGRESS')
-          .sort((a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0))[0] ?? null
-      : null;
+  const featuredTrick = showFeaturedCard
+    ? (tricks
+        .filter((t) => t.status === 'IN_PROGRESS')
+        .sort(
+          (a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0),
+        )[0] ?? null)
+    : null;
 
   const listTricks = featuredTrick ? tricks.filter((t) => t.id !== featuredTrick.id) : tricks;
   const sectionedData = buildSectionedData(listTricks);
@@ -182,8 +185,10 @@ export default function TrickGrid({
       <UnlockedTricksRow tricks={tricks} onPress={handlePress} />
       {sectionedData.length > 0 && (
         <View className="flex-row items-center gap-3 px-4 pt-2 pb-1">
-          <Text className="text-secondary font-black text-xs tracking-widest uppercase"
-            style={textGlow(COLORS.secondary, 4)}>
+          <Text
+            className="text-secondary font-black text-xs tracking-widest uppercase"
+            style={textGlow(COLORS.secondary, 4)}
+          >
             {listLabel}
           </Text>
           <View className="flex-1 h-px bg-secondary/30" />
@@ -214,7 +219,12 @@ export default function TrickGrid({
         ListEmptyComponent={
           !featuredTrick ? (
             <View className="flex-1 items-center justify-center py-24 px-8">
-              <Ionicons name="flash-outline" size={56} color={COLORS.textDim} style={{ opacity: 0.35 }} />
+              <Ionicons
+                name="flash-outline"
+                size={56}
+                color={COLORS.textDim}
+                style={{ opacity: 0.35 }}
+              />
               <Text className="text-textDim text-base font-bold mt-5 text-center tracking-wide">
                 {emptyMessage}
               </Text>

@@ -3,13 +3,13 @@ import { Platform, TextStyle, ViewStyle } from 'react-native';
 
 export const COLORS = {
   background: '#0D0D25', // Deep Dark Blue
-  card: '#1A1A3A',       // Dark Blue/Purple for cards
-  primary: '#FF00FF',    // Neon Pink
-  secondary: '#00FFFF',  // Electric Cyan
-  text: '#FFFFFF',       // White
-  textDim: '#E0E0FF',    // Light Blue-ish Grey
-  border: '#2A2A4A',     // Dark Border
-  success: '#00FF00',    // Neon Green (optional extra)
+  card: '#1A1A3A', // Dark Blue/Purple for cards
+  primary: '#FF00FF', // Neon Pink
+  secondary: '#00FFFF', // Electric Cyan
+  text: '#FFFFFF', // White
+  textDim: '#E0E0FF', // Light Blue-ish Grey
+  border: '#2A2A4A', // Dark Border
+  success: '#00FF00', // Neon Green (optional extra)
 };
 
 /**

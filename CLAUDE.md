@@ -21,6 +21,7 @@ npm run deploy:ios
 ```
 
 **Firebase Cloud Functions** (run from `functions/` directory):
+
 ```bash
 npm run build   # TypeScript compile
 npm run serve   # Local emulator
@@ -37,6 +38,7 @@ Copy `.env.example` to `.env` and fill in Firebase credentials (`EXPO_PUBLIC_FIR
 ## Architecture
 
 **Expo Router** (file-based routing) with a tab layout:
+
 - `app/_layout.tsx` — root layout; wraps everything in `AuthProvider`, handles auth redirects, and calls `fetchTricks` on auth state change
 - `app/(tabs)/` — four tabs: All Tricks, Learning (IN_PROGRESS), Done (COMPLETED), Profile
 - `app/login.tsx`, `app/register.tsx`, `app/verify-email.tsx` — public auth screens
@@ -44,6 +46,7 @@ Copy `.env.example` to `.env` and fill in Firebase credentials (`EXPO_PUBLIC_FIR
 **State management** is a single Zustand store (`store/trickStore.ts`) with `AsyncStorage` persistence. The store holds all `Trick` objects (metadata merged with per-user status) and exposes `fetchTricks`, `updateTrickStatus`, and `addTrick`. Status updates are optimistic—rolled back via re-fetch on failure.
 
 **Firebase backend:**
+
 - `lib/firebase.ts` — initialises Firebase app, exports `auth` and `db` (Firestore)
 - `context/AuthContext.tsx` — wraps `onAuthStateChanged`; exposes `user`, `loading`, `signOut`
 - `functions/src/index.ts` — two callable Cloud Functions:
@@ -54,6 +57,7 @@ Copy `.env.example` to `.env` and fill in Firebase credentials (`EXPO_PUBLIC_FIR
 **Data flow:** `fetchTricks(userId)` calls the `getTricks` Cloud Function for trick metadata, then queries `user_tricks` directly from the client to merge status. The combined `Trick[]` is stored in Zustand and persisted to AsyncStorage.
 
 **UI components:**
+
 - `TrickGrid` — `FlashList`-backed responsive grid; manages `TrickDetailModal` open/close state; uses `memo` on `TrickGridItem`
 - `TrickCardContent` — renders a single card with `SpriteIcon` + trick info
 - `SpriteIcon` — crops `assets/images/skate-sprites-multicolor.png` (6×5 sprite sheet) using a clipped `Image`; index mapping is in `utils/trickIcons.ts`
@@ -68,5 +72,6 @@ Copy `.env.example` to `.env` and fill in Firebase credentials (`EXPO_PUBLIC_FIR
 ## Deployment Notes (from README)
 
 Before shipping to the App Store:
+
 1. Restrict the Firebase API key to the bundle ID `com.justinleggett.skateboard` in Google Cloud Console
 2. Ensure Firestore security rules are deployed via the Firebase Console

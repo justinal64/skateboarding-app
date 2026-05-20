@@ -27,9 +27,7 @@ export default function NeonBadge({ title, subtitle }: NeonBadgeProps) {
         </Text>
       </View>
       {subtitle && (
-        <Text className="text-textDim text-sm font-medium tracking-[0.5px]">
-          {subtitle}
-        </Text>
+        <Text className="text-textDim text-sm font-medium tracking-[0.5px]">{subtitle}</Text>
       )}
     </View>
   );

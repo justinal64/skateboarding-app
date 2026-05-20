@@ -9,7 +9,14 @@ import TrickGrid from '@/components/TrickGrid';
 import { COLORS, neonGlow, textGlow } from '@/constants/AppTheme';
 import { Trick, TrickCategory } from '@/types';
 
-const CATEGORIES: (TrickCategory | 'All')[] = ['All', 'Basics', 'Flip', 'Grind', 'Slide', 'Transition'];
+const CATEGORIES: (TrickCategory | 'All')[] = [
+  'All',
+  'Basics',
+  'Flip',
+  'Grind',
+  'Slide',
+  'Transition',
+];
 
 const SORT_OPTIONS = [
   { label: 'Difficulty (Easy-Adv)', value: 'difficulty_asc' },
@@ -100,10 +107,14 @@ export default function TrickDirectory({
       {/* Header Section */}
       <View style={{ paddingTop: top + 8 }} className="pb-5 px-4 bg-background z-10 relative">
         <View className="flex-row justify-between items-center mb-6">
-
           {/* Left Column: Logo */}
           <View className="flex-1 flex-row items-center">
-            <MaterialCommunityIcons name="skateboard" size={28} color="#00FFFF" style={textGlow('#00FFFF', 5)} />
+            <MaterialCommunityIcons
+              name="skateboard"
+              size={28}
+              color="#00FFFF"
+              style={textGlow('#00FFFF', 5)}
+            />
             <Text
               className="text-[#00FFFF] font-black tracking-widest text-base ml-2"
               style={textGlow('#00FFFF', 5)}
@@ -202,9 +213,7 @@ export default function TrickDirectory({
             className="absolute top-[180px] right-4 w-[200px] bg-[#1E1E30] rounded-2xl border border-secondary p-3 z-50 shadow-xl"
             style={neonGlow('rgba(0,0,0,0.5)', 12)}
           >
-            <Text className="text-textDim text-xs font-bold mb-2 uppercase">
-              Sort By:
-            </Text>
+            <Text className="text-textDim text-xs font-bold mb-2 uppercase">Sort By:</Text>
             {SORT_OPTIONS.map((opt) => (
               <TouchableOpacity
                 key={opt.value}
@@ -218,9 +227,7 @@ export default function TrickDirectory({
               >
                 <Text
                   className={`text-sm ${
-                    sortOption === opt.value
-                      ? 'text-background font-bold'
-                      : 'text-text'
+                    sortOption === opt.value ? 'text-background font-bold' : 'text-text'
                   }`}
                 >
                   {opt.label}

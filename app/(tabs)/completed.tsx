@@ -15,9 +15,10 @@ export default function CompletedScreen() {
   const score = useUserScore();
 
   const completedTricks = tricks.filter((t) => t.status === 'COMPLETED');
-  const subtitle = tricks.length > 0
-    ? `${completedTricks.length} of ${tricks.length} mastered · ${score} XP`
-    : undefined;
+  const subtitle =
+    tricks.length > 0
+      ? `${completedTricks.length} of ${tricks.length} mastered · ${score} XP`
+      : undefined;
 
   const handleAddProcess = (trick: Trick) => {
     if (!user) return;

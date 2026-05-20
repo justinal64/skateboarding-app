@@ -109,10 +109,7 @@ export default function UnlockedTricksRow({ tricks, onPress }: Props) {
 
               {/* Difficulty */}
               <View className="flex-row items-center gap-1">
-                <View
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{ backgroundColor: diffColor }}
-                />
+                <View className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: diffColor }} />
                 <Text className="text-[9px] font-bold" style={{ color: diffColor }}>
                   {trick.difficulty}
                 </Text>

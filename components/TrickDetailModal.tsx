@@ -63,9 +63,7 @@ export default function TrickDetailModal({
         orderBy('date', 'desc'),
       ),
     )
-      .then((snap) =>
-        setSessions(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Session))),
-      )
+      .then((snap) => setSessions(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Session)))
       .finally(() => setLoadingSessions(false));
   }, [visible, trick?.id, user?.uid]);
 
@@ -78,19 +76,10 @@ export default function TrickDetailModal({
   const hasUnmetPrereqs = trick.status === 'NOT_STARTED' && unmetPrereqs.length > 0;
 
   return (
-    <Modal
-      animationType="slide"
-      transparent
-      visible={visible}
-      onRequestClose={onClose}
-    >
+    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
       <View className="flex-1 justify-end bg-black/70">
         {/* Backdrop */}
-        <TouchableOpacity
-          className="absolute inset-0"
-          activeOpacity={1}
-          onPress={onClose}
-        />
+        <TouchableOpacity className="absolute inset-0" activeOpacity={1} onPress={onClose} />
 
         <View
           className="bg-[#0D0D25] rounded-t-[30px] w-full h-[85%] overflow-hidden border border-secondary/20"
@@ -103,10 +92,7 @@ export default function TrickDetailModal({
               <View className="opacity-50">
                 <TrickCardContent trick={trick} size={300} showName={false} />
               </View>
-              <LinearGradient
-                colors={['transparent', '#0D0D25']}
-                className="absolute inset-0"
-              />
+              <LinearGradient colors={['transparent', '#0D0D25']} className="absolute inset-0" />
               <TouchableOpacity
                 className="absolute top-4 right-4 bg-black/30 rounded-full p-1"
                 onPress={onClose}
@@ -187,15 +173,31 @@ export default function TrickDetailModal({
                         >
                           <Text
                             className={`font-bold text-xs ${
-                              isCompleted ? 'text-success' : isInProgress ? 'text-primary' : 'text-textDim'
+                              isCompleted
+                                ? 'text-success'
+                                : isInProgress
+                                  ? 'text-primary'
+                                  : 'text-textDim'
                             }`}
                           >
                             {prereqName}
                           </Text>
                           <Ionicons
-                            name={isCompleted ? 'checkmark-circle' : isInProgress ? 'time' : 'lock-closed'}
+                            name={
+                              isCompleted
+                                ? 'checkmark-circle'
+                                : isInProgress
+                                  ? 'time'
+                                  : 'lock-closed'
+                            }
                             size={12}
-                            color={isCompleted ? COLORS.success : isInProgress ? COLORS.primary : COLORS.textDim}
+                            color={
+                              isCompleted
+                                ? COLORS.success
+                                : isInProgress
+                                  ? COLORS.primary
+                                  : COLORS.textDim
+                            }
                             style={{ marginLeft: 4 }}
                           />
                         </TouchableOpacity>
@@ -205,9 +207,7 @@ export default function TrickDetailModal({
                 </View>
               )}
 
-              <Text className="text-base text-text leading-6 mb-6">
-                {trick.description}
-              </Text>
+              <Text className="text-base text-text leading-6 mb-6">{trick.description}</Text>
 
               {/* Personal Notes */}
               {trick.status !== 'NOT_STARTED' && (
@@ -289,7 +289,11 @@ export default function TrickDetailModal({
                       {sessions.map((session) => {
                         const dateStr = session.date
                           .toDate()
-                          .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                          .toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          });
                         return (
                           <View
                             key={session.id}
@@ -298,7 +302,11 @@ export default function TrickDetailModal({
                             <View className="flex-row items-center justify-between mb-1">
                               <Text className="text-textDim text-xs font-bold">{dateStr}</Text>
                               <View className="flex-row items-center gap-1">
-                                <Ionicons name="refresh-outline" size={11} color={COLORS.secondary} />
+                                <Ionicons
+                                  name="refresh-outline"
+                                  size={11}
+                                  color={COLORS.secondary}
+                                />
                                 <Text className="text-secondary text-xs font-black">
                                   {session.attempts} attempt{session.attempts !== 1 ? 's' : ''}
                                 </Text>
@@ -322,9 +330,7 @@ export default function TrickDetailModal({
                   onPress={() => Linking.openURL(trick.video_url)}
                 >
                   <Ionicons name="logo-youtube" size={20} color="#FF0000" />
-                  <Text className="text-[#FF9999] font-bold text-sm">
-                    Watch Tutorial
-                  </Text>
+                  <Text className="text-[#FF9999] font-bold text-sm">Watch Tutorial</Text>
                 </TouchableOpacity>
               )}
 
@@ -334,7 +340,10 @@ export default function TrickDetailModal({
                   <>
                     <TouchableOpacity
                       className="w-full shadow-lg"
-                      style={[neonGlow('rgba(255, 0, 255, 0.5)', 10), hasUnmetPrereqs && { opacity: 0.4 }]}
+                      style={[
+                        neonGlow('rgba(255, 0, 255, 0.5)', 10),
+                        hasUnmetPrereqs && { opacity: 0.4 },
+                      ]}
                       disabled={hasUnmetPrereqs}
                       onPress={() => onAddToInProgress(trick)}
                       accessibilityLabel="Start Learning"

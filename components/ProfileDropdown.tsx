@@ -35,8 +35,8 @@ export default function ProfileDropdown() {
 
   if (!user) return null;
 
-  const displayName = user.displayName
-    || (user.email ? user.email.split('@')[0].toUpperCase() : 'SKATER');
+  const displayName =
+    user.displayName || (user.email ? user.email.split('@')[0].toUpperCase() : 'SKATER');
   const tricksCount = tricks.filter((t) => t.status === 'COMPLETED').length;
 
   // The small points badge used in both collapsed and expanded views
@@ -86,7 +86,10 @@ export default function ProfileDropdown() {
         </TouchableOpacity>
 
         {/* Points Badge (Below Avatar) */}
-        <View className="flex-row items-center bg-[#1A1A3A] px-2 py-0.5 rounded-full border border-[#FFD700]/40" style={neonGlow('rgba(255, 215, 0, 0.2)', 5)}>
+        <View
+          className="flex-row items-center bg-[#1A1A3A] px-2 py-0.5 rounded-full border border-[#FFD700]/40"
+          style={neonGlow('rgba(255, 215, 0, 0.2)', 5)}
+        >
           <Ionicons name="star" size={8} color="#FFD700" className="mr-1" />
           <Text
             className="text-[#FFD700] text-[9px] font-bold tracking-wider ml-0.5"
@@ -149,21 +152,30 @@ export default function ProfileDropdown() {
               {/* Stat Cards */}
               <View className="flex-row justify-between mb-4">
                 <View className="bg-[#1A1A3A] border border-[#00FFFF]/30 rounded-xl py-3 px-2 flex-1 items-center mr-2">
-                  <Text className="text-[#00FFFF] text-lg font-black mb-1" style={textGlow('#00FFFF', 8)}>
+                  <Text
+                    className="text-[#00FFFF] text-lg font-black mb-1"
+                    style={textGlow('#00FFFF', 8)}
+                  >
                     {tricksCount}
                   </Text>
                   <Text className="text-textDim text-[9px] font-bold tracking-widest">TRICKS</Text>
                 </View>
 
                 <View className="bg-[#1A1A3A] border border-[#FF00FF]/30 rounded-xl py-3 px-2 flex-1 items-center mr-2">
-                  <Text className="text-[#FF00FF] text-lg font-black mb-1" style={textGlow('#FF00FF', 8)}>
+                  <Text
+                    className="text-[#FF00FF] text-lg font-black mb-1"
+                    style={textGlow('#FF00FF', 8)}
+                  >
                     {streak}d
                   </Text>
                   <Text className="text-textDim text-[9px] font-bold tracking-widest">STREAK</Text>
                 </View>
 
                 <View className="bg-[#1A1A3A] border border-[#FFD700]/30 rounded-xl py-3 px-2 flex-1 items-center">
-                  <Text className="text-[#FFD700] text-lg font-black mb-1" style={textGlow('#FFD700', 8)}>
+                  <Text
+                    className="text-[#FFD700] text-lg font-black mb-1"
+                    style={textGlow('#FFD700', 8)}
+                  >
                     {totalScore}
                   </Text>
                   <Text className="text-textDim text-[9px] font-bold tracking-widest">XP</Text>
@@ -179,7 +191,9 @@ export default function ProfileDropdown() {
                 className="flex-row items-center border border-[#FF0055]/30 rounded-full px-3 py-1.5"
                 onPress={() => setExpanded(false)}
               >
-                <Text className="text-[#FF0055] text-[10px] font-bold tracking-widest mr-1">CLOSE</Text>
+                <Text className="text-[#FF0055] text-[10px] font-bold tracking-widest mr-1">
+                  CLOSE
+                </Text>
                 <Ionicons name="close" size={12} color="#FF0055" />
               </TouchableOpacity>
             </View>

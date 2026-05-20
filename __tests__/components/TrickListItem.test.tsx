@@ -63,7 +63,11 @@ describe('TrickListItem', () => {
 
   it('has correct accessibility label for IN_PROGRESS status', () => {
     render(
-      <TrickListItem trick={{ ...baseTrick, status: 'IN_PROGRESS' }} index={1} onPress={() => {}} />,
+      <TrickListItem
+        trick={{ ...baseTrick, status: 'IN_PROGRESS' }}
+        index={1}
+        onPress={() => {}}
+      />,
     );
     expect(screen.getByLabelText('Kickflip, in progress')).toBeTruthy();
   });

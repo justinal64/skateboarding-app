@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -73,12 +73,7 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent
-      visible={visible}
-      onRequestClose={onClose}
-    >
+    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
       <View className="flex-1 bg-black/80 justify-end">
         <View className="bg-[#1E1E1E] rounded-t-3xl h-[90%] p-5 border-t border-secondary">
           {/* Header */}
@@ -90,9 +85,7 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
           </View>
 
           <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-            {error ? (
-              <Text className="text-red-500 mb-2.5 text-sm">{error}</Text>
-            ) : null}
+            {error ? <Text className="text-red-500 mb-2.5 text-sm">{error}</Text> : null}
 
             <Text className="text-textDim text-sm font-semibold mb-2 mt-3">Trick Name</Text>
             <TextInput
@@ -127,9 +120,7 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
                 >
                   <Text
                     className={`text-sm ${
-                      difficulty === diff
-                        ? 'text-secondary font-bold'
-                        : 'text-textDim font-medium'
+                      difficulty === diff ? 'text-secondary font-bold' : 'text-textDim font-medium'
                     }`}
                   >
                     {diff}
@@ -152,9 +143,7 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
                 >
                   <Text
                     className={`text-sm ${
-                      category === cat
-                        ? 'text-secondary font-bold'
-                        : 'text-textDim font-medium'
+                      category === cat ? 'text-secondary font-bold' : 'text-textDim font-medium'
                     }`}
                   >
                     {cat}
@@ -206,9 +195,7 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
               {submitting ? (
                 <ActivityIndicator color={COLORS.background} />
               ) : (
-                <Text className="text-background font-bold text-base">
-                  Add Trick
-                </Text>
+                <Text className="text-background font-bold text-base">Add Trick</Text>
               )}
             </TouchableOpacity>
           </View>

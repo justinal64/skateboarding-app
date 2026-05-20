@@ -1,14 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import {
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    query,
-    setDoc,
-    Timestamp,
-    where,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  Timestamp,
+  where,
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { create } from 'zustand';
@@ -104,9 +104,7 @@ export const useTrickStore = create<TrickStore>()(
       updateTrickStatus: async (userId: string, trickId: string, newStatus: TrickStatus) => {
         // Optimistic update
         set((state) => ({
-          tricks: state.tricks.map((t) =>
-            t.id === trickId ? { ...t, status: newStatus } : t,
-          ),
+          tricks: state.tricks.map((t) => (t.id === trickId ? { ...t, status: newStatus } : t)),
         }));
 
         try {
@@ -172,9 +170,10 @@ export const useTrickStore = create<TrickStore>()(
     }),
     {
       name: 'trick-storage',
-      storage: Platform.OS === 'web'
-        ? createJSONStorage(() => localStorage)
-        : createJSONStorage(() => AsyncStorage),
+      storage:
+        Platform.OS === 'web'
+          ? createJSONStorage(() => localStorage)
+          : createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({ tricks: state.tricks }),
     },
   ),

@@ -20,9 +20,7 @@ export default function ScoreBadge() {
       >
         {totalScore}
       </Text>
-      <Text className="text-white/70 font-bold text-xs">
-        PTS
-      </Text>
+      <Text className="text-white/70 font-bold text-xs">PTS</Text>
     </View>
   );
 }

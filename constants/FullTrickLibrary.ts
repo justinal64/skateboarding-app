@@ -4,7 +4,8 @@ export const FULL_TRICK_LIBRARY: TrickMeta[] = [
   // --- BASICS & FLATGROUND ---
   {
     name: 'Ollie',
-    description: 'The foundation of street skateboarding. Popping the tail and sliding the foot to jump.',
+    description:
+      'The foundation of street skateboarding. Popping the tail and sliding the foot to jump.',
     imageUrl: 'https://picsum.photos/seed/Ollie/600/600',
     difficulty: 'Easy',
     category: 'Basics',

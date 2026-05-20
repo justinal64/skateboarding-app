@@ -63,9 +63,7 @@ export default function AllTricksScreen() {
       <AddTrickModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onAddTrick={(trick) =>
-          user ? addTrick(user.uid, trick) : Promise.reject('No User')
-        }
+        onAddTrick={(trick) => (user ? addTrick(user.uid, trick) : Promise.reject('No User'))}
       />
     </View>
   );

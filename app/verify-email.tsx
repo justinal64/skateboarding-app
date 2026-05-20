@@ -52,15 +52,11 @@ export default function VerifyEmailScreen() {
         style={{ marginBottom: 24 }}
       />
 
-      <Text className="text-[28px] font-bold text-white mb-4 text-center">
-        Check Your Inbox
-      </Text>
+      <Text className="text-[28px] font-bold text-white mb-4 text-center">Check Your Inbox</Text>
       <Text className="text-base text-textDim text-center mb-2">
         We sent a verification link to:
       </Text>
-      <Text className="text-lg font-bold text-primary mb-6 text-center">
-        {user?.email}
-      </Text>
+      <Text className="text-lg font-bold text-primary mb-6 text-center">{user?.email}</Text>
       <Text className="text-sm text-textDim text-center mb-12">
         You must verify your email before accessing the app.
       </Text>
@@ -80,9 +76,7 @@ export default function VerifyEmailScreen() {
         onPress={resendEmail}
         disabled={loading}
       >
-        <Text className="text-secondary text-base font-bold tracking-wider">
-          RESEND EMAIL
-        </Text>
+        <Text className="text-secondary text-base font-bold tracking-wider">RESEND EMAIL</Text>
       </Pressable>
 
       <Pressable className="p-3" onPress={signOut}>

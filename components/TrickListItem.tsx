@@ -28,7 +28,13 @@ type Props = {
   lockedByName?: string;
 };
 
-export default function TrickListItem({ trick, index, onPress, isLocked = false, lockedByName }: Props) {
+export default function TrickListItem({
+  trick,
+  index,
+  onPress,
+  isLocked = false,
+  lockedByName,
+}: Props) {
   const spriteIndex = getTrickSpriteIndex(trick);
   const isCompleted = trick.status === 'COMPLETED';
   const isInProgress = trick.status === 'IN_PROGRESS';
@@ -57,7 +63,11 @@ export default function TrickListItem({ trick, index, onPress, isLocked = false,
       {/* Sprite */}
       <View
         className="rounded-full overflow-hidden mr-3 items-center justify-center"
-        style={{ width: 42, height: 42, backgroundColor: spriteGlow !== 'transparent' ? spriteGlow : '#1A1A35' }}
+        style={{
+          width: 42,
+          height: 42,
+          backgroundColor: spriteGlow !== 'transparent' ? spriteGlow : '#1A1A35',
+        }}
       >
         <SpriteIcon index={spriteIndex} size={36} />
       </View>
@@ -98,7 +108,12 @@ export default function TrickListItem({ trick, index, onPress, isLocked = false,
         ) : isInProgress ? (
           <Ionicons name="time-outline" size={16} color="#FFB800" />
         ) : (
-          <Ionicons name="chevron-forward" size={16} color={COLORS.textDim} style={{ opacity: 0.5 }} />
+          <Ionicons
+            name="chevron-forward"
+            size={16}
+            color={COLORS.textDim}
+            style={{ opacity: 0.5 }}
+          />
         )}
       </View>
     </TouchableOpacity>

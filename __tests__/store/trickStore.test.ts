@@ -46,7 +46,17 @@ describe('trickStore', () => {
     const mockFn = jest.fn().mockResolvedValue({
       data: {
         tricks: [
-          { id: 'trick1', name: 'Ollie', description: '', imageUrl: '', video_url: '', difficulty: 'Easy', category: 'Basics', points: 10, prerequisites: [] },
+          {
+            id: 'trick1',
+            name: 'Ollie',
+            description: '',
+            imageUrl: '',
+            video_url: '',
+            difficulty: 'Easy',
+            category: 'Basics',
+            points: 10,
+            prerequisites: [],
+          },
         ],
       },
     });

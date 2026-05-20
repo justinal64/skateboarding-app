@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -68,7 +76,10 @@ export default function ProfileScreen() {
     } catch (err: unknown) {
       const code = (err as { code?: string }).code;
       if (code === 'auth/requires-recent-login') {
-        Alert.alert('Sign in again', 'Please sign out and sign back in before changing your email.');
+        Alert.alert(
+          'Sign in again',
+          'Please sign out and sign back in before changing your email.',
+        );
       } else if (code === 'auth/email-already-in-use') {
         Alert.alert('Error', 'That email is already in use.');
       } else {
@@ -132,13 +143,19 @@ export default function ProfileScreen() {
       <View className="items-center mb-8">
         <View
           className="w-[120px] h-[120px] rounded-full items-center justify-center border-2 mb-3"
-          style={[{ backgroundColor: `${avatarColor}22`, borderColor: avatarColor }, neonGlow(`${avatarColor}80`, 20)]}
+          style={[
+            { backgroundColor: `${avatarColor}22`, borderColor: avatarColor },
+            neonGlow(`${avatarColor}80`, 20),
+          ]}
         >
           <Ionicons name="person" size={64} color={avatarColor} />
         </View>
 
         {/* Color swatches */}
-        <Text className="text-textDim text-[9px] font-black uppercase tracking-widest mb-2" style={{ opacity: 0.6 }}>
+        <Text
+          className="text-textDim text-[9px] font-black uppercase tracking-widest mb-2"
+          style={{ opacity: 0.6 }}
+        >
           Avatar Accent
         </Text>
         <View className="flex-row gap-3 mb-5">
@@ -147,7 +164,10 @@ export default function ProfileScreen() {
               key={color}
               onPress={() => handleSaveAvatarColor(color)}
               className="w-6 h-6 rounded-full border-2"
-              style={{ backgroundColor: color, borderColor: avatarColor === color ? '#FFF' : 'transparent' }}
+              style={{
+                backgroundColor: color,
+                borderColor: avatarColor === color ? '#FFF' : 'transparent',
+              }}
               accessibilityLabel={`Set avatar color${avatarColor === color ? ', currently selected' : ''}`}
               accessibilityState={{ selected: avatarColor === color }}
               accessibilityRole="button"
@@ -168,10 +188,14 @@ export default function ProfileScreen() {
             />
             <View className="flex-row gap-6">
               <TouchableOpacity onPress={() => setIsEditing(false)}>
-                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">Cancel</Text>
+                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleSaveName}>
-                <Text className="text-primary text-sm font-bold uppercase tracking-wider">Save</Text>
+                <Text className="text-primary text-sm font-bold uppercase tracking-wider">
+                  Save
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -180,7 +204,11 @@ export default function ProfileScreen() {
             <Text className="text-3xl font-bold text-white text-center">
               {user?.displayName || 'Skater'}
             </Text>
-            <TouchableOpacity onPress={handleEditName} accessibilityLabel="Edit display name" accessibilityRole="button">
+            <TouchableOpacity
+              onPress={handleEditName}
+              accessibilityLabel="Edit display name"
+              accessibilityRole="button"
+            >
               <Ionicons name="pencil" size={16} color={COLORS.textDim} />
             </TouchableOpacity>
           </View>
@@ -201,10 +229,14 @@ export default function ProfileScreen() {
             />
             <View className="flex-row gap-6">
               <TouchableOpacity onPress={() => setIsEditingEmail(false)}>
-                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">Cancel</Text>
+                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleSaveEmail}>
-                <Text className="text-primary text-sm font-bold uppercase tracking-wider">Save</Text>
+                <Text className="text-primary text-sm font-bold uppercase tracking-wider">
+                  Save
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -212,7 +244,10 @@ export default function ProfileScreen() {
           <View className="flex-row items-center gap-2 mb-3">
             <Text className="text-base text-textDim text-center">{user?.email}</Text>
             <TouchableOpacity
-              onPress={() => { setEditEmail(user?.email ?? ''); setIsEditingEmail(true); }}
+              onPress={() => {
+                setEditEmail(user?.email ?? '');
+                setIsEditingEmail(true);
+              }}
               accessibilityLabel="Edit email address"
               accessibilityRole="button"
             >
@@ -235,7 +270,12 @@ export default function ProfileScreen() {
           onPress={signOut}
         >
           <Text className="text-white text-base font-bold tracking-widest">SIGN OUT</Text>
-          <Ionicons name="log-out-outline" size={20} color="#FFF" style={{ marginLeft: 8, opacity: 0.7 }} />
+          <Ionicons
+            name="log-out-outline"
+            size={20}
+            color="#FFF"
+            style={{ marginLeft: 8, opacity: 0.7 }}
+          />
         </Pressable>
 
         {/* Delete Account — red, destructive */}
@@ -279,9 +319,14 @@ export default function ProfileScreen() {
             <View className="flex-row gap-3">
               <TouchableOpacity
                 className="flex-1 items-center py-3 rounded-xl bg-white/5"
-                onPress={() => { setDeleteStep('idle'); setDeletePassword(''); }}
+                onPress={() => {
+                  setDeleteStep('idle');
+                  setDeletePassword('');
+                }}
               >
-                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">Cancel</Text>
+                <Text className="text-textDim text-sm font-bold uppercase tracking-wider">
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 className="flex-1 items-center py-3 rounded-xl bg-red-500/20 border border-red-500/50"
@@ -297,7 +342,6 @@ export default function ProfileScreen() {
           </View>
         )}
       </View>
-
     </ScrollView>
   );
 }

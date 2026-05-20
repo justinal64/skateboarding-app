@@ -59,7 +59,7 @@ function RootLayoutNav() {
     if (!user && !isPublicPage) {
       router.replace('/login');
     } else if (user && !user.emailVerified && !isVerifyPage) {
-       router.replace('/verify-email');
+      router.replace('/verify-email');
     } else if (user && user.emailVerified && (isPublicPage || isVerifyPage)) {
       router.replace('/');
     }
@@ -67,7 +67,7 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={NeonTheme}>
-        <Stack
+      <Stack
         screenOptions={{
           headerStyle: {
             backgroundColor: NeonTheme.colors.card,
@@ -85,7 +85,7 @@ function RootLayoutNav() {
         <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="verify-email" options={{ headerShown: false }} />
       </Stack>
-        <StatusBar style="light" />
+      <StatusBar style="light" />
     </ThemeProvider>
   );
 }

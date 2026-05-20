@@ -21,8 +21,7 @@ export default function NeonButton({
   variant = 'primary',
 }: NeonButtonProps) {
   const bgColor = variant === 'primary' ? COLORS.primary : COLORS.secondary;
-  const glowColor =
-    variant === 'primary' ? 'rgba(255, 0, 255, 0.5)' : 'rgba(0, 255, 255, 0.5)';
+  const glowColor = variant === 'primary' ? 'rgba(255, 0, 255, 0.5)' : 'rgba(0, 255, 255, 0.5)';
 
   return (
     <Pressable
@@ -33,9 +32,7 @@ export default function NeonButton({
       onPress={onPress}
       disabled={disabled}
     >
-      <Text className="text-white text-lg font-bold tracking-widest">
-        {label}
-      </Text>
+      <Text className="text-white text-lg font-bold tracking-widest">{label}</Text>
     </Pressable>
   );
 }
