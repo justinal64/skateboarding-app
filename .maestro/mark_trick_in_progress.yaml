@@ -1,0 +1,16 @@
+appId: com.justinleggett.skateboard
+name: Mark a trick as in progress
+---
+- runFlow: login.yaml
+
+- assertVisible: "ALL TRICKS"
+
+- tapOn: "Ollie"
+
+- assertVisible: "Start Learning"
+- tapOn: "Start Learning"
+
+- tapOn:
+    text: "Learning"
+
+- assertVisible: "Ollie"

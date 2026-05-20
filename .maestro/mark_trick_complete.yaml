@@ -1,0 +1,21 @@
+appId: com.justinleggett.skateboard
+name: Mark a trick as completed via I Landed It
+---
+- runFlow: login.yaml
+
+# Put Ollie in progress first
+- tapOn: "Ollie"
+- tapOn: "Start Learning"
+
+- tapOn:
+    text: "Learning"
+
+- assertVisible: "Ollie"
+- assertVisible: "I Landed It"
+
+- tapOn: "I Landed It"
+
+- tapOn:
+    text: "Done"
+
+- assertVisible: "Ollie"

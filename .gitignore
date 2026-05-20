@@ -42,5 +42,8 @@ app-example
 /ios
 /android
 
-
 .env
+
+# Maestro
+.maestro/screenshots/
+.maestro/videos/

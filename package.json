@@ -12,6 +12,7 @@
     "lint": "expo lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test:e2e": "maestro test .maestro/",
     "deploy:ios": "eas build --platform ios --profile production --auto-submit"
   },
   "dependencies": {

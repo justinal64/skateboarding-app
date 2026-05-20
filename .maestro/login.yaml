@@ -1,0 +1,19 @@
+appId: com.justinleggett.skateboard
+name: Login flow
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: "Sign In"
+
+- tapOn:
+    id: "email-input"
+- inputText: "${EMAIL}"
+
+- tapOn:
+    id: "password-input"
+- inputText: "${PASSWORD}"
+
+- tapOn: "Sign In"
+
+- assertVisible: "ALL TRICKS"
