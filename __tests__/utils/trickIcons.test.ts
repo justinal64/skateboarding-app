@@ -53,4 +53,12 @@ describe('getTrickSpriteIndex', () => {
     expect(getTrickSpriteIndex(makeTrick('KICKFLIP'))).toBe(1);
     expect(getTrickSpriteIndex(makeTrick('kickflip'))).toBe(1);
   });
+
+  it('returns Slide category fallback (10) for unknown slide trick', () => {
+    expect(getTrickSpriteIndex(makeTrick('Unknown Slide', 'Slide'))).toBe(10);
+  });
+
+  it('returns Transition category fallback (18) for unknown transition trick', () => {
+    expect(getTrickSpriteIndex(makeTrick('Unknown Transition', 'Transition'))).toBe(18);
+  });
 });
