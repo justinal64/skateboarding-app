@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 import ProfileDropdown from '@/components/ProfileDropdown';
 import TrickGrid from '@/components/TrickGrid';
@@ -107,21 +107,7 @@ export default function TrickDirectory({
       {/* Header Section */}
       <View style={{ paddingTop: top + 8 }} className="pb-5 px-4 bg-background z-10 relative">
         <View className="flex-row justify-between items-center mb-6">
-          {/* Left Column: Logo */}
-          <View className="flex-1 flex-row items-center">
-            <MaterialCommunityIcons
-              name="skateboard"
-              size={28}
-              color="#00FFFF"
-              style={textGlow('#00FFFF', 5)}
-            />
-            <Text
-              className="text-[#00FFFF] font-black tracking-widest text-base ml-2"
-              style={textGlow('#00FFFF', 5)}
-            >
-              SKL
-            </Text>
-          </View>
+          <View className="flex-1" />
 
           {/* Center Column: Title */}
           <View className="flex-2 items-center justify-center">
