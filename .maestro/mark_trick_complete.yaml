@@ -3,19 +3,27 @@ name: Mark a trick as completed via I Landed It
 ---
 - runFlow: login.yaml
 
-# Put Ollie in progress first
+# Move Ollie to in progress via the trick detail modal
 - tapOn: "Ollie"
-- tapOn: "Start Learning"
+- tapOn:
+    id: "start-learning-button"
+- tapOn:
+    text: "Close"
 
+# Switch to Learning tab
 - tapOn:
     text: "Learning"
 
+- assertVisible: "IN PROGRESS"
 - assertVisible: "Ollie"
-- assertVisible: "I Landed It"
 
-- tapOn: "I Landed It"
+# Tap I Landed It on the featured card
+- tapOn:
+    id: "i-landed-it-button"
 
+# Switch to Done tab and verify
 - tapOn:
     text: "Done"
 
+- assertVisible: "MASTERED"
 - assertVisible: "Ollie"

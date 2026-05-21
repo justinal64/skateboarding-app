@@ -40,6 +40,7 @@ export default function LoginScreen() {
         value={email}
         placeholder="email@address.com"
         autoCapitalize="none"
+        testID="email-input"
       />
 
       <FormInput
@@ -49,12 +50,14 @@ export default function LoginScreen() {
         secureTextEntry
         placeholder="Password"
         autoCapitalize="none"
+        testID="password-input"
       />
 
       <NeonButton
         label={loading ? 'SIGNING IN...' : 'SIGN IN'}
         onPress={signInWithEmail}
         disabled={loading}
+        testID="sign-in-button"
       />
 
       <Link href="/register" asChild>

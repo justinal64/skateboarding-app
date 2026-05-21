@@ -349,6 +349,7 @@ export default function TrickDetailModal({
                       accessibilityLabel="Start Learning"
                       accessibilityRole="button"
                       accessibilityState={{ disabled: hasUnmetPrereqs }}
+                      testID="start-learning-button"
                     >
                       <LinearGradient
                         colors={[COLORS.primary, COLORS.secondary]}
@@ -381,6 +382,7 @@ export default function TrickDetailModal({
                     }}
                     accessibilityLabel="Mark as Completed"
                     accessibilityRole="button"
+                    testID="mark-completed-button"
                   >
                     <LinearGradient
                       colors={[COLORS.success, '#00CC66']}

@@ -8,6 +8,7 @@ type NeonButtonProps = {
   onPress: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'secondary';
+  testID?: string;
 };
 
 /**
@@ -19,6 +20,7 @@ export default function NeonButton({
   onPress,
   disabled = false,
   variant = 'primary',
+  testID,
 }: NeonButtonProps) {
   const bgColor = variant === 'primary' ? COLORS.primary : COLORS.secondary;
   const glowColor = variant === 'primary' ? 'rgba(255, 0, 255, 0.5)' : 'rgba(0, 255, 255, 0.5)';
@@ -31,6 +33,7 @@ export default function NeonButton({
       style={[{ backgroundColor: bgColor }, neonGlow(glowColor, 10)]}
       onPress={onPress}
       disabled={disabled}
+      testID={testID}
     >
       <Text className="text-white text-lg font-bold tracking-widest">{label}</Text>
     </Pressable>

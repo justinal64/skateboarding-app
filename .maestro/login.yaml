@@ -4,7 +4,7 @@ name: Login flow
 - launchApp:
     clearState: true
 
-- assertVisible: "Sign In"
+- assertVisible: "WELCOME BACK"
 
 - tapOn:
     id: "email-input"
@@ -14,6 +14,7 @@ name: Login flow
     id: "password-input"
 - inputText: "${PASSWORD}"
 
-- tapOn: "Sign In"
+- tapOn:
+    id: "sign-in-button"
 
-- assertVisible: "ALL TRICKS"
+- assertVisible: "TRICK LIBRARY"

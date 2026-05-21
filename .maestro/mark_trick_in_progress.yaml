@@ -3,14 +3,16 @@ name: Mark a trick as in progress
 ---
 - runFlow: login.yaml
 
-- assertVisible: "ALL TRICKS"
+- assertVisible: "TRICK LIBRARY"
 
 - tapOn: "Ollie"
 
-- assertVisible: "Start Learning"
-- tapOn: "Start Learning"
+- assertVisible: "Ollie"
+- tapOn:
+    id: "start-learning-button"
 
 - tapOn:
     text: "Learning"
 
+- assertVisible: "IN PROGRESS"
 - assertVisible: "Ollie"

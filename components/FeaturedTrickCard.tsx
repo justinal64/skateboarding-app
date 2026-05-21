@@ -79,6 +79,7 @@ export default function FeaturedTrickCard({ trick, onLogSession, onLandedIt }: P
           onPress={() => onLogSession(trick)}
           accessibilityLabel="Log a practice session"
           accessibilityRole="button"
+          testID="log-session-button"
         >
           <Ionicons name="play" size={13} color="#000" />
           <Text className="text-black font-black text-xs tracking-widest uppercase">
@@ -91,6 +92,7 @@ export default function FeaturedTrickCard({ trick, onLogSession, onLandedIt }: P
           onPress={() => onLandedIt(trick)}
           accessibilityLabel="Mark trick as landed"
           accessibilityRole="button"
+          testID="i-landed-it-button"
         >
           <Text
             className="font-black text-xs tracking-widest uppercase"
