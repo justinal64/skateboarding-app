@@ -106,26 +106,21 @@ export default function TrickDirectory({
     <View className="flex-1 bg-background">
       {/* Header Section */}
       <View style={{ paddingTop: top + 8 }} className="pb-5 px-4 bg-background z-10 relative">
-        <View className="flex-row justify-between items-center mb-6">
-          <View className="flex-1" />
-
-          {/* Center Column: Title */}
-          <View className="flex-2 items-center justify-center">
-            <Text
-              className="text-white text-xl font-black tracking-widest"
-              style={textGlow('#FFFFFF', 8)}
-            >
-              {title === 'TRICK LIBRARY' ? 'Trick Library' : title}
+        <View style={{ minHeight: 60 }} className="mb-6 items-center justify-center relative">
+          <Text
+            className="text-white text-xl font-black tracking-widest text-center"
+            style={textGlow('#FFFFFF', 8)}
+          >
+            {title === 'TRICK LIBRARY' ? 'Trick Library' : title}
+          </Text>
+          {subtitle ? (
+            <Text className="text-textDim text-[10px] font-medium tracking-[0.5px] mt-0.5 text-center">
+              {subtitle}
             </Text>
-            {subtitle ? (
-              <Text className="text-textDim text-[10px] font-medium tracking-[0.5px] mt-0.5">
-                {subtitle}
-              </Text>
-            ) : null}
-          </View>
+          ) : null}
 
-          {/* Right Column: Profile */}
-          <View className="flex-1 items-end z-20">
+          {/* Profile pinned to top-right of the row */}
+          <View className="absolute top-0 right-0 z-20">
             <ProfileDropdown />
           </View>
         </View>

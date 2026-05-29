@@ -66,7 +66,14 @@ export default function ProfileDropdown() {
           {/* Circular Avatar */}
           <LinearGradient
             colors={[avatarColor, '#FF00FF']}
-            className="w-12 h-12 rounded-full items-center justify-center p-[2px]"
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 2,
+            }}
           >
             <View className="w-full h-full bg-[#111122] rounded-full items-center justify-center">
               <Text
@@ -118,7 +125,15 @@ export default function ProfileDropdown() {
               <View className="flex-row items-center mb-4">
                 <LinearGradient
                   colors={[avatarColor, '#FF00FF']}
-                  className="w-[60px] h-[60px] rounded-full items-center justify-center mr-4 p-[3px]"
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: 16,
+                    padding: 3,
+                  }}
                 >
                   <View className="w-full h-full bg-[#111122] rounded-full items-center justify-center">
                     <Ionicons name="person" size={28} color={avatarColor} />
