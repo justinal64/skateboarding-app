@@ -75,3 +75,13 @@ Before shipping to the App Store:
 
 1. Restrict the Firebase API key to the bundle ID `com.justinleggett.skateboard` in Google Cloud Console
 2. Ensure Firestore security rules are deployed via the Firebase Console
+
+## Pre-Launch Issue Tracker
+
+The canonical list of outstanding work for App Store submission lives outside this repo in Obsidian:
+
+`~/Documents/obsidian/skateboarding-app/pre-launch-issues.md`
+
+It is grouped by severity (🛑 blockers, ⚠️ definitely fix, 🧰 should fix, ✅ done) and ends with a suggested fix order. When the user says "work through pre-launch issues" or references an issue number (e.g. "issue #3"), read that file first. Update the file as items complete so it stays the source of truth — do not duplicate the list into this repo.
+
+Related: the BOLTS marketing site and legal pages (`/privacy`, `/terms`) are hosted on **Netlify** at `boltsapp.app`, in a separate repo. Don't add hosting config to this repo's `firebase.json`.
