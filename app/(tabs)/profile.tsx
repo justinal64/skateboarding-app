@@ -347,6 +347,13 @@ export default function ProfileScreen() {
       <Text className="text-textDim text-xs text-center mt-8" style={{ opacity: 0.5 }}>
         <Text
           className="underline"
+          onPress={() => Linking.openURL('https://boltsapp.app/terms')}
+        >
+          Terms of Service
+        </Text>
+        {'  ·  '}
+        <Text
+          className="underline"
           onPress={() => Linking.openURL('https://boltsapp.app/privacy')}
         >
           Privacy Policy

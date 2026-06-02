@@ -106,6 +106,13 @@ export default function RegisterScreen() {
         By creating an account, you agree to our{' '}
         <Text
           className="text-primary underline"
+          onPress={() => Linking.openURL('https://boltsapp.app/terms')}
+        >
+          Terms of Service
+        </Text>
+        {' '}and{' '}
+        <Text
+          className="text-primary underline"
           onPress={() => Linking.openURL('https://boltsapp.app/privacy')}
         >
           Privacy Policy
