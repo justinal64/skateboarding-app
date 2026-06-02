@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Linking,
   Pressable,
   ScrollView,
   Text,
@@ -342,6 +343,15 @@ export default function ProfileScreen() {
           </View>
         )}
       </View>
+
+      <Text className="text-textDim text-xs text-center mt-8" style={{ opacity: 0.5 }}>
+        <Text
+          className="underline"
+          onPress={() => Linking.openURL('https://boltsapp.app/privacy')}
+        >
+          Privacy Policy
+        </Text>
+      </Text>
     </ScrollView>
   );
 }

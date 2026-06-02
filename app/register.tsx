@@ -5,7 +5,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { useState } from 'react';
-import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { Alert, Linking, Pressable, Text, TextInput, View } from 'react-native';
 
 import NeonButton from '@/components/NeonButton';
 import { COLORS, textGlow } from '@/constants/AppTheme';
@@ -101,6 +101,16 @@ export default function RegisterScreen() {
         onPress={signUp}
         disabled={loading}
       />
+
+      <Text className="text-textDim text-xs text-center mt-4">
+        By creating an account, you agree to our{' '}
+        <Text
+          className="text-primary underline"
+          onPress={() => Linking.openURL('https://boltsapp.app/privacy')}
+        >
+          Privacy Policy
+        </Text>
+      </Text>
 
       <Link href="/login" asChild>
         <Pressable className="mt-6 items-center">
