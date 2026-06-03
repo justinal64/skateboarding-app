@@ -65,7 +65,7 @@ export default function TrickDetailModal({
     )
       .then((snap) => setSessions(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Session)))
       .finally(() => setLoadingSessions(false));
-  }, [visible, trick?.id, user?.uid]);
+  }, [visible, trick, user]);
 
   if (!trick) return null;
 

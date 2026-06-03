@@ -70,7 +70,7 @@ function Particle({ config, active }: { config: ParticleConfig; active: boolean 
       progress.value = 0;
       opacity.value = 0;
     }
-  }, [active]);
+  }, [active, config.delay, config.duration, opacity, progress]);
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,

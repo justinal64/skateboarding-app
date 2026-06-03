@@ -1,14 +1,9 @@
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
-import { HttpsError, onCall, onRequest } from 'firebase-functions/v2/https';
+import { HttpsError, onCall } from 'firebase-functions/v2/https';
 
 initializeApp();
-
-export const helloWorld = onRequest((request, response) => {
-  logger.info('Hello logs!', { structuredData: true });
-  response.send('Hello from Firebase!');
-});
 
 const VALID_DIFFICULTIES = new Set(['Easy', 'Intermediate', 'Advanced']);
 const VALID_CATEGORIES = new Set(['Basics', 'Flip', 'Grind', 'Slide', 'Transition']);

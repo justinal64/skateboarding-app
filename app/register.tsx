@@ -24,6 +24,15 @@ export default function RegisterScreen() {
       Alert.alert('Missing Info', 'Please enter your first and last name.');
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert('Weak Password', 'Password must be at least 6 characters.');
+      return;
+    }
 
     setLoading(true);
     try {
