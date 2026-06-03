@@ -2,43 +2,47 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function isVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
     // Public trick library — anyone can read; users can only write their own private tricks
     match /tricks/{trickId} {
       allow read: if true;
-      allow create: if request.auth != null
+      allow create: if isVerified()
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.isPublic == false;
-      allow update, delete: if request.auth != null
+      allow update, delete: if isVerified()
         && resource.data.ownerId == request.auth.uid;
     }
 
     // Per-user trick progress — owner only; doc ID must be prefixed with the owner's uid
     match /user_tricks/{docId} {
-      allow read: if request.auth != null
+      allow read: if isVerified()
         && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null
+      allow create: if isVerified()
         && request.auth.uid == request.resource.data.userId
         && docId.matches(request.auth.uid + '_.*');
-      allow update: if request.auth != null
+      allow update: if isVerified()
         && request.auth.uid == resource.data.userId
         && docId.matches(request.auth.uid + '_.*');
-      allow delete: if request.auth != null
+      allow delete: if isVerified()
         && request.auth.uid == resource.data.userId;
     }
 
     // User profiles (avatar colour, streak) — owner only
     match /user_profiles/{userId} {
-      allow read, write: if request.auth != null
+      allow read, write: if isVerified()
         && request.auth.uid == userId;
     }
 
     // Practice sessions — owner only
     match /sessions/{sessionId} {
-      allow read: if request.auth != null
+      allow read: if isVerified()
         && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null
+      allow create: if isVerified()
         && request.auth.uid == request.resource.data.userId;
-      allow update, delete: if request.auth != null
+      allow update, delete: if isVerified()
         && request.auth.uid == resource.data.userId;
     }
   }

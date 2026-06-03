@@ -12,6 +12,9 @@ export const getTricks = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
   }
+  if (!request.auth.token.email_verified) {
+    throw new HttpsError('unauthenticated', 'Email address must be verified.');
+  }
 
   const db = getFirestore();
   const tricksRef = db.collection('tricks');
@@ -42,6 +45,9 @@ export const getTricks = onCall({ cors: true }, async (request) => {
 export const addTrick = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
+  }
+  if (!request.auth.token.email_verified) {
+    throw new HttpsError('unauthenticated', 'Email address must be verified.');
   }
 
   const { name, description, difficulty, category, video_url, prerequisite_ids } = request.data;
