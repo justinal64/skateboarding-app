@@ -10,11 +10,18 @@ export function getErrorMessage(error: unknown): string {
 const FIREBASE_ERROR_MAP: Record<string, string> = {
   'auth/email-already-in-use': 'This email is already registered.',
   'auth/wrong-password': 'Incorrect password.',
+  'auth/invalid-credential': 'Incorrect email or password.',
   'auth/user-not-found': 'No account found with this email.',
+  'auth/user-disabled': 'This account has been disabled.',
   'auth/weak-password': 'Password must be at least 6 characters.',
   'auth/invalid-email': 'Please enter a valid email address.',
   'auth/too-many-requests': 'Too many attempts. Please try again later.',
   'auth/network-request-failed': 'Network error. Check your connection.',
+  'auth/api-key-not-valid': 'App is misconfigured. Please contact support.',
+  'auth/requests-from-referer': 'App is misconfigured. Please contact support.',
+  'API key not valid': 'App is misconfigured. Please contact support.',
+  'API_KEY_HTTP_REFERRER_BLOCKED': 'App is misconfigured. Please contact support.',
+  'requests-from-referer-blocked': 'App is misconfigured. Please contact support.',
 };
 
 /**
