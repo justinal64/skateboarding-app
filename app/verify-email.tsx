@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { sendEmailVerification } from 'firebase/auth';
 import { useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { COLORS } from '@/constants/AppTheme';
 import { useAuth } from '@/context/AuthContext';
@@ -9,6 +10,7 @@ import { getUserFriendlyError } from '@/utils/errors';
 
 export default function VerifyEmailScreen() {
   const { user, signOut } = useAuth();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const checkVerification = async () => {
@@ -17,7 +19,7 @@ export default function VerifyEmailScreen() {
       if (user) {
         await user.reload();
         if (user.emailVerified) {
-          Alert.alert('Success!', 'Your email is verified. Redirecting...');
+          router.replace('/(tabs)');
         } else {
           Alert.alert('Not Verified Yet', 'Please check your email and click the link.');
         }

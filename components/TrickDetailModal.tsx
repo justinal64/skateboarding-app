@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Linking, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -35,6 +36,7 @@ export default function TrickDetailModal({
   onPrerequisitePress,
   allowCompletion = false,
 }: TrickDetailModalProps) {
+  const insets = useSafeAreaInsets();
   const allTricks = useTrickStore((state) => state.tricks);
   const saveNote = useTrickStore((state) => state.saveNote);
   const { user } = useAuth();
@@ -86,10 +88,10 @@ export default function TrickDetailModal({
           style={neonGlow('rgba(0, 255, 255, 0.25)', 16)}
         >
           <ConfettiOverlay visible={showConfetti} />
-          <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+          <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}>
             {/* Header Image */}
             <View className="relative w-full h-[300px] bg-[#0D0D25] items-center justify-center">
-              <View className="opacity-50">
+              <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.5 }}>
                 <TrickCardContent trick={trick} size={300} showName={false} />
               </View>
               <LinearGradient colors={['transparent', '#0D0D25']} className="absolute inset-0" />

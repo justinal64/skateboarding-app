@@ -30,9 +30,8 @@ export default function SpriteIcon({ index, size }: SpriteIconProps) {
         style={{
           width: width * COLS,
           height: height * ROWS,
-          position: 'absolute',
-          left: -col * width,
-          top: -row * height,
+          marginLeft: -col * width,
+          marginTop: -row * height,
         }}
         resizeMode="stretch"
       />
