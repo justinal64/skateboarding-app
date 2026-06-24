@@ -19,6 +19,7 @@ export default function VerifyEmailScreen() {
       if (user) {
         await user.reload();
         if (user.emailVerified) {
+          await user.getIdToken(true); // force token refresh so email_verified claim is current
           router.replace('/(tabs)');
         } else {
           Alert.alert('Not Verified Yet', 'Please check your email and click the link.');

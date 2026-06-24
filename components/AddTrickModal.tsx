@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { COLORS, neonGlow } from '@/constants/AppTheme';
 import { TrickCategory, TrickDifficulty, TrickMeta } from '@/types';
+import { getErrorMessage } from '@/utils/errors';
 
 type AddTrickModalProps = {
   visible: boolean;
@@ -65,8 +66,8 @@ export default function AddTrickModal({ visible, onClose, onAddTrick }: AddTrick
       });
       resetForm();
       onClose();
-    } catch {
-      setError('Failed to add trick. Please try again.');
+    } catch (e) {
+      setError(getErrorMessage(e) || 'Failed to add trick. Please try again.');
     } finally {
       setSubmitting(false);
     }

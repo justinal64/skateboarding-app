@@ -50,7 +50,7 @@ export const addTrick = onCall({ cors: true }, async (request) => {
     throw new HttpsError('unauthenticated', 'Email address must be verified.');
   }
 
-  const { name, description, difficulty, category, video_url, prerequisite_ids } = request.data;
+  const { name, description, difficulty, category, points, video_url, prerequisite_ids } = request.data;
 
   if (!name || typeof name !== 'string' || name.trim().length === 0) {
     throw new HttpsError('invalid-argument', 'A valid trick name is required.');
@@ -76,6 +76,9 @@ export const addTrick = onCall({ cors: true }, async (request) => {
   if (!Array.isArray(prerequisite_ids) && prerequisite_ids !== undefined) {
     throw new HttpsError('invalid-argument', 'prerequisite_ids must be an array.');
   }
+  if (points !== undefined && (typeof points !== 'number' || !Number.isInteger(points) || points < 1 || points > 1000)) {
+    throw new HttpsError('invalid-argument', 'points must be a whole number between 1 and 1000.');
+  }
 
   const db = getFirestore();
   const tricksRef = db.collection('tricks');
@@ -86,6 +89,7 @@ export const addTrick = onCall({ cors: true }, async (request) => {
       description: typeof description === 'string' ? description.trim() : '',
       difficulty: difficulty ?? 'Intermediate',
       category: category ?? 'Basics',
+      points: typeof points === 'number' ? points : 10,
       video_url: typeof video_url === 'string' ? video_url.trim() : '',
       prerequisites: Array.isArray(prerequisite_ids) ? prerequisite_ids : [],
       ownerId: request.auth.uid,
@@ -96,7 +100,7 @@ export const addTrick = onCall({ cors: true }, async (request) => {
     const docRef = await tricksRef.add(newTrick);
     return { id: docRef.id };
   } catch (error) {
-    logger.error('Error adding trick', error);
-    throw new HttpsError('internal', 'Unable to add trick');
+    logger.error('Error adding trick', { uid: request.auth.uid, error });
+    throw new HttpsError('internal', 'Unable to save trick. Please try again.');
   }
 });
